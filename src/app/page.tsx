@@ -1,117 +1,146 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from '@/locales/i18n';
 
 export default function Home() {
   const { t, lang, toggleLang } = useTranslation();
+  const [latency, setLatency] = useState(24);
+  const [displayText, setDisplayText] = useState('');
+
+  useEffect(() => {
+    document.title = lang === 'en' 
+      ? 'Rana | Systems & Security Control Center' 
+      : 'রানা | সিস্টেম ও সিকিউরিটি কন্ট্রোল সেন্টার';
+  }, [lang]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLatency(prev => Math.max(15, Math.min(45, prev + Math.floor(Math.random() * 7) - 3)));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const heroSubText = t('home.hero_sub');
+  useEffect(() => {
+    setDisplayText('');
+    let i = 0;
+    let active = true;
+    const interval = setInterval(() => {
+      if (!active) return;
+      setDisplayText(() => heroSubText.slice(0, i + 1));
+      i++;
+      if (i >= heroSubText.length) {
+        clearInterval(interval);
+      }
+    }, 20);
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [heroSubText]);
+
+  const navLinks = [
+    { href: '/', label: t('nav.home'), active: true },
+    { href: '/portfolio', label: t('nav.portfolio') },
+    { href: '/blog', label: t('nav.blog') },
+    { href: '/faq', label: t('nav.faq') },
+    { href: '/about', label: t('nav.about') },
+    { href: '/contact', label: t('nav.contact') },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <span className="text-xl font-bold">BD Toolbox</span>
-          </div>
-          <div className="hidden md:flex md:items-center md:space-x-4">
-            <a href="#" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.home')}
-            </a>
-            <a href="/portfolio" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.portfolio')}
-            </a>
-            <a href="/blog" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.blog')}
-            </a>
-            <a href="/faq" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.faq')}
-            </a>
-            <a href="/about" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.about')}
-            </a>
-            <a href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.contact')}
-            </a>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button onClick={toggleLang} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {lang === 'en' ? 'বাং' : 'EN'}
-            </button>
-          </div>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
+      {/* Header */}
+      <header className="border-b border-slate-900 bg-slate-950/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="font-mono text-base font-bold tracking-widest text-slate-200">
+            RANA // SYS_OPS
+          </span>
         </div>
+        <nav className="hidden md:flex space-x-6 text-sm font-mono">
+          {navLinks.map((link) => (
+            <a 
+              key={link.href}
+              href={link.href} 
+              className={`hover:text-cyan-400 transition-colors ${link.active ? 'text-cyan-400 border-b border-cyan-400' : 'text-slate-400'}`}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+        <button 
+          onClick={toggleLang} 
+          className="bg-slate-900 hover:bg-slate-850 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
+        >
+          {lang === 'en' ? 'বাং' : 'EN'}
+        </button>
       </header>
 
-      <main className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-center mb-8">
+      {/* Hero Body */}
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col justify-center">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-block min-h-[38px] bg-slate-900/60 border border-slate-800 rounded px-4 py-2 font-mono text-xs text-emerald-400 mb-6 cyber-glow">
+            {displayText}
+            <span className="animate-pulse ml-0.5 font-bold">_</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-6">
             {t('home.title')}
           </h1>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-lg text-slate-400 leading-relaxed">
             {t('home.description')}
           </p>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {/* Tool cards will go here */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow">
-              <div className="p-6">
-                <h3 className="text-lg font-semibold mb-2">PDF Converter</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Convert images to PDF, merge/split PDFs, and more.
-                </p>
-              </div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow">
-              <div className="p-6">
-                <h3 className="text-lg font-semibold mb-2">Word Counter</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Count words, characters, sentences, and paragraphs.
-                </p>
-              </div>
-            </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow">
-              <div className="p-6">
-                <h3 className="text-lg font-semibold mb-2">Unit Converter</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Convert between different units, including Bangladeshi land units.
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
+
+        {/* Dynamic Status Grid */}
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16 font-mono text-xs">
+          <div className="bg-slate-900/40 border border-slate-850 rounded p-4 flex flex-col justify-between cyber-glow">
+            <span className="text-slate-500 uppercase">{t('home.pinger_latency')}</span>
+            <span className="text-lg font-bold text-cyan-400 mt-2">{latency}ms</span>
+          </div>
+          <div className="bg-slate-900/40 border border-slate-850 rounded p-4 flex flex-col justify-between cyber-glow">
+            <span className="text-slate-500 uppercase">{t('home.pinger_shields')}</span>
+            <span className="text-lg font-bold text-emerald-400 mt-2">Nominal</span>
+          </div>
+          <div className="bg-slate-900/40 border border-slate-850 rounded p-4 flex flex-col justify-between cyber-glow">
+            <span className="text-slate-500 uppercase">{t('home.pinger_vpn')}</span>
+            <span className="text-lg font-bold text-cyan-400 mt-2">Encrypted</span>
+          </div>
+          <div className="bg-slate-900/40 border border-slate-850 rounded p-4 flex flex-col justify-between cyber-glow">
+            <span className="text-slate-500 uppercase">{t('home.pinger_status')}</span>
+            <span className="text-lg font-bold text-emerald-400 mt-2">ONLINE</span>
+          </div>
+        </section>
+
+        {/* Dashboard Navigation Cards */}
+        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <a href="/portfolio" className="bg-slate-900/40 border border-slate-850 hover:border-cyan-500 rounded-lg p-6 transition-all duration-300 hover:-translate-y-1 cyber-glow block group">
+            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">{t('home.card_port_title')}</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">{t('home.card_port_desc')}</p>
+          </a>
+          <a href="/about" className="bg-slate-900/40 border border-slate-850 hover:border-cyan-500 rounded-lg p-6 transition-all duration-300 hover:-translate-y-1 cyber-glow block group">
+            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">{t('home.card_about_title')}</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">{t('home.card_about_desc')}</p>
+          </a>
+          <a href="/blog" className="bg-slate-900/40 border border-slate-850 hover:border-cyan-500 rounded-lg p-6 transition-all duration-300 hover:-translate-y-1 cyber-glow block group">
+            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">{t('home.card_blog_title')}</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">{t('home.card_blog_desc')}</p>
+          </a>
+          <a href="/contact" className="bg-slate-900/40 border border-slate-850 hover:border-cyan-500 rounded-lg p-6 transition-all duration-300 hover:-translate-y-1 cyber-glow block group">
+            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">{t('home.card_contact_title')}</h3>
+            <p className="text-sm text-slate-400 leading-relaxed">{t('home.card_contact_desc')}</p>
+          </a>
+        </section>
       </main>
 
-      <footer className="bg-gray-800 dark:bg-gray-900 text-gray-300 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.quick_links')}</h4>
-              <ul className="space-y-2">
-                <li><a href="/about" className="hover:text-white">{t('footer.about')}</a></li>
-                <li><a href="/contact" className="hover:text-white">{t('footer.contact')}</a></li>
-                <li><a href="/faq" className="hover:text-white">{t('footer.faq')}</a></li>
-                <li><a href="/privacy-policy" className="hover:text-white">{t('footer.privacy')}</a></li>
-                <li><a href="/terms-of-service" className="hover:text-white">{t('footer.terms')}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.tools')}</h4>
-              <ul className="space-y-2">
-                <li><a href="/tools/pdf-converter" className="hover:text-white">PDF Converter</a></li>
-                <li><a href="/tools/word-counter" className="hover:text-white">Word Counter</a></li>
-                <li><a href="/tools/unit-converter" className="hover:text-white">Unit Converter</a></li>
-                {/* More tools can be added */}
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.follow')}</h4>
-              <div className="flex space-x-4">
-                <a href="#" className="hover:text-white">LinkedIn</a>
-                <a href="#" className="hover:text-white">GitHub</a>
-                <a href="#" className="hover:text-white">Twitter</a>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 pt-4 border-t border-gray-700 text-center text-xs">
-            &copy; {new Date().getFullYear()} BD Toolbox. All rights reserved.
+      {/* Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950/80 py-8 px-6 text-sm font-mono mt-12">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA // SYS_OPS. {t('footer.copyright')}</div>
+          <div className="flex space-x-6 text-xs">
+            <a href="https://www.linkedin.com/in/hrana36/" className="text-slate-400 hover:text-white">LinkedIn</a>
+            <a href="https://github.com/hrana36" className="text-slate-400 hover:text-white">GitHub</a>
           </div>
         </div>
       </footer>
