@@ -12,7 +12,7 @@ export default function TerminalConsole() {
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [inputVal, setInputVal] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
+  const [tempDraft, setTempDraft] = useState('');
   const [logs, setLogs] = useState<LogLine[]>([
     { text: 'Rana-OS [Version 1.0.4]', type: 'success' },
     { text: 'Type "help" to list available commands.', type: 'output' },
@@ -37,11 +37,18 @@ export default function TerminalConsole() {
 
   const processCommand = (cmdStr: string) => {
     const trimmed = cmdStr.trim().toLowerCase();
-    if (!trimmed) return;
+    if (!trimmed) {
+      setLogs([...logs, { text: 'guest@rana-ops:~$ ', type: 'input' as const }]);
+      setInputVal('');
+      setHistoryIndex(-1);
+      setTempDraft('');
+      return;
+    }
 
     const newLogs = [...logs, { text: `guest@rana-ops:~$ ${cmdStr}`, type: 'input' as const }];
     setHistory([...history, cmdStr]);
     setHistoryIndex(-1);
+    setTempDraft('');
 
     switch (trimmed) {
       case 'clear':
@@ -141,6 +148,9 @@ export default function TerminalConsole() {
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (history.length === 0) return;
+      if (historyIndex === -1) {
+        setTempDraft(inputVal);
+      }
       const nextIdx = historyIndex === -1 ? history.length - 1 : Math.max(0, historyIndex - 1);
       setHistoryIndex(nextIdx);
       setInputVal(history[nextIdx]);
@@ -150,7 +160,7 @@ export default function TerminalConsole() {
       const nextIdx = historyIndex + 1;
       if (nextIdx >= history.length) {
         setHistoryIndex(-1);
-        setInputVal('');
+        setInputVal(tempDraft);
       } else {
         setHistoryIndex(nextIdx);
         setInputVal(history[nextIdx]);
@@ -187,28 +197,18 @@ export default function TerminalConsole() {
       </div>
       <div className="flex items-center mt-3 pt-2 border-t border-slate-900 relative">
         <span className="text-cyan-400 font-bold mr-2 select-none">guest@rana-ops:~$</span>
-        <div className="flex-1 flex items-center relative font-mono text-slate-100 min-h-[1.5rem]">
-          <span className="whitespace-pre">{inputVal}</span>
-          {isFocused ? (
-            <span className="w-2.5 h-4 bg-cyan-400 ml-0.5 animate-blink" />
-          ) : (
-            <span className="w-2.5 h-4 border border-cyan-400 ml-0.5" />
-          )}
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputVal}
-            onChange={(e) => setInputVal(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            className="absolute inset-0 w-full h-full bg-transparent border-none outline-none text-transparent caret-transparent focus:ring-0 p-0 font-mono"
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck="false"
-          />
-        </div>
+        <input
+          ref={inputRef}
+          type="text"
+          value={inputVal}
+          onChange={(e) => setInputVal(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="flex-1 bg-transparent border-none outline-none text-slate-100 caret-cyan-400 focus:ring-0 p-0 font-mono"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck="false"
+        />
       </div>
     </div>
   );
