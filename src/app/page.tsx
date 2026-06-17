@@ -9,10 +9,8 @@ export default function Home() {
   const [displayText, setDisplayText] = useState('');
 
   useEffect(() => {
-    document.title = lang === 'en' 
-      ? 'Rana | Systems & Security Control Center' 
-      : 'রানা | সিস্টেম ও সিকিউরিটি কন্ট্রোল সেন্টার';
-  }, [lang]);
+    document.title = t('home.tab_title');
+  }, [lang, t]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -28,7 +26,7 @@ export default function Home() {
     let active = true;
     const interval = setInterval(() => {
       if (!active) return;
-      setDisplayText(() => heroSubText.slice(0, i + 1));
+      setDisplayText(heroSubText.slice(0, i + 1));
       i++;
       if (i >= heroSubText.length) {
         clearInterval(interval);
@@ -101,15 +99,15 @@ export default function Home() {
           </div>
           <div className="bg-slate-900/40 border border-slate-850 rounded p-4 flex flex-col justify-between cyber-glow">
             <span className="text-slate-500 uppercase">{t('home.pinger_shields')}</span>
-            <span className="text-lg font-bold text-emerald-400 mt-2">Nominal</span>
+            <span className="text-lg font-bold text-emerald-400 mt-2">{t('home.status_nominal')}</span>
           </div>
           <div className="bg-slate-900/40 border border-slate-850 rounded p-4 flex flex-col justify-between cyber-glow">
             <span className="text-slate-500 uppercase">{t('home.pinger_vpn')}</span>
-            <span className="text-lg font-bold text-cyan-400 mt-2">Encrypted</span>
+            <span className="text-lg font-bold text-cyan-400 mt-2">{t('home.status_encrypted')}</span>
           </div>
           <div className="bg-slate-900/40 border border-slate-850 rounded p-4 flex flex-col justify-between cyber-glow">
             <span className="text-slate-500 uppercase">{t('home.pinger_status')}</span>
-            <span className="text-lg font-bold text-emerald-400 mt-2">ONLINE</span>
+            <span className="text-lg font-bold text-emerald-400 mt-2">{t('home.status_online')}</span>
           </div>
         </section>
 

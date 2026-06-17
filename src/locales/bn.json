@@ -22,7 +22,11 @@
     "pinger_latency": "সার্ভার লেটেন্সি",
     "pinger_shields": "সক্রিয় শিল্ড",
     "pinger_vpn": "ভিপিএন রুট",
-    "pinger_status": "স্ট্যাটাস"
+    "pinger_status": "স্ট্যাটাস",
+    "status_nominal": "স্বাভাবিক",
+    "status_encrypted": "এনক্রিপ্ট করা",
+    "status_online": "অনলাইন",
+    "tab_title": "রানা | সিস্টেম ও সিকিউরিটি কন্ট্রোল সেন্টার"
   },
   "about": {
     "title": "পার্সোনেল সিকিউরিটি ডসিয়ার",

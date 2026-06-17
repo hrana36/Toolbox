@@ -22,7 +22,11 @@
     "pinger_latency": "Server Latency",
     "pinger_shields": "Active Shields",
     "pinger_vpn": "VPN Route",
-    "pinger_status": "Status"
+    "pinger_status": "Status",
+    "status_nominal": "Nominal",
+    "status_encrypted": "Encrypted",
+    "status_online": "ONLINE",
+    "tab_title": "Rana | Systems & Security Control Center"
   },
   "about": {
     "title": "Personnel Security Dossier",
