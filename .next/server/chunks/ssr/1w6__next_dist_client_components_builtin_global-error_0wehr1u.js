@@ -1,3 +1,0 @@
-module.exports=[23612,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(57318);a.n(d("[project]/Rana/node_modules/next/dist/client/components/builtin/global-error.js <module evaluation>"))},8177,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(57318);a.n(d("[project]/Rana/node_modules/next/dist/client/components/builtin/global-error.js"))},37236,a=>{"use strict";a.i(23612);var b=a.i(8177);a.n(b)},98701,a=>{a.n(a.i(37236))}];
-
-//# sourceMappingURL=1w6__next_dist_client_components_builtin_global-error_0wehr1u.js.map
