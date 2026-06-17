@@ -1,34 +1,77 @@
 {
   "nav": {
-    "home": "Home",
-    "portfolio": "Portfolio",
-    "blog": "Blog",
-    "faq": "FAQ",
-    "about": "About",
-    "contact": "Contact"
+    "home": "Console Home",
+    "portfolio": "Terminal Port",
+    "blog": "Threat Feed",
+    "faq": "Operations FAQ",
+    "about": "Personnel Dossier",
+    "contact": "Secure Comms"
   },
   "home": {
-    "title": "BD Toolbox - Multi-tool Utility for Bangladeshi Users",
-    "description": "A bilingual (English/Bengali) multi-tool utility platform with 20+ client-side tools for document processing, image manipulation, calculators, and more."
+    "title": "MD Habibur Rahaman Rana - Systems & Security Operations Center",
+    "description": "Enterprise systems administration, cyber security engineering, endpoint compliance auditing, and proactive infrastructure monitoring.",
+    "hero_sub": "Initializing secure connection to sys_ops console... STATUS: OK.",
+    "card_port_title": "Interactive Console",
+    "card_port_desc": "Run active command queries on systems, experience logs, and verified credentials.",
+    "card_about_title": "Personnel Dossier",
+    "card_about_desc": "Read detailed profiles on infrastructure administration and SecOps capabilities.",
+    "card_blog_title": "Threat Feed",
+    "card_blog_desc": "Check the threat intelligence advisories, runbooks, and cybersecurity bulletins.",
+    "card_contact_title": "Secure Comms",
+    "card_contact_desc": "Establish secure contact links for project proposals or security audits.",
+    "pinger_latency": "Server Latency",
+    "pinger_shields": "Active Shields",
+    "pinger_vpn": "VPN Route",
+    "pinger_status": "Status"
+  },
+  "about": {
+    "title": "Personnel Security Dossier",
+    "section_profile": "Professional Profile",
+    "profile_desc": "Highly experienced and certified IT professional specializing in System Administration, Cyber Security principles, and Infrastructure Management. Proven expertise in configuring, maintaining, and supporting Microsoft-centric environments (Windows Server, Active Directory, Office 365). Focused on endpoint security (AV/EDR), security awareness, system patching, and leveraging RMM/PSA tools for proactive support and compliance. Certified as an Endpoint Administrator Associate (MD-102) and Azure Administrator Associate (AZ-104).",
+    "section_mission": "Ops Mission",
+    "mission_desc": "To secure, stabilize, and monitor enterprise infrastructure, minimizing threat surfaces and maximizing operational uptime through disciplined incident management and endpoint compliance.",
+    "section_credentials": "Verified Credentials",
+    "view_portfolio": "Launch Terminal"
+  },
+  "faq": {
+    "title": "Operations FAQ & Runbooks",
+    "question1": "What systems infrastructure and virtualization tools do you manage?",
+    "answer1": "I specialize in Microsoft-centric environments, managing Windows Server, Active Directory domain controllers, Group Policy Objects (GPOs), Exchange environments, and virtualization platforms (Hyper-V / VMware).",
+    "question2": "How do you handle remote operations and ticketing SLAs?",
+    "answer2": "I leverage enterprise RMM/PSA tools (Datto RMM, Autotask PSA, Ninja RMM, ConnectWise Manage) for remote patching, security auditing, automated alert responses, and incident resolution within strict Service Level Agreements.",
+    "question3": "What EDR/AV security suites do you deploy and monitor?",
+    "answer3": "I deploy and manage advanced Endpoint Detection and Response (EDR) agents, including SentinelOne, Bitdefender, Datto AV/EDR, and Acronis Cyber Protect to secure enterprise nodes.",
+    "question4": "Are you available for international remote contracts?",
+    "answer4": "Yes, I am currently working remotely from Dhaka, Bangladesh for Sydney, Australia-based MSPs, and support global operations in USA (Texas) and Australian regions.",
+    "question5": "What active certifications do you hold?",
+    "answer5": "I hold active verified certifications: Microsoft 365 Certified: Endpoint Administrator Associate (MD-102), Microsoft Certified: Azure Administrator Associate (AZ-104), and Google IT Support Professional."
+  },
+  "contact": {
+    "title": "Establish Secure Communications",
+    "description": "Send an encrypted transmission or general inquiry to the SecOps center.",
+    "form_name": "Identifier / Name",
+    "form_email": "Return Address / Email",
+    "form_subject": "Category / Topic",
+    "form_message": "Transmission / Message",
+    "form_submit": "Transmit Payload",
+    "form_success": "Payload transmitted successfully.",
+    "direct_title": "Direct Channels",
+    "email_label": "Email",
+    "phone_label": "Phone",
+    "linkedin_label": "LinkedIn",
+    "github_label": "GitHub"
+  },
+  "blog": {
+    "title": "Threat Intelligence Feed",
+    "subtitle": "Security advisories, infrastructure runbooks, and threat intelligence bulletins.",
+    "severity_label": "Severity",
+    "read_more": "Read Bulletin",
+    "back": "Return to Feed"
   },
   "footer": {
-    "quick_links": "Quick Links",
-    "about": "About",
-    "contact": "Contact",
-    "faq": "FAQ",
-    "privacy": "Privacy Policy",
-    "terms": "Terms of Service",
-    "follow": "Follow Us",
-    "tools": "Tools"
-  },
-  "portfolio": {
-    "header": {
-      "system_status": "SEC_SYSTEM",
-      "nominal": "NOMINAL"
-    },
-    "instructions": {
-      "title": "Instruction Log",
-      "body": "Use the interactive console on the left to run system queries. Type 'help' to output all active directives."
-    }
+    "quick_links": "Console Map",
+    "tools": "SecOps Links",
+    "follow": "Direct Channels",
+    "copyright": "All rights reserved. Secure terminal session active."
   }
 }
