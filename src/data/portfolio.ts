@@ -4,12 +4,12 @@ export const portfolioData = {
     title: 'Systems Engineer | Cybersecurity & IT Infrastructure',
     valueStatement: 'Securing and maintaining enterprise IT environments across SentinelOne, Microsoft 365/Azure AD, and MSP platforms',
     cta: [
-      { text: 'View Resume', link: '/resume.pdf' }, // Assuming we have a resume PDF
+      { text: 'View Resume', link: '/resume.pdf' },
       { text: 'Contact Me', href: '#contact' }
     ]
   },
   about: {
-    description: 'Highly experienced and certified IT professional specializing in System Administration, Cyber Security principles, and Infrastructure Management. Proven expertise in configuring, maintaining, and supporting Microsoft-centric environments (Windows Server, Active Directory, Office 365). Focused on endpoint security (AV/EDR), security awareness, system patching, and leveraging RMM/PSA tools for proactive support and compliance. Certified as a Microsoft 365 Certified: Endpoint Administrator Associate.',
+    description: 'Highly experienced and certified IT professional specializing in System Administration, Cyber Security principles, and Infrastructure Management. Proven expertise in configuring, maintaining, and supporting Microsoft-centric environments (Windows Server, Active Directory, Office 365). Focused on endpoint security (AV/EDR), security awareness, system patching, and leveraging RMM/PSA tools for proactive support and compliance. Certified as a Microsoft 365 Certified: Endpoint Administrator Associate and Microsoft Certified: Azure Administrator Associate.',
     location: 'Dhaka, Bangladesh (working remotely for Sydney, Australia-based MSP)'
   },
   technicalSkills: {
@@ -86,7 +86,7 @@ export const portfolioData = {
       title: 'BD Toolbox',
       description: 'Architected and built a bilingual (EN/Bangla) multi-tool utility platform with 20+ client-side tools (Next.js, TypeScript, client-side processing for privacy/security)',
       tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'React'],
-      link: '#' // In a real app, this would be a link to the project
+      link: '#'
     },
     {
       title: 'Royal Health Insight',
@@ -104,11 +104,15 @@ export const portfolioData = {
   educationAndCertifications: {
     certifications: [
       {
-        name: 'Microsoft 365 Certified: Endpoint Administrator Associate',
+        name: 'Microsoft 365 Certified: Endpoint Administrator Associate (MD-102)',
         date: 'May 8, 2024'
       },
       {
-        name: 'Google IT Support',
+        name: 'Microsoft Certified: Azure Administrator Associate (AZ-104)',
+        date: 'June 2024'
+      },
+      {
+        name: 'Google IT Support Professional',
         date: 'Jan 5, 2021'
       }
     ],
@@ -132,5 +136,11 @@ export const portfolioData = {
         gpa: '5.00'
       }
     ]
+  },
+  contact: {
+    email: 'hrana36@gmail.com',
+    phone: '+8801621892727',
+    linkedin: 'https://www.linkedin.com/in/hrana36/',
+    github: 'https://github.com/hrana36'
   }
 };
