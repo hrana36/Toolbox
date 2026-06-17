@@ -173,7 +173,7 @@ export default function TerminalConsole() {
       onClick={handleContainerClick} 
       className="flex-1 flex flex-col bg-slate-950/80 border border-slate-800 rounded-lg p-4 font-mono text-sm overflow-hidden cyber-glow cursor-text"
     >
-      <div className="flex items-center justify-between border-b border-slate-850 pb-2 mb-3 select-none">
+      <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3 select-none">
         <div className="flex space-x-1.5">
           <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
           <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>

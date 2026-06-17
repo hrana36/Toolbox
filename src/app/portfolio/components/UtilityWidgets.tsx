@@ -38,7 +38,7 @@ export default function UtilityWidgets() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mt-4">
       {/* Live Uptime */}
-      <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 font-mono text-xs flex flex-col justify-between cyber-glow">
+      <div className="bg-slate-950/40 border border-slate-800 rounded-lg p-4 font-mono text-xs flex flex-col justify-between cyber-glow">
         <span className="text-slate-500 uppercase tracking-wider">Operational Uptime</span>
         <div className="text-lg font-bold text-cyan-400 mt-2">
           UPTIME: {pad(uptime.days)}d:{pad(uptime.hours)}h:{pad(uptime.mins)}m:{pad(uptime.secs)}s
@@ -46,7 +46,7 @@ export default function UtilityWidgets() {
       </div>
 
       {/* EDR Shields */}
-      <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 font-mono text-xs flex flex-col justify-between cyber-glow">
+      <div className="bg-slate-950/40 border border-slate-800 rounded-lg p-4 font-mono text-xs flex flex-col justify-between cyber-glow">
         <span className="text-slate-500 uppercase tracking-wider">EDR Shield Status</span>
         <div className="grid grid-cols-2 gap-1 mt-2">
           <div className="flex items-center space-x-1.5">
@@ -69,7 +69,7 @@ export default function UtilityWidgets() {
       </div>
 
       {/* Network Metadata */}
-      <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 font-mono text-xs flex flex-col justify-between cyber-glow">
+      <div className="bg-slate-950/40 border border-slate-800 rounded-lg p-4 font-mono text-xs flex flex-col justify-between cyber-glow">
         <span className="text-slate-500 uppercase tracking-wider">Security Tunnel Details</span>
         <div className="space-y-1 mt-2 text-slate-300">
           <div>Geo-IP: <span className="text-cyan-400">103.43.14.92 (Dhaka, BD)</span></div>

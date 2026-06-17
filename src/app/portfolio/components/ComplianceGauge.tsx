@@ -2,11 +2,11 @@
 
 export default function ComplianceGauge() {
   return (
-    <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5 flex flex-col items-center cyber-glow">
+    <div className="bg-slate-950/40 border border-slate-800 rounded-lg p-5 flex flex-col items-center cyber-glow">
       <h3 className="text-slate-400 text-xs font-mono mb-4 uppercase tracking-wider">Compliance & Security Gauge</h3>
       <div className="relative w-40 h-40 flex items-center justify-center">
         {/* Simple SVG radial track & circle */}
-        <svg className="w-full h-full transform -rotate-90">
+        <svg viewBox="0 0 160 160" className="w-full h-full transform -rotate-90">
           <circle 
             cx="80" 
             cy="80" 
@@ -32,7 +32,7 @@ export default function ComplianceGauge() {
           <span className="text-3xl font-extrabold text-white">96%</span>
         </div>
       </div>
-      <div className="w-full mt-4 space-y-2 border-t border-slate-850 pt-3 text-xs font-mono">
+      <div className="w-full mt-4 space-y-2 border-t border-slate-800 pt-3 text-xs font-mono">
         <div className="flex justify-between">
           <span className="text-slate-500">System Health:</span>
           <span className="text-emerald-400">Optimal</span>
