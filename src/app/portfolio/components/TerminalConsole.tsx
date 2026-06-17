@@ -99,7 +99,7 @@ export default function TerminalConsole() {
           newLogs.push(
             { text: `✔ Verified: ${cert.name}`, type: 'success' },
             { text: `  Issued: ${cert.date} | Authority: Microsoft/Google`, type: 'output' },
-            { text: `  SHA-256 Validation Hash: [OK] ${Math.random().toString(16).substr(2, 16)}...`, type: 'output' }
+            { text: `  SHA-256 Validation Hash: [OK] ${Math.random().toString(16).slice(2, 18)}...`, type: 'output' }
           );
         });
         break;
@@ -208,6 +208,7 @@ export default function TerminalConsole() {
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck="false"
+          aria-label="Terminal Command Input"
         />
       </div>
     </div>

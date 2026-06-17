@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import TerminalConsole from './components/TerminalConsole';
 import ComplianceGauge from './components/ComplianceGauge';
 import UtilityWidgets from './components/UtilityWidgets';
@@ -8,8 +9,12 @@ import { useTranslation } from '@/locales/i18n';
 export default function Portfolio() {
   const { t, lang, toggleLang } = useTranslation();
 
+  useEffect(() => {
+    document.title = lang === 'en' ? 'Rana | Systems Operations Hub' : 'রানা | সিস্টেমস অপারেশনস হাব';
+  }, [lang]);
+
   return (
-    <div className="h-screen w-screen bg-slate-950 text-slate-100 flex flex-col overflow-hidden select-none">
+    <div className="min-h-screen md:h-screen w-screen bg-slate-950 text-slate-100 flex flex-col overflow-y-auto md:overflow-hidden">
       {/* Title Header */}
       <header className="border-b border-slate-900 bg-slate-950/60 backdrop-blur-md px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">

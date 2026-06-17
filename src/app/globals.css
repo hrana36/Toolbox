@@ -16,7 +16,11 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: 'Inter', sans-serif;
-  overflow: hidden; /* Lock viewport scroll */
+}
+@media (min-width: 768px) {
+  body {
+    overflow: hidden; /* Lock viewport scroll on desktop only */
+  }
 }
 
 /* Custom glow utility */
