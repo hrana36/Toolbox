@@ -65,7 +65,8 @@
     "email_label": "Email",
     "phone_label": "Phone",
     "linkedin_label": "LinkedIn",
-    "github_label": "GitHub"
+    "github_label": "GitHub",
+    "tab_title": "Rana | Secure Comms"
   },
   "blog": {
     "title": "Threat Intelligence Feed",
