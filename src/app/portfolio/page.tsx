@@ -14,14 +14,14 @@ export default function Portfolio() {
       <header className="border-b border-slate-900 bg-slate-950/60 backdrop-blur-md px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="font-mono text-base font-bold tracking-widest text-slate-200">
+          <h1 className="font-mono text-base font-bold tracking-widest text-slate-200">
             RANA // SYS_OPS
-          </span>
+          </h1>
         </div>
         <div className="flex items-center space-x-6">
           <div className="hidden sm:flex items-center space-x-2 text-xs font-mono text-slate-400">
-            <span>SEC_SYSTEM:</span>
-            <span className="text-emerald-400 font-bold">NOMINAL</span>
+            <span>{t('portfolio.header.system_status')}:</span>
+            <span className="text-emerald-400 font-bold">{t('portfolio.header.nominal')}</span>
           </div>
           <button 
             onClick={toggleLang} 
@@ -44,10 +44,14 @@ export default function Portfolio() {
           <ComplianceGauge />
           
           <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5 font-mono text-xs text-slate-400 cyber-glow flex-1 flex flex-col justify-center">
-            <span className="text-slate-500 uppercase tracking-wider mb-2 block">Instruction Log</span>
+            <span className="text-slate-500 uppercase tracking-wider mb-2 block">{t('portfolio.instructions.title')}</span>
             <p className="leading-relaxed">
-              Use the interactive console on the left to run system queries. 
-              Type <span className="text-cyan-400">help</span> to output all active directives.
+              {t('portfolio.instructions.body').split("'help'").map((text, idx, arr) => (
+                <span key={idx}>
+                  {text}
+                  {idx < arr.length - 1 && <span className="text-cyan-400">help</span>}
+                </span>
+              ))}
             </p>
           </div>
         </div>

@@ -20,5 +20,15 @@
     "terms": "Terms of Service",
     "follow": "Follow Us",
     "tools": "Tools"
+  },
+  "portfolio": {
+    "header": {
+      "system_status": "SEC_SYSTEM",
+      "nominal": "NOMINAL"
+    },
+    "instructions": {
+      "title": "Instruction Log",
+      "body": "Use the interactive console on the left to run system queries. Type 'help' to output all active directives."
+    }
   }
 }
