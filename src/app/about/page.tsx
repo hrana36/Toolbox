@@ -1,117 +1,91 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useTranslation } from '@/locales/i18n';
 
 export default function About() {
-  const { t, lang } = useTranslation();
+  const { t, lang, toggleLang } = useTranslation();
+
+  useEffect(() => {
+    document.title = lang === 'en' ? 'Rana | Personnel Dossier' : 'রানা | পার্সোনেল ডসিয়ার';
+  }, [lang]);
+
+  const navLinks = [
+    { href: '/', label: t('nav.home') },
+    { href: '/portfolio', label: t('nav.portfolio') },
+    { href: '/blog', label: t('nav.blog') },
+    { href: '/faq', label: t('nav.faq') },
+    { href: '/about', label: t('nav.about'), active: true },
+    { href: '/contact', label: t('nav.contact') },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <span className="text-xl font-bold">BD Toolbox</span>
-          </div>
-          <div className="hidden md:flex md:items-center md:space-x-4">
-            <a href="/" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.home')}
-            </a>
-            <a href="/portfolio" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.portfolio')}
-            </a>
-            <a href="/blog" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.blog')}
-            </a>
-            <a href="/faq" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.faq')}
-            </a>
-            <a href="/about" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-bold">
-              {t('nav.about')}
-            </a>
-            <a href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.contact')}
-            </a>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button onClick={() => { /* toggleLang */ }} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {lang === 'en' ? 'বাং' : 'EN'}
-            </button>
-          </div>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans select-none">
+      {/* Header */}
+      <header className="border-b border-slate-900 bg-slate-950/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="font-mono text-base font-bold tracking-widest text-slate-200">
+            RANA // SYS_OPS
+          </span>
         </div>
+        <nav className="hidden md:flex space-x-6 text-sm font-mono">
+          {navLinks.map((link) => (
+            <a 
+              key={link.href}
+              href={link.href} 
+              className={`hover:text-cyan-400 transition-colors ${link.active ? 'text-cyan-400 border-b border-cyan-400' : 'text-slate-400'}`}
+            >
+              {link.label}
+            </a>
+          ))}
+        </nav>
+        <button 
+          onClick={toggleLang} 
+          className="bg-slate-900 hover:bg-slate-850 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
+        >
+          {lang === 'en' ? 'বাং' : 'EN'}
+        </button>
       </header>
 
-      <main className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-center mb-8">
-            {t('about.title') || 'About BD Toolbox'}
-          </h1>
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('about.purpose') || 'Our Purpose'}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
-                {t('about.purposeDescription') || 'To provide free, bilingual (English/Bengali) online tools that empower Bangladeshi users to accomplish everyday tasks with ease and efficiency.'}
-              </p>
-            </div>
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('about.mission') || 'Our Mission'}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
-                {t('about.missionDescription') || 'We believe that access to useful online tools should be free and accessible to everyone, regardless of language. Our mission is to break down language barriers by providing a comprehensive suite of tools in both English and Bengali, helping users in Bangladesh and beyond to be more productive in their personal and professional lives.'}
-              </p>
-            </div>
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">
-                {t('about.builtBy') || 'Built By'}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
-                {t('about.builtByDescription') || 'BD Toolbox was created by Md Habibur Rahaman Rana, a Systems Engineer specializing in Cybersecurity and IT Infrastructure. With a passion for creating useful software that solves real-world problems, Rana developed this platform to serve the Bangladeshi community.'}
-              </p>
-              <div className="mt-4 text-center">
-                <a href="/portfolio" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-                  {t('about.viewPortfolio') || 'View Portfolio'}
-                </a>
-              </div>
-            </div>
+      {/* Body */}
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-12 flex flex-col justify-center">
+        <h1 className="text-3xl font-bold font-mono tracking-wider border-b border-slate-900 pb-4 mb-8 text-white uppercase text-cyber-glow">
+          {t('about.title')}
+        </h1>
+
+        <div className="space-y-8 leading-relaxed text-slate-300 text-sm">
+          {/* Profile Section */}
+          <section className="bg-slate-900/40 border border-slate-850 rounded-lg p-6 cyber-glow">
+            <h2 className="text-lg font-bold font-mono text-cyan-400 mb-3 uppercase tracking-wider">{t('about.section_profile')}</h2>
+            <p className="text-slate-400">{t('about.profile_desc')}</p>
+          </section>
+
+          {/* Mission Section */}
+          <section className="bg-slate-900/40 border border-slate-850 rounded-lg p-6 cyber-glow">
+            <h2 className="text-lg font-bold font-mono text-emerald-400 mb-3 uppercase tracking-wider">{t('about.section_mission')}</h2>
+            <p className="text-slate-400">{t('about.mission_desc')}</p>
+          </section>
+
+          {/* Action Link */}
+          <div className="text-center pt-4">
+            <a 
+              href="/portfolio" 
+              className="bg-cyan-650 hover:bg-cyan-700 text-white font-mono text-xs px-6 py-3 rounded border border-cyan-500/30 transition-colors tracking-widest uppercase inline-block cyber-glow"
+            >
+              {t('about.view_portfolio')}
+            </a>
           </div>
         </div>
       </main>
 
-      <footer className="bg-gray-800 dark:bg-gray-900 text-gray-300 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.quick_links') || 'Quick Links'}</h4>
-              <ul className="space-y-2">
-                <li><a href="/" className="hover:text-white">{t('nav.home') || 'Home'}</a></li>
-                <li><a href="/portfolio" className="hover:text-white">{t('nav.portfolio') || 'Portfolio'}</a></li>
-                <li><a href="/blog" className="hover:text-white">{t('nav.blog') || 'Blog'}</a></li>
-                <li><a href="/faq" className="hover:text-white">{t('nav.faq') || 'FAQ'}</a></li>
-                <li><a href="/about" className="hover:text-white">{t('nav.about') || 'About'}</a></li>
-                <li><a href="/contact" className="hover:text-white">{t('nav.contact') || 'Contact'}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.tools') || 'Tools'}</h4>
-              <ul className="space-y-2">
-                <li><a href="/tools/pdf-converter" className="hover:text-white">PDF Converter</a></li>
-                <li><a href="/tools/word-counter" className="hover:text-white">Word Counter</a></li>
-                <li><a href="/tools/unit-converter" className="hover:text-white">Unit Converter</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.follow') || 'Follow Us'}</h4>
-              <div className="flex space-x-4">
-                <a href="#" className="hover:text-white">LinkedIn</a>
-                <a href="#" className="hover:text-white">GitHub</a>
-                <a href="#" className="hover:text-white">Twitter</a>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 pt-4 border-t border-gray-700 text-center text-xs">
-            &copy; {new Date().getFullYear()} BD Toolbox. All rights reserved.
+      {/* Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950/80 py-8 px-6 text-sm font-mono mt-12">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA // SYS_OPS. {t('footer.copyright')}</div>
+          <div className="flex space-x-6 text-xs">
+            <a href="https://www.linkedin.com/in/hrana36/" className="text-slate-400 hover:text-white">LinkedIn</a>
+            <a href="https://github.com/hrana36" className="text-slate-400 hover:text-white">GitHub</a>
           </div>
         </div>
       </footer>
