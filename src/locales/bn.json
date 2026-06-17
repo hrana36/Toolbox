@@ -66,6 +66,10 @@
     "phone_label": "ফোন",
     "linkedin_label": "লিঙ্কডইন",
     "github_label": "গিটহাব",
+    "option_general": "সাধারণ অনুসন্ধান",
+    "option_audit": "অবকাঠামো অডিট",
+    "option_contract": "অপারেশন চুক্তি প্রস্তাব",
+    "option_threat": "সিকিউরিটি ইনসিডেন্ট পরামর্শ",
     "tab_title": "রানা | সিকিউর কমস"
   },
   "blog": {

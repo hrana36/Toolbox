@@ -66,6 +66,10 @@
     "phone_label": "Phone",
     "linkedin_label": "LinkedIn",
     "github_label": "GitHub",
+    "option_general": "General Inquiry",
+    "option_audit": "Infrastructure Audit",
+    "option_contract": "Ops Contract Proposal",
+    "option_threat": "SecOps Incident Consultation",
     "tab_title": "Rana | Secure Comms"
   },
   "blog": {

@@ -102,10 +102,10 @@ export default function Contact() {
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                   className="w-full bg-slate-900/60 border border-slate-800 focus:border-cyan-500 rounded p-2.5 text-slate-200 outline-none focus:ring-0 transition-colors"
                 >
-                  <option value="General">General Inquiry</option>
-                  <option value="Audit">Infrastructure Audit</option>
-                  <option value="Contract">Ops Contract Proposal</option>
-                  <option value="Threat">SecOps Incident Consultation</option>
+                  <option value="General">{t('contact.option_general')}</option>
+                  <option value="Audit">{t('contact.option_audit')}</option>
+                  <option value="Contract">{t('contact.option_contract')}</option>
+                  <option value="Threat">{t('contact.option_threat')}</option>
                 </select>
               </div>
               <div>
