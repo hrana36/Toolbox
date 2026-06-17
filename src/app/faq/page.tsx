@@ -1,139 +1,98 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useTranslation } from '@/locales/i18n';
 
 export default function FAQ() {
-  const { t, lang } = useTranslation();
-
-  const faqItems = [
-    {
-      question: t('faq.question1') || 'Are files uploaded to the server when using the tools?',
-      answer: t('faq.answer1') || 'No, all tools are client-side. Your files never leave your browser, ensuring privacy and security. The only exception is the currency converter, which fetches live exchange rates from a free API.'
-    },
-    {
-      question: t('faq.question2') || 'How do I use the PDF converter tool?',
-      answer: t('faq.answer2') || 'Simply upload your JPG, PNG, or WebP images and click \"Convert to PDF\". You can also merge multiple PDFs, split a PDF into multiple files, or extract text from a PDF.'
-    },
-    {
-      question: t('faq.question3') || 'Is the ATS resume checker accurate?',
-      answer: t('faq.answer3') || 'The ATS resume checker provides a score based on common criteria that applicant tracking systems look for, such as keyword matching, formatting, and length. While it\'s a helpful guide, actual ATS systems may use different algorithms, so the score is an estimate.'
-    },
-    {
-      question: t('faq.question4') || 'Can I use these tools on my mobile device?',
-      answer: t('faq.answer4') || 'Yes, the BD Toolbox is fully responsive and works on all devices, including smartphones and tablets. All tools are designed to be mobile-friendly.'
-    },
-    {
-      question: t('faq.question5') || 'Do I need to create an account to use the tools?',
-      answer: t('faq.answer5') || 'No, all tools are available immediately without any registration or account creation. We believe in providing frictionless access to useful utilities.'
-    }
-  ];
-
+  const { t, lang, toggleLang } = useTranslation();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const toggleItem = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+  useEffect(() => {
+    document.title = lang === 'en' ? 'Rana | Operations Runbooks' : 'রানা | অপারেশনস রানবুক';
+  }, [lang]);
+
+  const faqItems = [
+    { question: t('faq.question1'), answer: t('faq.answer1') },
+    { question: t('faq.question2'), answer: t('faq.answer2') },
+    { question: t('faq.question3'), answer: t('faq.answer3') },
+    { question: t('faq.question4'), answer: t('faq.answer4') },
+    { question: t('faq.question5'), answer: t('faq.answer5') }
+  ];
+
+  const navLinks = [
+    { href: '/', label: t('nav.home') },
+    { href: '/portfolio', label: t('nav.portfolio') },
+    { href: '/blog', label: t('nav.blog') },
+    { href: '/faq', label: t('nav.faq'), active: true },
+    { href: '/about', label: t('nav.about') },
+    { href: '/contact', label: t('nav.contact') },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <span className="text-xl font-bold">BD Toolbox</span>
-          </div>
-          <div className="hidden md:flex md:items-center md:space-x-4">
-            <a href="/" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.home')}
-            </a>
-            <a href="/portfolio" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.portfolio')}
-            </a>
-            <a href="/blog" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.blog')}
-            </a>
-            <a href="/faq" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-bold">
-              {t('nav.faq')}
-            </a>
-            <a href="/about" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.about')}
-            </a>
-            <a href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.contact')}
-            </a>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button onClick={() => { /* toggleLang */ }} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {lang === 'en' ? 'বাং' : 'EN'}
-            </button>
-          </div>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      {/* Header */}
+      <header className="border-b border-slate-900 bg-slate-950/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="font-mono text-base font-bold tracking-widest text-slate-200">
+            RANA // SYS_OPS
+          </span>
         </div>
+        <nav className="hidden md:flex space-x-6 text-sm font-mono">
+          {navLinks.map((link) => (
+            <Link 
+              key={link.href}
+              href={link.href} 
+              className={`hover:text-cyan-400 transition-colors ${link.active ? 'text-cyan-400 border-b border-cyan-400' : 'text-slate-400'}`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+        <button 
+          onClick={toggleLang} 
+          className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
+        >
+          {lang === 'en' ? 'বাং' : 'EN'}
+        </button>
       </header>
 
-      <main className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-center mb-8">
-            {t('faq.title') || 'Frequently Asked Questions'}
-          </h1>
-          <div className="space-y-4">
-            {faqItems.map((item, index) => (
-              <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                <div
-                  onClick={() => toggleItem(index)}
-                  className="flex items-center justify-between p-6 bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 flex-1">
-                    {item.question}
-                  </h3>
-                  <span className={`transition-transform duration-200 ${openIndex === index ? 'rotate-180' : 'rotate-0'}`}>
-                    {/* Chevron icon */}
-                    <span className="inline-block h-4 w-4">{openIndex === index ? '▼' : '▶'}</span>
-                  </span>
+      {/* Body */}
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-4 md:py-6 flex flex-col justify-center">
+        <h1 className="text-2xl font-bold font-mono tracking-wider border-b border-slate-900 pb-2 mb-4 text-white uppercase text-cyber-glow">
+          {t('faq.title')}
+        </h1>
+
+        <div className="space-y-4">
+          {faqItems.map((item, index) => (
+            <div key={index} className="border border-slate-900 bg-slate-900/20 rounded-lg overflow-hidden cyber-glow">
+              <button
+                onClick={() => setOpenIndex(openIndex === index ? null : index)}
+                className="w-full flex items-center justify-between p-5 text-left font-mono text-sm text-slate-200 hover:bg-slate-900/50 transition-colors"
+              >
+                <span>{item.question}</span>
+                <span className="text-cyan-400 font-bold ml-2">
+                  {openIndex === index ? '[-]' : '[+]'}
+                </span>
+              </button>
+              {openIndex === index && (
+                <div className="px-5 pb-5 pt-2 border-t border-slate-950 text-slate-400 text-sm leading-relaxed">
+                  {item.answer}
                 </div>
-                {openIndex === index && (
-                  <div className="px-6 py-4 text-gray-600 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700">
-                    <p>{item.answer}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+              )}
+            </div>
+          ))}
         </div>
       </main>
 
-      <footer className="bg-gray-800 dark:bg-gray-900 text-gray-300 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.quick_links') || 'Quick Links'}</h4>
-              <ul className="space-y-2">
-                <li><a href="/" className="hover:text-white">{t('nav.home') || 'Home'}</a></li>
-                <li><a href="/portfolio" className="hover:text-white">{t('nav.portfolio') || 'Portfolio'}</a></li>
-                <li><a href="/blog" className="hover:text-white">{t('nav.blog') || 'Blog'}</a></li>
-                <li><a href="/faq" className="hover:text-white">{t('nav.faq') || 'FAQ'}</a></li>
-                <li><a href="/about" className="hover:text-white">{t('nav.about') || 'About'}</a></li>
-                <li><a href="/contact" className="hover:text-white">{t('nav.contact') || 'Contact'}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.tools') || 'Tools'}</h4>
-              <ul className="space-y-2">
-                <li><a href="/tools/pdf-converter" className="hover:text-white">PDF Converter</a></li>
-                <li><a href="/tools/word-counter" className="hover:text-white">Word Counter</a></li>
-                <li><a href="/tools/unit-converter" className="hover:text-white">Unit Converter</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.follow') || 'Follow Us'}</h4>
-              <div className="flex space-x-4">
-                <a href="#" className="hover:text-white">LinkedIn</a>
-                <a href="#" className="hover:text-white">GitHub</a>
-                <a href="#" className="hover:text-white">Twitter</a>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 pt-4 border-t border-gray-700 text-center text-xs">
-            &copy; {new Date().getFullYear()} BD Toolbox. All rights reserved.
+      {/* Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950/80 py-4 px-6 text-sm font-mono mt-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA // SYS_OPS. {t('footer.copyright')}</div>
+          <div className="flex space-x-6 text-xs">
+            <a href="https://www.linkedin.com/in/hrana36/" className="text-slate-400 hover:text-white">LinkedIn</a>
+            <a href="https://github.com/hrana36" className="text-slate-400 hover:text-white">GitHub</a>
           </div>
         </div>
       </footer>
