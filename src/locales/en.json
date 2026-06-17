@@ -1,0 +1,24 @@
+{
+  "nav": {
+    "home": "Home",
+    "portfolio": "Portfolio",
+    "blog": "Blog",
+    "faq": "FAQ",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "home": {
+    "title": "BD Toolbox - Multi-tool Utility for Bangladeshi Users",
+    "description": "A bilingual (English/Bengali) multi-tool utility platform with 20+ client-side tools for document processing, image manipulation, calculators, and more."
+  },
+  "footer": {
+    "quick_links": "Quick Links",
+    "about": "About",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "follow": "Follow Us",
+    "tools": "Tools"
+  }
+}

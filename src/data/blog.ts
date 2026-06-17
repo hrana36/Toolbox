@@ -1,0 +1,14 @@
+export const blogPosts = [
+  {
+    id: '1',
+    slug: 'how-to-convert-pdf-to-word-for-free-online',
+    title: {
+      en: 'How to Convert PDF to Word for Free Online',
+      bn: 'বিনামূল্যে অনলাইনে PDF কে Word এ কিভাবে تبدیل করবেন'
+    },
+    excerpt: {
+      en: 'Learn how to convert PDF files to Word documents using free online tools without installing any software.',
+      bn: 'কোনো সফটওয়ার ইনস্টল করে না PDF কে Word এ অনলাইনে রূপান্তর করার উপায়েついて জানুন।'
+    }
+  }
+];

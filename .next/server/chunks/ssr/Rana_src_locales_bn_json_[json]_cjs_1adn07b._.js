@@ -1,0 +1,3 @@
+module.exports=[5012,(a,b,c)=>{b.exports={nav:{home:"হোম",portfolio:"পோரটফολিও",blog:"ব্লগ",faq:"আপدãoশব boj",about:"আমাদের সম্পর্কে",contact:" যোগাযোগ"},home:{title:"বিডি টুলবক্স - বহু-উপযোগী ইউটিলিটি প্ল্যাটফর্ম",description:"একটি দ্বিভাষিক (ইংরেজি/বাঙ্গালি) বহু-উপযোগী ইউটিলিটি প্ল্যাটফর্ম, jossa 20+ ক্লায়েন্ট-সাইড টুলDoc প্রসেসিং, ইমেজ ম্যানিপুলেশন, কালকুলেটর 등이 포함되어 있습니다."},footer:{quick_links:"দ্রুত লিংক",about:"আমাদের সম্পর্কে",contact:" যোগাযোগ",faq:"সामान्य প্রশ্ন",privacy:"غنية 정책",terms:"이용약관",follow:"우리를 팔로우하세요",tools:"도구"}}}];
+
+//# sourceMappingURL=Rana_src_locales_bn_json_%5Bjson%5D_cjs_1adn07b._.js.map
