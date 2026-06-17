@@ -1,117 +1,103 @@
 'use client';
 
-import { blogPosts } from '@/data/blog';
-import { useTranslation } from '@/locales/i18n';
-import { notFound } from 'next/navigation';
+import { use, useEffect } from 'react';
 import Link from 'next/link';
+import { useTranslation } from '@/locales/i18n';
+import { blogPosts } from '@/data/blog';
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
-  const { t, lang } = useTranslation();
-  const { slug } = params;
+type Params = Promise<{ slug: string }>;
 
-  // Find the blog post by slug
+export default function BlogPostPage(props: { params: Params }) {
+  const { t, lang, toggleLang } = useTranslation();
+  const { slug } = use(props.params);
   const post = blogPosts.find((p) => p.slug === slug);
 
+  useEffect(() => {
+    if (post) {
+      document.title = `Rana | ${post.title.substring(0, 25)}...`;
+    }
+  }, [post]);
+
   if (!post) {
-    notFound();
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center font-mono">
+        <span className="text-red-400 text-lg">[ERROR] 404: ADVISORY_NOT_FOUND</span>
+        <Link href="/blog" className="text-cyan-400 mt-4 hover:underline">&laquo; Return to Threat Feed</Link>
+      </div>
+    );
   }
 
+  const navLinks = [
+    { href: '/', label: t('nav.home') },
+    { href: '/portfolio', label: t('nav.portfolio') },
+    { href: '/blog', label: t('nav.blog'), active: true },
+    { href: '/faq', label: t('nav.faq') },
+    { href: '/about', label: t('nav.about') },
+    { href: '/contact', label: t('nav.contact') },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <span className="text-xl font-bold">BD Toolbox</span>
-          </div>
-          <div className="hidden md:flex md:items-center md:space-x-4">
-            <a href="/" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.home')}
-            </a>
-            <a href="/portfolio" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.portfolio')}
-            </a>
-            <a href="/blog" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.blog')}
-            </a>
-            <a href="/faq" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.faq')}
-            </a>
-            <a href="/about" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.about')}
-            </a>
-            <a href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.contact')}
-            </a>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button onClick={() => { /* toggleLang */ }} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {lang === 'en' ? 'বাং' : 'EN'}
-            </button>
-          </div>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      {/* Header */}
+      <header className="border-b border-slate-900 bg-slate-950/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="font-mono text-base font-bold tracking-widest text-slate-200">
+            RANA // SYS_OPS
+          </span>
         </div>
+        <nav className="hidden md:flex space-x-6 text-sm font-mono">
+          {navLinks.map((link) => (
+            <Link 
+              key={link.href}
+              href={link.href} 
+              className={`hover:text-cyan-400 transition-colors ${link.active ? 'text-cyan-400 border-b border-cyan-400' : 'text-slate-400'}`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+        <button 
+          onClick={toggleLang} 
+          className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
+        >
+          {lang === 'en' ? 'বাং' : 'EN'}
+        </button>
       </header>
 
-      <main className="py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <article className="prose dark:prose-invert mx-auto">
-            <h1 className="mb-6">{post.title[lang as keyof typeof post.title]}</h1>
-            <div className="mb-8">
-              <p>{post.excerpt[lang as keyof typeof post.excerpt]}</p>
-            </div>
-            {/* In a real app, we would have the full content here */}
-            <section className="mt-8">
-              <h2 className="text-2xl font-bold mb-4">
-                {t('blog.fullContent') || 'Full Content'}
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                {t('blog.contentPlaceholder') || 'This is where the full blog post content would be displayed. In a real implementation, we would have the complete article with multiple sections, headings, paragraphs, and possibly images.'}
-              </p>
-              <p className="text-gray-600 dark:text-gray-400 mt-4">
-                {t('blog.contentPlaceholder2') || 'For now, this is a placeholder to demonstrate the structure. The actual content would be fetched from a CMS or markdown file.'}
-              </p>
-            </section>
-          </article>
-          <div className="mt-12 text-center">
-            <Link href="/blog" className="text-blue-600 dark:text-blue-400 hover:underline">
-              {t('blog.backToBlog') || '← Back to Blog'}
-            </Link>
-          </div>
+      {/* Body */}
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-4 md:py-6 flex flex-col justify-center">
+        <div className="mb-4">
+          <Link href="/blog" className="text-cyan-400 hover:underline font-mono text-xs">&laquo; {t('blog.back')}</Link>
         </div>
+
+        <article className="bg-slate-900/30 border border-slate-800 rounded-lg p-5 md:p-6 cyber-glow space-y-4">
+          <header className="border-b border-slate-950 pb-3">
+            <div className="flex items-center space-x-4 font-mono text-[10px] text-slate-500 mb-2">
+              <span>{post.date}</span>
+              <span>•</span>
+              <span>{post.category}</span>
+              <span>•</span>
+              <span className="text-red-400">Severity: {post.severity}</span>
+            </div>
+            <h1 className="text-2xl font-bold font-mono text-white leading-tight">
+              {post.title}
+            </h1>
+          </header>
+
+          <div className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap font-sans space-y-4">
+            {post.content}
+          </div>
+        </article>
       </main>
 
-      <footer className="bg-gray-800 dark:bg-gray-900 text-gray-300 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.quick_links') || 'Quick Links'}</h4>
-              <ul className="space-y-2">
-                <li><a href="/" className="hover:text-white">{t('nav.home') || 'Home'}</a></li>
-                <li><a href="/portfolio" className="hover:text-white">{t('nav.portfolio') || 'Portfolio'}</a></li>
-                <li><a href="/blog" className="hover:text-white">{t('nav.blog') || 'Blog'}</a></li>
-                <li><a href="/faq" className="hover:text-white">{t('nav.faq') || 'FAQ'}</a></li>
-                <li><a href="/about" className="hover:text-white">{t('nav.about') || 'About'}</a></li>
-                <li><a href="/contact" className="hover:text-white">{t('nav.contact') || 'Contact'}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.tools') || 'Tools'}</h4>
-              <ul className="space-y-2">
-                <li><a href="/tools/pdf-converter" className="hover:text-white">PDF Converter</a></li>
-                <li><a href="/tools/word-counter" className="hover:text-white">Word Counter</a></li>
-                <li><a href="/tools/unit-converter" className="hover:text-white">Unit Converter</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.follow') || 'Follow Us'}</h4>
-              <div className="flex space-x-4">
-                <a href="#" className="hover:text-white">LinkedIn</a>
-                <a href="#" className="hover:text-white">GitHub</a>
-                <a href="#" className="hover:text-white">Twitter</a>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 pt-4 border-t border-gray-700 text-center text-xs">
-            &copy; {new Date().getFullYear()} BD Toolbox. All rights reserved.
+      {/* Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950/80 py-4 px-6 text-sm font-mono mt-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA // SYS_OPS. {t('footer.copyright')}</div>
+          <div className="flex space-x-6 text-xs">
+            <a href="https://www.linkedin.com/in/hrana36/" className="text-slate-400 hover:text-white">LinkedIn</a>
+            <a href="https://github.com/hrana36" className="text-slate-400 hover:text-white">GitHub</a>
           </div>
         </div>
       </footer>

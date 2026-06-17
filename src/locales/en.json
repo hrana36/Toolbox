@@ -77,7 +77,8 @@
     "subtitle": "Security advisories, infrastructure runbooks, and threat intelligence bulletins.",
     "severity_label": "Severity",
     "read_more": "Read Bulletin",
-    "back": "Return to Feed"
+    "back": "Return to Feed",
+    "tab_title": "Rana | Threat Intel Feed"
   },
   "footer": {
     "quick_links": "Console Map",
