@@ -8,8 +8,8 @@ export default function About() {
   const { t, lang, toggleLang } = useTranslation();
 
   useEffect(() => {
-    document.title = lang === 'en' ? 'Rana | Personnel Dossier' : 'রানা | পার্সোনেল ডসিয়ার';
-  }, [lang]);
+    document.title = t('about.tab_title');
+  }, [lang, t]);
 
   const navLinks = [
     { href: '/', label: t('nav.home') },

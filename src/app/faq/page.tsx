@@ -9,8 +9,8 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    document.title = lang === 'en' ? 'Rana | Operations Runbooks' : 'রানা | অপারেশনস রানবুক';
-  }, [lang]);
+    document.title = t('faq.tab_title');
+  }, [lang, t]);
 
   const faqItems = [
     { question: t('faq.question1'), answer: t('faq.answer1') },

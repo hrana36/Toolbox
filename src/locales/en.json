@@ -35,7 +35,8 @@
     "section_mission": "Ops Mission",
     "mission_desc": "To secure, stabilize, and monitor enterprise infrastructure, minimizing threat surfaces and maximizing operational uptime through disciplined incident management and endpoint compliance.",
     "section_credentials": "Verified Credentials",
-    "view_portfolio": "Launch Terminal"
+    "view_portfolio": "Launch Terminal",
+    "tab_title": "Rana | Personnel Dossier"
   },
   "faq": {
     "title": "Operations FAQ & Runbooks",
@@ -48,7 +49,8 @@
     "question4": "Are you available for international remote contracts?",
     "answer4": "Yes, I am currently working remotely from Dhaka, Bangladesh for Sydney, Australia-based MSPs, and support global operations in USA (Texas) and Australian regions.",
     "question5": "What active certifications do you hold?",
-    "answer5": "I hold active verified certifications: Microsoft 365 Certified: Endpoint Administrator Associate (MD-102), Microsoft Certified: Azure Administrator Associate (AZ-104), and Google IT Support Professional."
+    "answer5": "I hold active verified certifications: Microsoft 365 Certified: Endpoint Administrator Associate (MD-102), Microsoft Certified: Azure Administrator Associate (AZ-104), and Google IT Support Professional.",
+    "tab_title": "Rana | Operations Runbooks"
   },
   "contact": {
     "title": "Establish Secure Communications",
