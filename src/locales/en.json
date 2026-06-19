@@ -78,7 +78,9 @@
     "severity_label": "Severity",
     "read_more": "Read Bulletin",
     "back": "Return to Feed",
-    "tab_title": "Rana | Threat Intel Feed"
+    "tab_title": "Rana | Threat Intel Feed",
+    "error_title": "[ERROR] 404: ADVISORY_NOT_FOUND",
+    "error_back": "Return to Threat Feed"
   },
   "footer": {
     "quick_links": "Console Map",

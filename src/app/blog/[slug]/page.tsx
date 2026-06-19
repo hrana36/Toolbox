@@ -21,8 +21,8 @@ export default function BlogPostPage(props: { params: Params }) {
   if (!post) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center font-mono">
-        <span className="text-red-400 text-lg">[ERROR] 404: ADVISORY_NOT_FOUND</span>
-        <Link href="/blog" className="text-cyan-400 mt-4 hover:underline">&laquo; Return to Threat Feed</Link>
+        <span className="text-red-400 text-lg">{t('blog.error_title')}</span>
+        <Link href="/blog" className="text-cyan-400 mt-4 hover:underline">&laquo; {t('blog.error_back')}</Link>
       </div>
     );
   }
@@ -78,7 +78,7 @@ export default function BlogPostPage(props: { params: Params }) {
               <span>•</span>
               <span>{post.category}</span>
               <span>•</span>
-              <span className="text-red-400">Severity: {post.severity}</span>
+              <span className="text-red-400">{t('blog.severity_label')}: {post.severity}</span>
             </div>
             <h1 className="text-2xl font-bold font-mono text-white leading-tight">
               {post.title}
