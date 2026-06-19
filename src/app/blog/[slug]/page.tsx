@@ -61,7 +61,7 @@ export default function BlogPostPage(props: { params: Params }) {
           onClick={toggleLang} 
           className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
         >
-          EN/BN
+          {lang === 'en' ? 'EN' : 'BN'}
         </button>
       </header>
 
