@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -92,28 +92,8 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Dynamic Status Grid */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 font-mono text-xs">
-          <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
-            <span className="text-slate-500 uppercase">{t('home.pinger_latency')}</span>
-            <span className="text-lg font-bold text-cyan-400 mt-2">{latency}ms</span>
-          </div>
-          <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
-            <span className="text-slate-500 uppercase">{t('home.pinger_shields')}</span>
-            <span className="text-lg font-bold text-emerald-400 mt-2">{t('home.status_nominal')}</span>
-          </div>
-          <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
-            <span className="text-slate-500 uppercase">{t('home.pinger_vpn')}</span>
-            <span className="text-lg font-bold text-cyan-400 mt-2">{t('home.status_encrypted')}</span>
-          </div>
-          <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
-            <span className="text-slate-500 uppercase">{t('home.pinger_status')}</span>
-            <span className="text-lg font-bold text-emerald-400 mt-2">{t('home.status_online')}</span>
-          </div>
-        </section>
-
         {/* Dashboard Navigation Cards */}
-        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
           <Link href="/portfolio" className="bg-slate-900/40 border border-slate-800 hover:border-cyan-500 rounded-lg p-4 md:p-5 transition-all duration-300 hover:-translate-y-1 cyber-glow block group">
             <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">{t('home.card_port_title')}</h3>
             <p className="text-sm text-slate-400 leading-relaxed">{t('home.card_port_desc')}</p>
@@ -130,6 +110,26 @@ export default function Home() {
             <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">{t('home.card_contact_title')}</h3>
             <p className="text-sm text-slate-400 leading-relaxed">{t('home.card_contact_desc')}</p>
           </Link>
+        </section>
+
+        {/* Dynamic Status Grid */}
+        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs">
+          <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
+            <span className="text-slate-500 uppercase">{t('home.pinger_latency')}</span>
+            <span className="text-lg font-bold text-cyan-400 mt-2">{latency}ms</span>
+          </div>
+          <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
+            <span className="text-slate-500 uppercase">{t('home.pinger_shields')}</span>
+            <span className="text-lg font-bold text-emerald-400 mt-2">{t('home.status_nominal')}</span>
+          </div>
+          <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
+            <span className="text-slate-500 uppercase">{t('home.pinger_vpn')}</span>
+            <span className="text-lg font-bold text-cyan-400 mt-2">{t('home.status_encrypted')}</span>
+          </div>
+          <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
+            <span className="text-slate-500 uppercase">{t('home.pinger_status')}</span>
+            <span className="text-lg font-bold text-emerald-400 mt-2">{t('home.status_online')}</span>
+          </div>
         </section>
       </main>
 
