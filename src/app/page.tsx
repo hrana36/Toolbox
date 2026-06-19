@@ -100,11 +100,7 @@ export default function Home() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-6 leading-tight">
-              {lang === 'en' ? (
-                <>Systems & Security <br /> Operations Center</>
-              ) : (
-                <>সিস্টেম ও সিকিউরিটি <br /> অপারেশন সেন্টার</>
-              )}
+              {lang === 'en' ? 'Systems & Security Center' : 'সিস্টেম ও সিকিউরিটি সেন্টার'}
             </h1>
             <p className="text-lg text-slate-400 leading-relaxed">
               {t('home.description')}
