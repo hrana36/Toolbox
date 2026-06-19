@@ -83,21 +83,73 @@ export const portfolioData = {
   ],
   projects: [
     {
-      title: 'BD Toolbox',
-      description: 'Architected and built a bilingual (EN/Bangla) multi-tool utility platform with 20+ client-side tools (Next.js, TypeScript, client-side processing for privacy/security)',
-      tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'React'],
+      title: 'Secure Network Segmentation & Firewall Lab',
+      category: 'Network',
+      description: 'Design a segmented network with a firewall and validate access.',
+      tech: ['pfSense', 'OPNsense', 'VLANs', 'Firewall Rules', 'Network Segmentation'],
       link: '#'
     },
     {
-      title: 'Royal Health Insight',
-      description: 'Built and maintain a Bengali-language health information website, including technical SEO setup and structured data implementation',
-      tech: ['WordPress', 'SEO', 'Bengali Content'],
+      title: 'Server Hardening & Baseline Configuration',
+      category: 'Endpoint',
+      description: 'Apply CIS benchmarks to secure Windows or Linux systems and verify reduced vulnerabilities.',
+      tech: ['CIS Benchmarks', 'Group Policy (GPO)', 'Linux Hardening', 'Vulnerability Auditing'],
       link: '#'
     },
     {
-      title: 'Color the Canvas',
-      description: 'Manage end-to-end content production pipeline for a YouTube Shorts channel, including branding and cross-platform distribution workflow',
-      tech: ['YouTube', 'Video Editing', 'Branding'],
+      title: 'Endpoint Monitoring & EDR Deployment',
+      category: 'Endpoint',
+      description: 'Deploy an open-source EDR solution and detect suspicious endpoint behavior.',
+      tech: ['Wazuh', 'EDR', 'Endpoint Security', 'Sysmon', 'Threat Detection'],
+      link: '#'
+    },
+    {
+      title: 'Automated Patching & Configuration Management',
+      category: 'Endpoint',
+      description: 'Automate OS patching and security configuration enforcement across systems.',
+      tech: ['Ansible', 'Datto RMM', 'Ninja RMM', 'PowerShell', 'Patch Management'],
+      link: '#'
+    },
+    {
+      title: 'Cloud Environment Hardening & Monitoring',
+      category: 'Cloud',
+      description: 'Build and monitor a secure AWS or Azure environment using native security services.',
+      tech: ['AWS Security Hub', 'Azure Entra ID', 'IAM Hardening', 'CloudTrail', 'GuardDuty'],
+      link: '#'
+    },
+    {
+      title: 'Vulnerability Scanning & Remediation Pipeline',
+      category: 'SecOps',
+      description: 'Scan systems for vulnerabilities, remediate findings, and validate fixes through rescanning.',
+      tech: ['Nessus', 'OpenVAS', 'Vulnerability Assessment', 'Remediation tracking'],
+      link: '#'
+    },
+    {
+      title: 'Network IDS/IPS Deployment & Tuning',
+      category: 'Network',
+      description: 'Deploy and tune IDS rules to detect attacks while minimizing false positives.',
+      tech: ['Snort', 'Suricata', 'IDS/IPS', 'Rule Tuning', 'Packet Analysis'],
+      link: '#'
+    },
+    {
+      title: 'SIEM Implementation & Log Management',
+      category: 'SecOps',
+      description: 'Centralize logs and configure security alerts using a SIEM platform.',
+      tech: ['ELK Stack', 'Wazuh SIEM', 'Syslog', 'Log Parsing', 'Security Alerting'],
+      link: '#'
+    },
+    {
+      title: 'Container Security: Image Scanning & Hardening',
+      category: 'Cloud',
+      description: 'Scan and harden Docker images to reduce container vulnerabilities.',
+      tech: ['Docker', 'Trivy', 'Image Hardening', 'Container Security', 'CI/CD security'],
+      link: '#'
+    },
+    {
+      title: 'Active Directory Security Lab',
+      category: 'Endpoint',
+      description: 'Deploy and secure an AD domain using Group Policy and auditing best practices.',
+      tech: ['Active Directory', 'GPO Hardening', 'LDAP Security', 'Auditing Policy', 'Kerberos Hardening'],
       link: '#'
     }
   ],

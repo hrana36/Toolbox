@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/locales/i18n';
+import { portfolioData } from '@/data/portfolio';
 
 export default function Home() {
   const { t, lang, toggleLang } = useTranslation();
   const [latency, setLatency] = useState(24);
   const [displayText, setDisplayText] = useState('');
+  const [activeTab, setActiveTab] = useState<'All' | 'Network' | 'Endpoint' | 'Cloud' | 'SecOps'>('All');
 
   useEffect(() => {
     document.title = t('home.tab_title');
@@ -94,48 +96,70 @@ export default function Home() {
 
         {/* Projects Section */}
         <section className="bg-slate-900/20 border border-slate-900 rounded-lg p-5 mb-6 cyber-glow">
-          <div className="mb-4">
-            <h2 className="text-lg font-bold font-mono text-cyan-400 uppercase tracking-wider">
-              {t('home.project_title')}
-            </h2>
-            <p className="text-xs text-slate-400">
-              {t('home.project_desc')}
-            </p>
+          <div className="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold font-mono text-cyan-400 uppercase tracking-wider">
+                {t('home.project_title')}
+              </h2>
+              <p className="text-xs text-slate-400">
+                {t('home.project_desc')}
+              </p>
+            </div>
+
+            {/* Terminal Category Tabs */}
+            <div className="flex flex-wrap gap-2 font-mono text-xs">
+              {(['All', 'Network', 'Endpoint', 'Cloud', 'SecOps'] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-3 py-1.5 rounded border transition-all ${
+                    activeTab === tab
+                      ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.2)]'
+                      : 'bg-slate-950/40 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                  }`}
+                >
+                  {tab === 'All' ? 'ALL' : tab.toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="bg-slate-950/60 border border-slate-800 rounded p-4 flex flex-col justify-between hover:border-cyan-500/50 transition-colors">
-              <div>
-                <h4 className="text-sm font-bold text-white mb-2">{t('home.proj1_title')}</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">{t('home.proj1_desc')}</p>
-              </div>
-              <div className="mt-4 text-left">
-                <Link href="/portfolio" className="text-cyan-400 hover:text-cyan-300 font-mono text-[10px] uppercase tracking-wider">
-                  {t('about.view_portfolio')} &rarr;
-                </Link>
-              </div>
-            </div>
-            <div className="bg-slate-950/60 border border-slate-800 rounded p-4 flex flex-col justify-between hover:border-cyan-500/50 transition-colors">
-              <div>
-                <h4 className="text-sm font-bold text-white mb-2">{t('home.proj2_title')}</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">{t('home.proj2_desc')}</p>
-              </div>
-              <div className="mt-4 text-left">
-                <Link href="/portfolio" className="text-cyan-400 hover:text-cyan-300 font-mono text-[10px] uppercase tracking-wider">
-                  {t('about.view_portfolio')} &rarr;
-                </Link>
-              </div>
-            </div>
-            <div className="bg-slate-950/60 border border-slate-800 rounded p-4 flex flex-col justify-between hover:border-cyan-500/50 transition-colors">
-              <div>
-                <h4 className="text-sm font-bold text-white mb-2">{t('home.proj3_title')}</h4>
-                <p className="text-xs text-slate-400 leading-relaxed">{t('home.proj3_desc')}</p>
-              </div>
-              <div className="mt-4 text-left">
-                <Link href="/portfolio" className="text-cyan-400 hover:text-cyan-300 font-mono text-[10px] uppercase tracking-wider">
-                  {t('about.view_portfolio')} &rarr;
-                </Link>
-              </div>
-            </div>
+
+          {/* Dynamic Grid */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {portfolioData.projects
+              .filter((p) => activeTab === 'All' || p.category === activeTab)
+              .map((project, idx) => (
+                <div
+                  key={idx}
+                  className="bg-slate-950/60 border border-slate-800 rounded p-4 flex flex-col justify-between hover:border-cyan-500/50 transition-colors animate-[fadeIn_0.3s_ease-out]"
+                >
+                  <div>
+                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider block mb-1">
+                      // {project.category}
+                    </span>
+                    <h4 className="text-sm font-bold text-white mb-2">{project.title}</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed mb-4">{project.description}</p>
+                  </div>
+                  <div>
+                    {/* Tech Badges */}
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {project.tech.map((techItem) => (
+                        <span
+                          key={techItem}
+                          className="bg-slate-900 text-slate-300 border border-slate-800 text-[9px] px-1.5 py-0.5 rounded font-mono"
+                        >
+                          {techItem}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="text-left">
+                      <Link href="/portfolio" className="text-cyan-400 hover:text-cyan-300 font-mono text-[10px] uppercase tracking-wider">
+                        {t('about.view_portfolio')} &rarr;
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
           </div>
         </section>
 
