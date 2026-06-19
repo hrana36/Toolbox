@@ -76,18 +76,6 @@ export default function Contact() {
               <h2 className="text-base font-bold font-mono text-emerald-400 mb-3 uppercase tracking-wider">{t('about.section_mission')}</h2>
               <p className="text-slate-400 text-xs">{t('about.mission_desc')}</p>
             </section>
-
-            {/* Badges Section */}
-            <div className="flex justify-center items-center gap-12 py-4">
-              <div className="flex flex-col items-center gap-2">
-                <img src="/md-102.png" alt="MD-102 Badge" className="w-24 h-24 object-contain cyber-glow rounded-full p-1.5 border border-slate-800 bg-slate-950/60" />
-                <span className="text-[10px] font-mono text-slate-400">MD-102 Endpoint Administrator</span>
-              </div>
-              <div className="flex flex-col items-center gap-2">
-                <img src="/az-104.png" alt="AZ-104 Badge" className="w-24 h-24 object-contain cyber-glow rounded-full p-1.5 border border-slate-800 bg-slate-950/60" />
-                <span className="text-[10px] font-mono text-slate-400">AZ-104 Azure Administrator</span>
-              </div>
-            </div>
           </div>
         </div>
 
