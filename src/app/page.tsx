@@ -80,17 +80,37 @@ export default function Home() {
 
       {/* Hero Body */}
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6 flex flex-col justify-center">
-        <div className="text-center max-w-3xl mx-auto mb-6">
-          <div className="inline-block min-h-[38px] bg-slate-900/60 border border-slate-800 rounded px-4 py-2 font-mono text-xs text-emerald-400 mb-6 cyber-glow">
-            {displayText}
-            <span className="animate-pulse ml-0.5 font-bold">_</span>
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
+          {/* Left Badge: MD-102 */}
+          <div className="hidden md:flex w-28 h-28 justify-center items-center flex-shrink-0">
+            <img src="/md-102.png" alt="MD-102 Badge" className="w-24 h-24 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-6">
-            {t('home.title')}
-          </h1>
-          <p className="text-lg text-slate-400 leading-relaxed">
-            {t('home.description')}
-          </p>
+
+          {/* Center Content */}
+          <div className="text-center max-w-3xl flex-1">
+            <div className="inline-block min-h-[38px] bg-slate-900/60 border border-slate-800 rounded px-4 py-2 font-mono text-xs text-emerald-400 mb-6 cyber-glow">
+              {displayText}
+              <span className="animate-pulse ml-0.5 font-bold">_</span>
+            </div>
+
+            {/* Mobile Badges Row (only shown on small screens) */}
+            <div className="flex md:hidden justify-center items-center gap-6 mb-6">
+              <img src="/md-102.png" alt="MD-102 Badge" className="w-16 h-16 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
+              <img src="/az-104.png" alt="AZ-104 Badge" className="w-16 h-16 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
+            </div>
+
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-6">
+              {t('home.title')}
+            </h1>
+            <p className="text-lg text-slate-400 leading-relaxed">
+              {t('home.description')}
+            </p>
+          </div>
+
+          {/* Right Badge: AZ-104 */}
+          <div className="hidden md:flex w-28 h-28 justify-center items-center flex-shrink-0">
+            <img src="/az-104.png" alt="AZ-104 Badge" className="w-24 h-24 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
+          </div>
         </div>
 
         {/* Projects Section */}
