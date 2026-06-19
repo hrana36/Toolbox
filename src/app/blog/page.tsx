@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect } from 'react';
 import Link from 'next/link';
@@ -46,7 +46,7 @@ export default function Blog() {
           onClick={toggleLang} 
           className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
         >
-          {lang === 'en' ? 'বাং' : 'EN'}
+          {lang === 'en' ? 'à¦¬à¦¾à¦‚' : 'EN'}
         </button>
       </header>
 
@@ -62,7 +62,7 @@ export default function Blog() {
             <div key={post.slug} className="bg-slate-900/30 border border-slate-800 rounded-lg p-4 md:p-5 cyber-glow flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between font-mono text-[10px] mb-3">
-                  <span className="text-slate-500">{post.date} · {post.category}</span>
+                  <span className="text-slate-500">{post.date} Â· {post.category}</span>
                   <span className={`px-2 py-0.5 rounded border ${
                     post.severity === 'HIGH' 
                       ? 'bg-red-950/40 border-red-800 text-red-400' 

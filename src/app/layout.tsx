@@ -6,8 +6,8 @@ import { I18nProvider } from '@/locales/i18n';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'BD Toolbox - Multi-tool Utility for Bangladeshi Users',
-  description: 'A bilingual (English/Bengali) multi-tool utility platform with 20+ client-side tools for document processing, image manipulation, calculators, and more.',
+  title: 'Rana | Systems & Security Operations Center',
+  description: 'Enterprise systems administration, cyber security engineering, endpoint compliance auditing, and proactive infrastructure monitoring.',
 };
 
 export default function RootLayout({

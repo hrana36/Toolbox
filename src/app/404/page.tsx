@@ -1,98 +1,82 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/locales/i18n';
 
 export default function NotFound() {
-  const { t, lang } = useTranslation();
+  const { t, lang, toggleLang } = useTranslation();
+
+  useEffect(() => {
+    document.title = lang === 'en' ? 'Rana | 404 - Not Found' : 'রানা | ৪০৪ - পাওয়া যায়নি';
+  }, [lang]);
+
+  const navLinks = [
+    { href: '/', label: t('nav.home') },
+    { href: '/portfolio', label: t('nav.portfolio') },
+    { href: '/blog', label: t('nav.blog') },
+    { href: '/faq', label: t('nav.faq') },
+    { href: '/about', label: t('nav.about') },
+    { href: '/contact', label: t('nav.contact') },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center">
-      <header className="bg-white dark:bg-gray-800 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <span className="text-xl font-bold">BD Toolbox</span>
-          </div>
-          <div className="hidden md:flex md:items-center md:space-x-4">
-            <a href="/" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.home')}
-            </a>
-            <a href="/portfolio" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.portfolio')}
-            </a>
-            <a href="/blog" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.blog')}
-            </a>
-            <a href="/faq" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.faq')}
-            </a>
-            <a href="/about" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.about')}
-            </a>
-            <a href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.contact')}
-            </a>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button onClick={() => { /* toggleLang */ }} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {lang === 'en' ? 'বাং' : 'EN'}
-            </button>
-          </div>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      {/* Header */}
+      <header className="border-b border-slate-900 bg-slate-950/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="font-mono text-base font-bold tracking-widest text-slate-200">
+            RANA // SYS_OPS
+          </span>
         </div>
+        <nav className="hidden md:flex space-x-6 text-sm font-mono">
+          {navLinks.map((link) => (
+            <Link 
+              key={link.href}
+              href={link.href} 
+              className="hover:text-cyan-400 transition-colors text-slate-400"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+        <button 
+          onClick={toggleLang} 
+          className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
+        >
+          {lang === 'en' ? 'বাং' : 'EN'}
+        </button>
       </header>
 
-      <main className="flex-1 w-full max-w-2xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h1 className="text-5xl font-bold mb-6">
-            404
+      {/* Body */}
+      <main className="flex-1 max-w-md mx-auto w-full px-4 py-4 md:py-6 flex flex-col justify-center text-center">
+        <div className="bg-slate-900/30 border border-slate-800 rounded-lg p-6 md:p-8 cyber-glow space-y-4 font-mono">
+          <span className="text-red-400 text-3xl font-bold block mb-2">[ 404: NOT_FOUND ]</span>
+          <h1 className="text-lg text-white font-mono uppercase mb-4">
+            {t('notFound.title') || 'Requested Resource Offline'}
           </h1>
-          <h2 className="text-3xl font-semibold mb-6">
-            {t('notFound.title') || 'Page Not Found'}
-          </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            {t('notFound.message') || 'Sorry, the page you are looking for does not exist.'}
+          <p className="text-xs text-slate-400 leading-relaxed mb-6">
+            {t('notFound.message') || 'The virtual path specified does not resolve to an active system node or operation advisory.'}
           </p>
-          <div className="mt-6">
-            <Link href="/" className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-              {t('notFound.homeLink') || 'Return to Homepage'}
+          <div className="pt-2">
+            <Link 
+              href="/" 
+              className="inline-block bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-cyan-400 font-bold px-5 py-2.5 rounded transition-all"
+            >
+              &laquo; {t('notFound.homeLink') || 'Return to Control Console'}
             </Link>
           </div>
         </div>
       </main>
 
-      <footer className="bg-gray-800 dark:bg-gray-900 text-gray-300 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.quick_links') || 'Quick Links'}</h4>
-              <ul className="space-y-2">
-                <li><a href="/" className="hover:text-white">{t('nav.home') || 'Home'}</a></li>
-                <li><a href="/portfolio" className="hover:text-white">{t('nav.portfolio') || 'Portfolio'}</a></li>
-                <li><a href="/blog" className="hover:text-white">{t('nav.blog') || 'Blog'}</a></li>
-                <li><a href="/faq" className="hover:text-white">{t('nav.faq') || 'FAQ'}</a></li>
-                <li><a href="/about" className="hover:text-white">{t('nav.about') || 'About'}</a></li>
-                <li><a href="/contact" className="hover:text-white">{t('nav.contact') || 'Contact'}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.tools') || 'Tools'}</h4>
-              <ul className="space-y-2">
-                <li><a href="/tools/pdf-converter" className="hover:text-white">PDF Converter</a></li>
-                <li><a href="/tools/word-counter" className="hover:text-white">Word Counter</a></li>
-                <li><a href="/tools/unit-converter" className="hover:text-white">Unit Converter</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.follow') || 'Follow Us'}</h4>
-              <div className="flex space-x-4">
-                <a href="#" className="hover:text-white">LinkedIn</a>
-                <a href="#" className="hover:text-white">GitHub</a>
-                <a href="#" className="hover:text-white">Twitter</a>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 pt-4 border-t border-gray-700 text-center text-xs">
-            &copy; {new Date().getFullYear()} BD Toolbox. All rights reserved.
+      {/* Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950/80 py-4 px-6 text-sm font-mono mt-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA // SYS_OPS. {t('footer.copyright')}</div>
+          <div className="flex space-x-6 text-xs">
+            <a href="https://www.linkedin.com/in/hrana36/" className="text-slate-400 hover:text-white">LinkedIn</a>
+            <a href="https://github.com/hrana36" className="text-slate-400 hover:text-white">GitHub</a>
           </div>
         </div>
       </footer>

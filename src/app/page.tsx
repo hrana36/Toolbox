@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -73,7 +73,7 @@ export default function Home() {
           onClick={toggleLang} 
           className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
         >
-          {lang === 'en' ? 'বাং' : 'EN'}
+          {lang === 'en' ? 'à¦¬à¦¾à¦‚' : 'EN'}
         </button>
       </header>
 

@@ -1,138 +1,128 @@
 'use client';
 
+import { useEffect } from 'react';
+import Link from 'next/link';
 import { useTranslation } from '@/locales/i18n';
 
 export default function PrivacyPolicy() {
-  const { t, lang } = useTranslation();
+  const { t, lang, toggleLang } = useTranslation();
+
+  useEffect(() => {
+    document.title = lang === 'en' ? 'Rana | Privacy Policy' : 'রানা | প্রাইভেসী পলিসি';
+  }, [lang]);
+
+  const navLinks = [
+    { href: '/', label: t('nav.home') },
+    { href: '/portfolio', label: t('nav.portfolio') },
+    { href: '/blog', label: t('nav.blog') },
+    { href: '/faq', label: t('nav.faq') },
+    { href: '/about', label: t('nav.about') },
+    { href: '/contact', label: t('nav.contact') },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <span className="text-xl font-bold">BD Toolbox</span>
-          </div>
-          <div className="hidden md:flex md:items-center md:space-x-4">
-            <a href="/" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.home')}
-            </a>
-            <a href="/portfolio" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.portfolio')}
-            </a>
-            <a href="/blog" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.blog')}
-            </a>
-            <a href="/faq" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.faq')}
-            </a>
-            <a href="/about" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.about')}
-            </a>
-            <a href="/contact" className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {t('nav.contact')}
-            </a>
-          </div>
-          <div className="flex items-center space-x-3">
-            <button onClick={() => { /* toggleLang */ }} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              {lang === 'en' ? 'বাং' : 'EN'}
-            </button>
-          </div>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+      {/* Header */}
+      <header className="border-b border-slate-900 bg-slate-950/60 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span className="font-mono text-base font-bold tracking-widest text-slate-200">
+            RANA // SYS_OPS
+          </span>
         </div>
+        <nav className="hidden md:flex space-x-6 text-sm font-mono">
+          {navLinks.map((link) => (
+            <Link 
+              key={link.href}
+              href={link.href} 
+              className="hover:text-cyan-400 transition-colors text-slate-400"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+        <button 
+          onClick={toggleLang} 
+          className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
+        >
+          {lang === 'en' ? 'বাং' : 'EN'}
+        </button>
       </header>
 
-      <main className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-center mb-8">
+      {/* Body */}
+      <main className="flex-1 max-w-3xl mx-auto w-full px-4 py-4 md:py-6 flex flex-col justify-center">
+        <div className="bg-slate-900/30 border border-slate-800 rounded-lg p-5 md:p-6 cyber-glow space-y-4 font-mono text-xs">
+          <h1 className="text-xl font-bold border-b border-slate-900 pb-2 mb-2 text-white uppercase text-cyber-glow text-center">
             {t('privacyPolicy.title') || 'Privacy Policy'}
           </h1>
-          <div className="prose dark:prose-invert mx-auto">
-            <p className="mb-6">
-              {t('privacyPolicy.effectiveDate') || 'Effective Date: June 15, 2026'}
-            </p>
-            <h2 className="text-2xl font-semibold mb-4">
-              {t('privacyPolicy.introduction') || 'Introduction'}
-            </h2>
-            <p className="mb-4">
-              {t('privacyPolicy.introductionText') || 'This privacy policy describes how BD Toolbox collects, uses, and protects your information when you use our website and online tools.'}
-            </p>
-            <h2 className="text-2xl font-semibold mb-4">
-              {t('privacyPolicy.informationCollection') || 'Information We Collect'}
-            </h2>
-            <ul className="list-disc list-inside space-y-2 mb-6">
-              <li>
-                {t('privacyPolicy.noPersonalData') || 'We do not collect personal data such as names, email addresses, or phone numbers unless you voluntarily provide it through our contact forms.'}
-              </li>
-              <li>
-                {t('privacyPolicy.fileData') || 'When using our tools, we do not store or access any files you upload. All processing happens client-side in your browser.'}
-              </li>
-              <li>
-                {t('privacyPolicy.cookies') || 'We may use cookies to remember your language preference and improve your experience.'}
-              </li>
-              <li>
-                {t('privacyPolicy.analytics') || 'We use anonymous analytics to understand how users interact with our site, but this data does not identify individual users.'}
-              </li>
-            </ul>
-            <h2 className="text-2xl font-semibold mb-4">
-              {t('privacyPolicy.howWeUseInformation') || 'How We Use Your Information'}
-            </h2>
-            <p className="mb-4">
-              {t('privacyPolicy.useInformationText') || 'Any information you provide through contact forms is used solely to respond to your inquiry. We do not share your information with third parties.'}
-            </p>
-            <h2 className="text-2xl font-semibold mb-4">
-              {t('privacyPolicy.dataSecurity') || 'Data Security'}
-            </h2>
-            <p className="mb-4">
-              {t('privacyPolicy.dataSecurityText') || 'We implement reasonable security measures to protect against unauthorized access, alteration, or destruction of information we collect.'}
-            </p>
-            <h2 className="text-2xl font-semibold mb-4">
-              {t('privacyPolicy.changesToPolicy') || 'Changes to This Policy'}
-            </h2>
-            <p className="mb-4">
-              {t('privacyPolicy.changesText') || 'We may update this privacy policy from time to time. We will notify you of any changes by posting the new privacy policy on this page.'}
-            </p>
-            <h2 className="text-2xl font-semibold mb-4">
-              {t('privacyPolicy.contactUs') || 'Contact Us'}
-            </h2>
-            <p className="mb-4">
-              {t('privacyPolicy.contactText') || 'If you have any questions about this privacy policy, please contact us at hrana36@gmail.com'}
-            </p>
+          <p className="text-slate-400 leading-relaxed text-center mb-4">
+            {t('privacyPolicy.effectiveDate') || 'Effective Date: June 15, 2026'}
+          </p>
+
+          <div className="space-y-4 font-sans text-slate-300">
+            <div>
+              <h2 className="text-sm font-bold font-mono text-white mb-2 uppercase">{t('privacyPolicy.introduction') || '1. Introduction'}</h2>
+              <p className="leading-relaxed">
+                {t('privacyPolicy.introductionText') || 'This privacy policy describes how RANA // SYS_OPS collects, uses, and protects your information when you use our website.'}
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-bold font-mono text-white mb-2 uppercase">{t('privacyPolicy.informationCollection') || '2. Information We Collect'}</h2>
+              <ul className="list-disc list-inside space-y-1 leading-relaxed">
+                <li>
+                  {t('privacyPolicy.noPersonalData') || 'We do not collect personal data such as names, email addresses, or phone numbers unless you voluntarily provide it through our contact forms.'}
+                </li>
+                <li>
+                  {t('privacyPolicy.fileData') || 'When using our tools or apps, all operations happen client-side in your local browser. We do not store or access any local files.'}
+                </li>
+                <li>
+                  {t('privacyPolicy.cookies') || 'We may use cookies to remember your language preference and improve your experience.'}
+                </li>
+                <li>
+                  {t('privacyPolicy.analytics') || 'We use anonymous analytics to understand how users interact with our site, but this data does not identify individual users.'}
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-bold font-mono text-white mb-2 uppercase">{t('privacyPolicy.howWeUseInformation') || '3. How We Use Your Information'}</h2>
+              <p className="leading-relaxed">
+                {t('privacyPolicy.useInformationText') || 'Any information you provide through contact forms is used solely to respond to your inquiry. We do not share your information with third parties.'}
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-bold font-mono text-white mb-2 uppercase">{t('privacyPolicy.dataSecurity') || '4. Data Security'}</h2>
+              <p className="leading-relaxed">
+                {t('privacyPolicy.dataSecurityText') || 'We implement reasonable security measures to protect against unauthorized access, alteration, or destruction of information we collect.'}
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-bold font-mono text-white mb-2 uppercase">{t('privacyPolicy.changesToPolicy') || '5. Changes to This Policy'}</h2>
+              <p className="leading-relaxed">
+                {t('privacyPolicy.changesText') || 'We may update this privacy policy from time to time. We will notify you of any changes by posting the new privacy policy on this page.'}
+              </p>
+            </div>
+
+            <div>
+              <h2 className="text-sm font-bold font-mono text-white mb-2 uppercase">{t('privacyPolicy.contactUs') || '6. Contact Us'}</h2>
+              <p className="leading-relaxed">
+                {t('privacyPolicy.contactText') || 'If you have any questions about this privacy policy, please contact us at hrana36@gmail.com'}
+              </p>
+            </div>
           </div>
         </div>
       </main>
 
-      <footer className="bg-gray-800 dark:bg-gray-900 text-gray-300 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-sm">
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.quick_links') || 'Quick Links'}</h4>
-              <ul className="space-y-2">
-                <li><a href="/" className="hover:text-white">{t('nav.home') || 'Home'}</a></li>
-                <li><a href="/portfolio" className="hover:text-white">{t('nav.portfolio') || 'Portfolio'}</a></li>
-                <li><a href="/blog" className="hover:text-white">{t('nav.blog') || 'Blog'}</a></li>
-                <li><a href="/faq" className="hover:text-white">{t('nav.faq') || 'FAQ'}</a></li>
-                <li><a href="/about" className="hover:text-white">{t('nav.about') || 'About'}</a></li>
-                <li><a href="/contact" className="hover:text-white">{t('nav.contact') || 'Contact'}</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.tools') || 'Tools'}</h4>
-              <ul className="space-y-2">
-                <li><a href="/tools/pdf-converter" className="hover:text-white">PDF Converter</a></li>
-                <li><a href="/tools/word-counter" className="hover:text-white">Word Counter</a></li>
-                <li><a href="/tools/unit-converter" className="hover:text-white">Unit Converter</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-2">{t('footer.follow') || 'Follow Us'}</h4>
-              <div className="flex space-x-4">
-                <a href="#" className="hover:text-white">LinkedIn</a>
-                <a href="#" className="hover:text-white">GitHub</a>
-                <a href="#" className="hover:text-white">Twitter</a>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8 pt-4 border-t border-gray-700 text-center text-xs">
-            &copy; {new Date().getFullYear()} BD Toolbox. All rights reserved.
+      {/* Footer */}
+      <footer className="border-t border-slate-900 bg-slate-950/80 py-4 px-6 text-sm font-mono mt-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA // SYS_OPS. {t('footer.copyright')}</div>
+          <div className="flex space-x-6 text-xs">
+            <a href="https://www.linkedin.com/in/hrana36/" className="text-slate-400 hover:text-white">LinkedIn</a>
+            <a href="https://github.com/hrana36" className="text-slate-400 hover:text-white">GitHub</a>
           </div>
         </div>
       </footer>
