@@ -58,7 +58,27 @@ export default function Contact() {
       </header>
 
       {/* Body */}
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-4 md:py-6 flex flex-col justify-center">
+      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-4 md:py-6 flex flex-col justify-center gap-8">
+        {/* Personnel Security Dossier */}
+        <div className="w-full flex flex-col justify-center">
+          <h1 className="text-2xl font-bold font-mono tracking-wider border-b border-slate-900 pb-2 mb-4 text-white uppercase text-cyber-glow">
+            {t('about.title')}
+          </h1>
+          <div className="space-y-4 leading-relaxed text-slate-300 text-sm">
+            {/* Profile Section */}
+            <section className="bg-slate-900/40 border border-slate-800 rounded-lg p-4 md:p-5 cyber-glow">
+              <h2 className="text-base font-bold font-mono text-cyan-400 mb-3 uppercase tracking-wider">{t('about.section_profile')}</h2>
+              <p className="text-slate-400 text-xs">{t('about.profile_desc')}</p>
+            </section>
+
+            {/* Mission Section */}
+            <section className="bg-slate-900/40 border border-slate-800 rounded-lg p-4 md:p-5 cyber-glow">
+              <h2 className="text-base font-bold font-mono text-emerald-400 mb-3 uppercase tracking-wider">{t('about.section_mission')}</h2>
+              <p className="text-slate-400 text-xs">{t('about.mission_desc')}</p>
+            </section>
+          </div>
+        </div>
+
         {/* Centered Form */}
         <div className="w-full flex flex-col justify-center">
           <h1 className="text-2xl font-bold font-mono tracking-wider border-b border-slate-900 pb-2 mb-4 text-white uppercase text-cyber-glow">
