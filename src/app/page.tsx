@@ -82,8 +82,8 @@ export default function Home() {
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6 flex flex-col justify-center">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
           {/* Left Badge: MD-102 */}
-          <div className="hidden md:flex w-28 h-28 justify-center items-center flex-shrink-0">
-            <img src="/md-102.png" alt="MD-102 Badge" className="w-24 h-24 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
+          <div className="hidden md:flex w-36 h-36 justify-center items-center flex-shrink-0">
+            <img src="/md-102.png" alt="MD-102 Badge" className="w-30 h-30 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
           </div>
 
           {/* Center Content */}
@@ -95,12 +95,16 @@ export default function Home() {
 
             {/* Mobile Badges Row (only shown on small screens) */}
             <div className="flex md:hidden justify-center items-center gap-6 mb-6">
-              <img src="/md-102.png" alt="MD-102 Badge" className="w-16 h-16 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
-              <img src="/az-104.png" alt="AZ-104 Badge" className="w-16 h-16 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
+              <img src="/md-102.png" alt="MD-102 Badge" className="w-20 h-20 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
+              <img src="/az-104.png" alt="AZ-104 Badge" className="w-20 h-20 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
             </div>
 
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-6">
-              {t('home.title')}
+            <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+              {lang === 'en' ? (
+                <>Systems & Security <br /> Operations Center</>
+              ) : (
+                <>সিস্টেম ও সিকিউরিটি <br /> অপারেশন সেন্টার</>
+              )}
             </h1>
             <p className="text-lg text-slate-400 leading-relaxed">
               {t('home.description')}
@@ -108,8 +112,8 @@ export default function Home() {
           </div>
 
           {/* Right Badge: AZ-104 */}
-          <div className="hidden md:flex w-28 h-28 justify-center items-center flex-shrink-0">
-            <img src="/az-104.png" alt="AZ-104 Badge" className="w-24 h-24 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
+          <div className="hidden md:flex w-36 h-36 justify-center items-center flex-shrink-0">
+            <img src="/az-104.png" alt="AZ-104 Badge" className="w-30 h-30 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
           </div>
         </div>
 
