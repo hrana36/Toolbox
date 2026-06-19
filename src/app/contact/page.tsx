@@ -25,7 +25,6 @@ export default function Contact() {
     { href: '/portfolio', label: t('nav.portfolio') },
     { href: '/blog', label: t('nav.blog') },
     { href: '/faq', label: t('nav.faq') },
-    { href: '/about', label: t('nav.about') },
     { href: '/contact', label: t('nav.contact'), active: true },
   ];
 
@@ -59,9 +58,9 @@ export default function Contact() {
       </header>
 
       {/* Body */}
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-4 md:py-6 flex flex-col md:flex-row gap-8 justify-center">
-        {/* Left Form */}
-        <div className="flex-1 flex flex-col justify-center">
+      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-4 md:py-6 flex flex-col justify-center">
+        {/* Centered Form */}
+        <div className="w-full flex flex-col justify-center">
           <h1 className="text-2xl font-bold font-mono tracking-wider border-b border-slate-900 pb-2 mb-4 text-white uppercase text-cyber-glow">
             {t('contact.title')}
           </h1>
@@ -126,29 +125,6 @@ export default function Contact() {
               </button>
             </form>
           )}
-        </div>
-
-        {/* Right Info */}
-        <div className="w-full md:w-80 flex flex-col justify-center">
-          <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4 font-mono text-xs text-slate-300 space-y-4 cyber-glow">
-            <h3 className="text-sm font-bold text-white uppercase border-b border-slate-950 pb-2 mb-2">{t('contact.direct_title')}</h3>
-            <div>
-              <span className="text-slate-500 block uppercase">{t('contact.email_label')}</span>
-              <span className="text-cyan-400">{portfolioData.contact.email}</span>
-            </div>
-            <div>
-              <span className="text-slate-500 block uppercase">{t('contact.phone_label')}</span>
-              <span className="text-cyan-400">{portfolioData.contact.phone}</span>
-            </div>
-            <div>
-              <span className="text-slate-500 block uppercase">{t('contact.linkedin_label')}</span>
-              <a href={portfolioData.contact.linkedin} className="text-cyan-400 hover:underline">linkedin.com/in/hrana36</a>
-            </div>
-            <div>
-              <span className="text-slate-500 block uppercase">{t('contact.github_label')}</span>
-              <a href={portfolioData.contact.github} className="text-cyan-400 hover:underline">github.com/hrana36</a>
-            </div>
-          </div>
         </div>
       </main>
 

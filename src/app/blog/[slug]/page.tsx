@@ -32,7 +32,6 @@ export default function BlogPostPage(props: { params: Params }) {
     { href: '/portfolio', label: t('nav.portfolio') },
     { href: '/blog', label: t('nav.blog'), active: true },
     { href: '/faq', label: t('nav.faq') },
-    { href: '/about', label: t('nav.about') },
     { href: '/contact', label: t('nav.contact') },
   ];
 

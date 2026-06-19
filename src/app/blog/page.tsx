@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect } from 'react';
 import Link from 'next/link';
@@ -17,7 +17,6 @@ export default function Blog() {
     { href: '/portfolio', label: t('nav.portfolio') },
     { href: '/blog', label: t('nav.blog'), active: true },
     { href: '/faq', label: t('nav.faq') },
-    { href: '/about', label: t('nav.about') },
     { href: '/contact', label: t('nav.contact') },
   ];
 

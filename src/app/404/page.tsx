@@ -16,7 +16,6 @@ export default function NotFound() {
     { href: '/portfolio', label: t('nav.portfolio') },
     { href: '/blog', label: t('nav.blog') },
     { href: '/faq', label: t('nav.faq') },
-    { href: '/about', label: t('nav.about') },
     { href: '/contact', label: t('nav.contact') },
   ];
 
