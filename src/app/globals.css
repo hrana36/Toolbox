@@ -17,11 +17,6 @@ body {
   background: var(--background);
   font-family: 'Inter', sans-serif;
 }
-@media (min-width: 768px) {
-  body {
-    overflow: hidden; /* Lock viewport scroll on desktop only */
-  }
-}
 
 /* Custom glow utility */
 .cyber-glow {

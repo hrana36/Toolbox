@@ -9,7 +9,7 @@ export default function Home() {
   const { t, lang, toggleLang } = useTranslation();
   const [latency, setLatency] = useState(24);
   const [displayText, setDisplayText] = useState('');
-  const [activeTab, setActiveTab] = useState<'All' | 'Network' | 'Endpoint' | 'Cloud' | 'SecOps'>('All');
+  const [activeTab, setActiveTab] = useState<'Network' | 'Endpoint' | 'Cloud' | 'SecOps'>('Network');
 
   useEffect(() => {
     document.title = t('home.tab_title');
@@ -108,7 +108,7 @@ export default function Home() {
 
             {/* Terminal Category Tabs */}
             <div className="flex flex-wrap gap-2 font-mono text-xs">
-              {(['All', 'Network', 'Endpoint', 'Cloud', 'SecOps'] as const).map((tab) => (
+              {(['Network', 'Endpoint', 'Cloud', 'SecOps'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -118,7 +118,7 @@ export default function Home() {
                       : 'bg-slate-950/40 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200'
                   }`}
                 >
-                  {tab === 'All' ? 'ALL' : tab.toUpperCase()}
+                  {tab.toUpperCase()}
                 </button>
               ))}
             </div>
@@ -127,7 +127,7 @@ export default function Home() {
           {/* Dynamic Grid */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {portfolioData.projects
-              .filter((p) => activeTab === 'All' || p.category === activeTab)
+              .filter((p) => p.category === activeTab)
               .map((project, idx) => (
                 <div
                   key={idx}
