@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import TerminalConsole from './components/TerminalConsole';
 import ComplianceGauge from './components/ComplianceGauge';
 import UtilityWidgets from './components/UtilityWidgets';
@@ -13,6 +14,14 @@ export default function Portfolio() {
     document.title = lang === 'en' ? 'Rana | Systems Operations Hub' : 'রানা | সিস্টেমস অপারেশনস হাব';
   }, [lang]);
 
+  const navLinks = [
+    { href: '/', label: t('nav.home') },
+    { href: '/portfolio', label: t('nav.portfolio'), active: true },
+    { href: '/blog', label: t('nav.blog') },
+    { href: '/faq', label: t('nav.faq') },
+    { href: '/contact', label: t('nav.contact') },
+  ];
+
   return (
     <div className="min-h-screen md:h-screen w-screen bg-slate-950 text-slate-100 flex flex-col overflow-y-auto md:overflow-hidden">
       {/* Title Header */}
@@ -23,6 +32,17 @@ export default function Portfolio() {
             RANA // SYS_OPS
           </h1>
         </div>
+        <nav className="hidden md:flex space-x-6 text-sm font-mono">
+          {navLinks.map((link) => (
+            <Link 
+              key={link.href}
+              href={link.href} 
+              className={`hover:text-cyan-400 transition-colors ${link.active ? 'text-cyan-400 border-b border-cyan-400' : 'text-slate-400'}`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
         <div className="flex items-center space-x-6">
           <div className="hidden sm:flex items-center space-x-2 text-xs font-mono text-slate-400">
             <span>{t('portfolio.header.system_status')}:</span>
