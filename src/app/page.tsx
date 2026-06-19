@@ -9,7 +9,7 @@ export default function Home() {
   const { t, lang, toggleLang } = useTranslation();
   const [latency, setLatency] = useState(24);
   const [displayText, setDisplayText] = useState('');
-  const [activeTab, setActiveTab] = useState<'Network' | 'Endpoint' | 'Cloud' | 'SecOps'>('Network');
+  const [activeTab, setActiveTab] = useState<'Network' | 'Endpoint' | 'Cloud' | 'SecOps' | 'Toolbox'>('Network');
 
   useEffect(() => {
     document.title = t('home.tab_title');
@@ -127,7 +127,7 @@ export default function Home() {
 
             {/* Terminal Category Tabs */}
             <div className="flex flex-wrap gap-2 font-mono text-xs">
-              {(['Network', 'Endpoint', 'Cloud', 'SecOps'] as const).map((tab) => (
+              {(['Network', 'Endpoint', 'Cloud', 'SecOps', 'Toolbox'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
