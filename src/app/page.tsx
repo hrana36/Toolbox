@@ -92,24 +92,51 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Dashboard Navigation Cards */}
-        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-6">
-          <Link href="/portfolio" className="bg-slate-900/40 border border-slate-800 hover:border-cyan-500 rounded-lg p-4 md:p-5 transition-all duration-300 hover:-translate-y-1 cyber-glow block group">
-            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">{t('home.card_port_title')}</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">{t('home.card_port_desc')}</p>
-          </Link>
-          <Link href="/about" className="bg-slate-900/40 border border-slate-800 hover:border-cyan-500 rounded-lg p-4 md:p-5 transition-all duration-300 hover:-translate-y-1 cyber-glow block group">
-            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">{t('home.card_about_title')}</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">{t('home.card_about_desc')}</p>
-          </Link>
-          <Link href="/blog" className="bg-slate-900/40 border border-slate-800 hover:border-cyan-500 rounded-lg p-4 md:p-5 transition-all duration-300 hover:-translate-y-1 cyber-glow block group">
-            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">{t('home.card_blog_title')}</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">{t('home.card_blog_desc')}</p>
-          </Link>
-          <Link href="/contact" className="bg-slate-900/40 border border-slate-800 hover:border-cyan-500 rounded-lg p-4 md:p-5 transition-all duration-300 hover:-translate-y-1 cyber-glow block group">
-            <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors">{t('home.card_contact_title')}</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">{t('home.card_contact_desc')}</p>
-          </Link>
+        {/* Projects Section */}
+        <section className="bg-slate-900/20 border border-slate-900 rounded-lg p-5 mb-6 cyber-glow">
+          <div className="mb-4">
+            <h2 className="text-lg font-bold font-mono text-cyan-400 uppercase tracking-wider">
+              {t('home.project_title')}
+            </h2>
+            <p className="text-xs text-slate-400">
+              {t('home.project_desc')}
+            </p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="bg-slate-950/60 border border-slate-800 rounded p-4 flex flex-col justify-between hover:border-cyan-500/50 transition-colors">
+              <div>
+                <h4 className="text-sm font-bold text-white mb-2">{t('home.proj1_title')}</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">{t('home.proj1_desc')}</p>
+              </div>
+              <div className="mt-4 text-left">
+                <Link href="/portfolio" className="text-cyan-400 hover:text-cyan-300 font-mono text-[10px] uppercase tracking-wider">
+                  {t('about.view_portfolio')} &rarr;
+                </Link>
+              </div>
+            </div>
+            <div className="bg-slate-950/60 border border-slate-800 rounded p-4 flex flex-col justify-between hover:border-cyan-500/50 transition-colors">
+              <div>
+                <h4 className="text-sm font-bold text-white mb-2">{t('home.proj2_title')}</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">{t('home.proj2_desc')}</p>
+              </div>
+              <div className="mt-4 text-left">
+                <Link href="/portfolio" className="text-cyan-400 hover:text-cyan-300 font-mono text-[10px] uppercase tracking-wider">
+                  {t('about.view_portfolio')} &rarr;
+                </Link>
+              </div>
+            </div>
+            <div className="bg-slate-950/60 border border-slate-800 rounded p-4 flex flex-col justify-between hover:border-cyan-500/50 transition-colors">
+              <div>
+                <h4 className="text-sm font-bold text-white mb-2">{t('home.proj3_title')}</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">{t('home.proj3_desc')}</p>
+              </div>
+              <div className="mt-4 text-left">
+                <Link href="/portfolio" className="text-cyan-400 hover:text-cyan-300 font-mono text-[10px] uppercase tracking-wider">
+                  {t('about.view_portfolio')} &rarr;
+                </Link>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* Dynamic Status Grid */}
