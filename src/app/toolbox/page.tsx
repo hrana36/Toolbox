@@ -5,9 +5,73 @@ import Link from 'next/link';
 import { useTranslation } from '@/locales/i18n';
 import { unicodeToBijoy, bijoyToUnicode } from '@/utils/banglaConverter';
 
+// Lightweight PEM Certificate decoder (Extract validity dates, issuer, subject)
+function parsePemCertificate(pemText: string) {
+  try {
+    const cleanPem = pemText
+      .replace(/-----BEGIN CERTIFICATE-----/, '')
+      .replace(/-----END CERTIFICATE-----/, '')
+      .replace(/\s+/g, '');
+
+    const binaryCert = atob(cleanPem);
+    
+    // Basic heuristic to locate standard ISO UTCTime / GeneralizedTime dates
+    const dateRegex = /(\d{10,12})Z/g;
+    
+    // Convert binary data to hex for search
+    let hex = '';
+    for (let i = 0; i < binaryCert.length; i++) {
+      hex += binaryCert.charCodeAt(i).toString(16).padStart(2, '0');
+    }
+
+    // Convert hex representation of ASCII digits to string
+    let asciiStr = '';
+    for (let i = 0; i < hex.length - 1; i += 2) {
+      const charCode = parseInt(hex.substring(i, i + 2), 16);
+      if (charCode >= 32 && charCode <= 126) {
+        asciiStr += String.fromCharCode(charCode);
+      } else {
+        asciiStr += '.';
+      }
+    }
+
+    // Look for Validity Dates (usually UTC times in format: 230620120000Z)
+    const matchesUtc = asciiStr.match(/\d{12}Z/g);
+    let validFrom = 'N/A';
+    let validTo = 'N/A';
+    if (matchesUtc && matchesUtc.length >= 2) {
+      const formatDate = (dateStr: string) => {
+        const yy = dateStr.substring(0, 2);
+        const year = parseInt(yy) < 50 ? `20${yy}` : `19${yy}`;
+        return `${year}-${dateStr.substring(2, 4)}-${dateStr.substring(4, 6)} ${dateStr.substring(6, 8)}:${dateStr.substring(8, 10)} UTC`;
+      };
+      validFrom = formatDate(matchesUtc[0]);
+      validTo = formatDate(matchesUtc[1]);
+    }
+
+    // Extract Common Name (CN) heuristics
+    const cnMatches = asciiStr.match(/CN=([^.\s]+)/);
+    const commonName = cnMatches ? cnMatches[1] : 'Local Decoded Certificate';
+
+    return {
+      success: true,
+      subject: { CN: commonName },
+      issuer: { CN: 'Decoded from local file/text' },
+      valid_from: validFrom,
+      valid_to: validTo,
+      serialNumber: 'Decoded locally',
+      fingerprint256: 'SHA-256 not computed locally',
+      bits: 'N/A',
+      type: 'N/A'
+    };
+  } catch (e) {
+    return { success: false, error: 'Failed to decode PEM format. Check certificate format.' };
+  }
+}
+
 export default function Toolbox() {
   const { t, lang, toggleLang } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'bd' | 'dev_tools' | 'math' | 'helpers' | 'net' | 'pdf'>('bd');
+  const [activeTab, setActiveTab] = useState<'dev_tools' | 'math' | 'helpers' | 'pdf' | 'security'>('pdf');
   
   // Custom states for BD Toolbox operations
   const [textInput, setTextInput] = useState('');
@@ -18,11 +82,12 @@ export default function Toolbox() {
   const [dnsDetails, setDnsDetails] = useState<any>(null);
   
   // PDF states
-  const [pdfSubTab, setPdfSubTab] = useState<'merge' | 'split' | 'jpg_to_pdf'>('merge');
+  const [pdfSubTab, setPdfSubTab] = useState<'merge' | 'split' | 'jpg_to_pdf' | 'organize' | 'word_to_pdf'>('merge');
   const [pdfFiles, setPdfFiles] = useState<File[]>([]);
   const [pdfPageRange, setPdfPageRange] = useState('');
   const [pdfStatus, setPdfStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [pdfErrorMessage, setPdfErrorMessage] = useState('');
+  const [pdfPagesOrder, setPdfPagesOrder] = useState<number[]>([]); // stores page indices (0-indexed) for custom sorting/ordering
   
   // BD Essentials States
   const [bdSubTab, setBdSubTab] = useState<'unicode' | 'age' | 'resize'>('unicode');
@@ -35,7 +100,7 @@ export default function Toolbox() {
   const [resizeStatus, setResizeStatus] = useState('');
 
   // Developer & Design States
-  const [devSubTab, setDevSubTab] = useState<'base64' | 'json' | 'color' | 'diff' | 'lorem' | 'qr'>('json');
+  const [devSubTab, setDevSubTab] = useState<'base64' | 'json' | 'color' | 'diff' | 'lorem' | 'qr' | 'unicode'>('qr');
   const [jsonInput, setJsonInput] = useState('');
   const [jsonOutput, setJsonOutput] = useState('');
   const [jsonError, setJsonError] = useState('');
@@ -49,8 +114,23 @@ export default function Toolbox() {
   const [qrInput, setQrInput] = useState('');
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
+  // Security & Cryptography States
+  const [securitySubTab, setSecuritySubTab] = useState<'ip' | 'dns' | 'pwd' | 'hash' | 'cipher'>('ip');
+  const [pwdLength, setPwdLength] = useState(16);
+  const [pwdNumbers, setPwdNumbers] = useState(true);
+  const [pwdSymbols, setPwdSymbols] = useState(true);
+  const [pwdResult, setPwdResult] = useState('');
+  const [hashInput, setHashInput] = useState('');
+  const [hashAlgo, setHashAlgo] = useState<'SHA-256' | 'SHA-1' | 'SHA-512'>('SHA-256');
+  const [hashResult, setHashResult] = useState('');
+  const [cipherInput, setCipherInput] = useState('');
+  const [cipherShift, setCipherShift] = useState(3);
+  const [cipherResult, setCipherResult] = useState('');
+
   // Math & Calculator States
-  const [mathSubTab, setMathSubTab] = useState<'gpa' | 'emi' | 'pct' | 'land'>('gpa');
+  const [mathSubTab, setMathSubTab] = useState<'gpa' | 'emi' | 'pct' | 'land' | 'sci_calc' | 'age'>('gpa');
+  const [calcInput, setCalcInput] = useState('');
+  const [calcOutput, setCalcOutput] = useState('');
   const [gpaCourses, setGpaCourses] = useState<{ credit: number; grade: number }[]>([
     { credit: 3, grade: 4.0 },
     { credit: 3, grade: 3.75 }
@@ -69,10 +149,15 @@ export default function Toolbox() {
   const [landResult, setLandResult] = useState('');
 
   // Media & Text Helpers States
-  const [helperSubTab, setHelperSubTab] = useState<'yt' | 'word' | 'case'>('yt');
+  const [helperSubTab, setHelperSubTab] = useState<'yt' | 'word' | 'case' | 'video_dl' | 'resize'>('yt');
   const [ytUrl, setYtUrl] = useState('');
   const [ytThumbnails, setYtThumbnails] = useState<any>(null);
   const [caseInput, setCaseInput] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [videoFormat, setVideoFormat] = useState<'video' | 'audio'>('video');
+  const [videoQuality, setVideoQuality] = useState('1080');
+  const [videoStatus, setVideoStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
+  const [videoErrorMsg, setVideoErrorMsg] = useState('');
   
   useEffect(() => {
     document.title = lang === 'en' ? 'Rana | Cyber Deck' : 'রানা | সাইবার ডেক';
@@ -129,6 +214,40 @@ export default function Toolbox() {
       txt: ['v=spf1 include:spf.protection.outlook.com -all', 'google-site-verification=xyz123'],
       ns: ['ns1.cloudflare.com', 'ns2.cloudflare.com']
     });
+  };
+
+  const handleVideoDownload = async () => {
+    if (!videoUrl.trim()) return;
+    setVideoStatus('processing');
+    setVideoErrorMsg('');
+    try {
+      const response = await fetch('https://api.cobalt.tools/api/json', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          url: videoUrl.trim(),
+          videoQuality: videoQuality,
+          isAudioOnly: videoFormat === 'audio',
+          filenamePattern: 'basic'
+        })
+      });
+      const data = await response.json();
+      if (data.status === 'success' || data.status === 'stream' || data.status === 'redirect') {
+        setVideoStatus('success');
+        if (data.url) {
+          window.open(data.url, '_blank');
+        }
+      } else {
+        setVideoStatus('error');
+        setVideoErrorMsg(data.text || t('helpers.video_api_error'));
+      }
+    } catch (e) {
+      setVideoStatus('error');
+      setVideoErrorMsg(t('helpers.video_api_error'));
+    }
   };
 
   const downloadBlob = (bytes: Uint8Array, fileName: string, mimeType: string) => {
@@ -223,6 +342,90 @@ export default function Toolbox() {
       setPdfErrorMessage(e.message || 'Error splitting PDF.');
     }
   };
+  
+  const loadPdfPagesCount = async (file: File) => {
+    try {
+      const { PDFDocument } = await import('pdf-lib');
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await PDFDocument.load(arrayBuffer);
+      const totalPages = pdf.getPageCount();
+      const order = [];
+      for (let i = 0; i < totalPages; i++) order.push(i);
+      setPdfPagesOrder(order);
+    } catch (e: any) {
+      setPdfStatus('error');
+      setPdfErrorMessage(lang === 'en' ? 'Failed to read PDF pages.' : 'পিডিএফ পেজ পড়তে ব্যর্থ হয়েছে।');
+    }
+  };
+
+  const handleOrganizePdf = async () => {
+    if (pdfFiles.length === 0) {
+      setPdfStatus('error');
+      setPdfErrorMessage(lang === 'en' ? 'Please select a PDF file first.' : 'অনুগ্রহ করে প্রথমে একটি পিডিএফ ফাইল সিলেক্ট করুন।');
+      return;
+    }
+    setPdfStatus('processing');
+    try {
+      const { PDFDocument } = await import('pdf-lib');
+      const file = pdfFiles[0];
+      const arrayBuffer = await file.arrayBuffer();
+      const srcPdf = await PDFDocument.load(arrayBuffer);
+      const outputPdf = await PDFDocument.create();
+      
+      const copiedPages = await outputPdf.copyPages(srcPdf, pdfPagesOrder);
+      copiedPages.forEach((page) => outputPdf.addPage(page));
+      
+      const pdfBytes = await outputPdf.save();
+      downloadBlob(pdfBytes, 'reordered_document.pdf', 'application/pdf');
+      setPdfStatus('success');
+    } catch (e: any) {
+      setPdfStatus('error');
+      setPdfErrorMessage(e.message || 'Error organizing PDF.');
+    }
+  };
+
+  const handleWordToPdf = async () => {
+    if (pdfFiles.length === 0) {
+      setPdfStatus('error');
+      setPdfErrorMessage(lang === 'en' ? 'Please select a Word (.docx) file.' : 'অনুগ্রহ করে একটি ওয়ার্ড (.docx) ফাইল নির্বাচন করুন।');
+      return;
+    }
+    setPdfStatus('processing');
+    try {
+      const mammoth = await import('mammoth');
+      const html2pdf = (await import('html2pdf.js')).default;
+      
+      const file = pdfFiles[0];
+      const arrayBuffer = await file.arrayBuffer();
+      
+      const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+      const htmlContent = result.value;
+      
+      // Render to a temporary offline container to avoid interfering with current page view layout
+      const element = document.createElement('div');
+      element.innerHTML = htmlContent;
+      element.style.padding = '40px';
+      element.style.color = '#000000';
+      element.style.backgroundColor = '#ffffff';
+      element.style.fontFamily = 'Arial, sans-serif';
+      element.style.lineHeight = '1.6';
+      
+      // Configure HTML to PDF conversion options
+      const opt = {
+        margin: 10,
+        filename: file.name.replace(/\.docx$/i, '') + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      
+      await html2pdf().from(element).set(opt as any).save();
+      setPdfStatus('success');
+    } catch (e: any) {
+      setPdfStatus('error');
+      setPdfErrorMessage(e.message || 'Error converting Word document.');
+    }
+  };
 
   const handleJpgToPdf = async () => {
     if (pdfFiles.length === 0) {
@@ -234,16 +437,42 @@ export default function Toolbox() {
     try {
       const { PDFDocument } = await import('pdf-lib');
       const pdfDoc = await PDFDocument.create();
+      
       for (const imgFile of pdfFiles) {
-        const arrayBuffer = await imgFile.arrayBuffer();
-        let img;
-        if (imgFile.type === 'image/png') {
-          img = await pdfDoc.embedPng(arrayBuffer);
-        } else if (imgFile.type === 'image/jpeg' || imgFile.type === 'image/jpg') {
-          img = await pdfDoc.embedJpg(arrayBuffer);
-        } else {
-          throw new Error(lang === 'en' ? `Unsupported image type: ${imgFile.type}` : `অসমর্থিত ইমেজ ফরম্যাট: ${imgFile.type}`);
+        let arrayBuffer = await imgFile.arrayBuffer();
+        let isPng = imgFile.type === 'image/png';
+        let isJpg = imgFile.type === 'image/jpeg' || imgFile.type === 'image/jpg';
+        
+        // If image type is webp, gif, bmp, svg etc., draw on Canvas offline and convert to PNG bytes client-side
+        if (!isPng && !isJpg) {
+          const blobUrl = URL.createObjectURL(imgFile);
+          const imageObj = await new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = blobUrl;
+          });
+          URL.revokeObjectURL(blobUrl);
+          
+          const canvas = document.createElement('canvas');
+          canvas.width = imageObj.width;
+          canvas.height = imageObj.height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(imageObj, 0, 0);
+          
+          const pngBlob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+          if (!pngBlob) throw new Error('Failed to convert image format.');
+          arrayBuffer = await pngBlob.arrayBuffer();
+          isPng = true;
         }
+        
+        let img;
+        if (isPng) {
+          img = await pdfDoc.embedPng(arrayBuffer);
+        } else {
+          img = await pdfDoc.embedJpg(arrayBuffer);
+        }
+        
         const page = pdfDoc.addPage([img.width, img.height]);
         page.drawImage(img, { x: 0, y: 0, width: img.width, height: img.height });
       }
@@ -485,6 +714,38 @@ export default function Toolbox() {
     setLandResult(out.toFixed(3));
   };
 
+  const evaluateCalculatorFormula = (formula: string) => {
+    if (!formula.trim()) {
+      setCalcOutput('');
+      return;
+    }
+    try {
+      const sanitized = formula.replace(/π/g, 'Math.PI')
+                               .replace(/e/g, 'Math.E')
+                               .replace(/sin\(/g, 'Math.sin(')
+                               .replace(/cos\(/g, 'Math.cos(')
+                               .replace(/tan\(/g, 'Math.tan(')
+                               .replace(/sqrt\(/g, 'Math.sqrt(')
+                               .replace(/log\(/g, 'Math.log10(')
+                               .replace(/ln\(/g, 'Math.log(')
+                               .replace(/\^/g, '**');
+
+      const validationStr = sanitized.replace(/Math\.(PI|E|sin|cos|tan|sqrt|log10|log)/g, '1');
+      if (!/^[0-9+\-*/().\s*]+$/.test(validationStr)) {
+        throw new Error('Invalid Input');
+      }
+
+      const result = new Function(`return (${sanitized})`)();
+      if (typeof result === 'number' && !isNaN(result)) {
+        setCalcOutput(Number(result.toFixed(8)).toString());
+      } else {
+        setCalcOutput('Error');
+      }
+    } catch (err) {
+      setCalcOutput('Error');
+    }
+  };
+
   // Helpers Handlers
   const handleGetYtThumbnails = () => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -510,6 +771,54 @@ export default function Toolbox() {
   const getReadTime = (text: string) => {
     const wCount = getWordCount(text);
     return Math.max(1, Math.ceil(wCount / 200)); // 200 words per minute average
+  };
+
+  // Security Handlers
+  const handleGeneratePassword = () => {
+    let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (pwdNumbers) chars += '0123456789';
+    if (pwdSymbols) chars += '!@#$%^&*()_+~`|}{[]:;?><,./-=';
+    let result = '';
+    for (let i = 0; i < pwdLength; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setPwdResult(result);
+  };
+
+  const handleGenerateHash = async () => {
+    if (!hashInput) return;
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(hashInput);
+      const hashBuffer = await crypto.subtle.digest(hashAlgo, data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      setHashResult(hashHex);
+    } catch (e: any) {
+      setHashResult(e.message || 'Error hashing input');
+    }
+  };
+
+  const handleCipherAction = (mode: 'encrypt' | 'decrypt', cipherType: 'rot13' | 'caesar') => {
+    let shift = cipherShift;
+    if (cipherType === 'rot13') shift = 13;
+    if (mode === 'decrypt') shift = 26 - shift;
+    
+    let result = '';
+    for (let i = 0; i < cipherInput.length; i++) {
+      const char = cipherInput[i];
+      if (char.match(/[a-z]/i)) {
+        const code = cipherInput.charCodeAt(i);
+        if (code >= 65 && code <= 90) {
+          result += String.fromCharCode(((code - 65 + shift) % 26) + 65);
+        } else if (code >= 97 && code <= 122) {
+          result += String.fromCharCode(((code - 97 + shift) % 26) + 97);
+        }
+      } else {
+        result += char;
+      }
+    }
+    setCipherResult(result);
   };
 
   return (
@@ -558,48 +867,34 @@ export default function Toolbox() {
           <h1 className="text-3xl font-extrabold text-white tracking-tight mb-3 font-mono text-cyber-glow">
             {lang === 'en' ? 'CYBER DECK' : 'সাইবার ডেক'}
           </h1>
-          <p className="text-sm text-slate-400 max-w-xl mx-auto">
+          <p className="text-sm text-slate-400 max-w-xl mx-auto font-mono text-[11px] md:text-xs tracking-wide">
             {lang === 'en' 
-              ? 'Bilingual local utilities for developers & sysadmins. Perform Base64 encoding/decoding, IP geographical inquiries, and simulate DNS checks locally.'
-              : 'ডেভেলপার এবং সিস্টেম অ্যাডমিনদের জন্য দ্বিপাক্ষিক স্থানীয় ইউটিলিটি। বেস৬৪ এনকোডিং/ডিকোডিং, আইপি জিওগ্রাফিক্যাল অনুসন্ধান এবং ডিএনএস সিমুলেশন রান করুন।'}
+              ? 'Local-first decryption engines, file compilers, network utilities, and specialized calculators. Zero server uploads.'
+              : 'সম্পূর্ণ লোকাল ও অফলাইন ইউটিলিটি ডেক। কোনো ফাইল বা ডাটা সার্ভারে আপলোড হয় না।'}
           </p>
         </div>
 
         {/* Tab Buttons */}
-        <div className="flex flex-wrap border-b border-slate-900 mb-6 font-mono text-xs gap-1">
+        <div className="flex md:grid md:grid-cols-5 overflow-x-auto whitespace-nowrap border-b border-slate-900 mb-6 font-mono text-[10px] md:text-xs scrollbar-none">
           <button
-            onClick={() => setActiveTab('bd')}
-            className={`px-4 py-2 border-b-2 transition-all ${
-              activeTab === 'bd'
+            onClick={() => {
+              setActiveTab('pdf');
+              setPdfSubTab('word_to_pdf');
+              setPdfFiles([]);
+              setPdfStatus('idle');
+              setPdfErrorMessage('');
+            }}
+            className={`px-2 py-2 border-b-2 text-center transition-all ${
+              activeTab === 'pdf'
                 ? 'border-cyan-400 text-cyan-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            {t('nav.bd').toUpperCase()}
-          </button>
-          <button
-            onClick={() => setActiveTab('dev_tools')}
-            className={`px-4 py-2 border-b-2 transition-all ${
-              activeTab === 'dev_tools'
-                ? 'border-cyan-400 text-cyan-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {t('nav.dev_tools').toUpperCase()}
-          </button>
-          <button
-            onClick={() => setActiveTab('math')}
-            className={`px-4 py-2 border-b-2 transition-all ${
-              activeTab === 'math'
-                ? 'border-cyan-400 text-cyan-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            {t('nav.math').toUpperCase()}
+            {t('nav.pdf').toUpperCase()}
           </button>
           <button
             onClick={() => setActiveTab('helpers')}
-            className={`px-4 py-2 border-b-2 transition-all ${
+            className={`px-2 py-2 border-b-2 text-center transition-all ${
               activeTab === 'helpers'
                 ? 'border-cyan-400 text-cyan-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -608,172 +903,60 @@ export default function Toolbox() {
             {t('nav.helpers').toUpperCase()}
           </button>
           <button
-            onClick={() => setActiveTab('net')}
-            className={`px-4 py-2 border-b-2 transition-all ${
-              activeTab === 'net'
+            onClick={() => setActiveTab('dev_tools')}
+            className={`px-2 py-2 border-b-2 text-center transition-all ${
+              activeTab === 'dev_tools'
                 ? 'border-cyan-400 text-cyan-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            {t('nav.net').toUpperCase()}
+            {t('nav.dev_tools').toUpperCase()}
           </button>
           <button
             onClick={() => {
-              setActiveTab('pdf');
-              setPdfFiles([]);
-              setPdfStatus('idle');
-              setPdfErrorMessage('');
+              setActiveTab('security');
+              setSecuritySubTab('ip');
+              setIpInput('');
+              setIpDetails(null);
+              setDnsInput('');
+              setDnsDetails(null);
+              setPwdResult('');
+              setHashResult('');
+              setCipherResult('');
             }}
-            className={`px-4 py-2 border-b-2 transition-all ${
-              activeTab === 'pdf'
+            className={`px-2 py-2 border-b-2 text-center transition-all ${
+              activeTab === 'security'
                 ? 'border-cyan-400 text-cyan-400'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            {t('nav.pdf').toUpperCase()}
+            {t('nav.net_security').toUpperCase()}
+          </button>
+          <button
+            onClick={() => setActiveTab('math')}
+            className={`px-2 py-2 border-b-2 text-center transition-all ${
+              activeTab === 'math'
+                ? 'border-cyan-400 text-cyan-400'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            {t('nav.math').toUpperCase()}
           </button>
         </div>
 
         {/* Panel Container */}
         <div className="bg-slate-900/30 border border-slate-900 rounded-lg p-6 cyber-glow min-h-[300px]">
-          {activeTab === 'bd' && (
-            <div className="space-y-6">
-              <div className="flex space-x-2 border-b border-slate-900 pb-2">
-                <button
-                  onClick={() => { setBdSubTab('unicode'); setUnicodeInput(''); setUnicodeOutput(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${bdSubTab === 'unicode' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
-                >
-                  {t('bd.sub_unicode')}
-                </button>
-                <button
-                  onClick={() => { setBdSubTab('age'); setAgeResult(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${bdSubTab === 'age' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
-                >
-                  {t('bd.sub_age')}
-                </button>
-                <button
-                  onClick={() => { setBdSubTab('resize'); setResizeImgFile(null); setResizeStatus(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${bdSubTab === 'resize' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
-                >
-                  {t('bd.sub_resize')}
-                </button>
-              </div>
 
-              {bdSubTab === 'unicode' && (
-                <div className="space-y-4">
-                  <div className="flex flex-col space-y-1.5">
-                    <label className="text-xs font-mono text-slate-400">INPUT TEXT (ইউনিকোড বা বিজয়)</label>
-                    <textarea
-                      value={unicodeInput}
-                      onChange={(e) => setUnicodeInput(e.target.value)}
-                      placeholder="এখানে টেক্সট লিখুন..."
-                      className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 min-h-[100px] font-mono"
-                    />
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={handleUnicodeToBijoy}
-                      className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-4 py-2 rounded transition-all"
-                    >
-                      {t('bd.btn_convert_bijoy')}
-                    </button>
-                    <button
-                      onClick={handleBijoyToUnicode}
-                      className="bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-300 text-xs font-mono px-4 py-2 rounded transition-all"
-                    >
-                      {t('bd.btn_convert_unicode')}
-                    </button>
-                  </div>
-                  {unicodeOutput && (
-                    <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs break-all">
-                      <div className="text-slate-500 mb-1">// RESULT CONVERSION</div>
-                      <div className="text-slate-200">{unicodeOutput}</div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {bdSubTab === 'age' && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-mono text-slate-400">{t('bd.label_dob')}</label>
-                      <input
-                        type="date"
-                        value={ageDob}
-                        onChange={(e) => setAgeDob(e.target.value)}
-                        className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-400/50 font-mono"
-                      />
-                    </div>
-                    <div className="flex flex-col space-y-1.5">
-                      <label className="text-xs font-mono text-slate-400">{t('bd.label_target_date')}</label>
-                      <input
-                        type="date"
-                        value={ageTargetDate}
-                        onChange={(e) => setAgeTargetDate(e.target.value)}
-                        className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-400/50 font-mono"
-                      />
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleCalculateAge}
-                    className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2 rounded transition-all w-full"
-                  >
-                    {t('bd.btn_calc_age')}
-                  </button>
-                  {ageResult && (
-                    <div className="p-3 bg-slate-950 border border-slate-850 rounded text-center text-sm font-mono text-cyan-400">
-                      {ageResult}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {bdSubTab === 'resize' && (
-                <div className="space-y-4">
-                  <div className="flex flex-col space-y-1.5">
-                    <label className="text-xs font-mono text-slate-400">{t('bd.label_upload_img')}</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        if (e.target.files?.[0]) {
-                          setResizeImgFile(e.target.files[0]);
-                          setResizeStatus('');
-                        }
-                      }}
-                      className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-300 font-mono"
-                    />
-                  </div>
-                  <div className="flex gap-3">
-                    <button
-                      disabled={!resizeImgFile}
-                      onClick={() => handleResizeImage('photo')}
-                      className="flex-1 bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-4 py-2.5 rounded transition-all"
-                    >
-                      {t('bd.btn_resize_photo')}
-                    </button>
-                    <button
-                      disabled={!resizeImgFile}
-                      onClick={() => handleResizeImage('sig')}
-                      className="flex-1 bg-slate-900 hover:bg-slate-850 disabled:opacity-40 disabled:hover:bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono px-4 py-2.5 rounded transition-all"
-                    >
-                      {t('bd.btn_resize_sig')}
-                    </button>
-                  </div>
-                  {resizeStatus && (
-                    <div className="p-3 bg-slate-950 border border-slate-850 rounded text-center text-xs font-mono text-slate-300">
-                      {resizeStatus}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
 
           {activeTab === 'dev_tools' && (
             <div className="space-y-6">
               <div className="flex flex-wrap space-x-2 border-b border-slate-900 pb-2 gap-y-1">
+                <button
+                  onClick={() => { setDevSubTab('qr'); setQrInput(''); setQrCodeUrl(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'qr' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  QR GENERATOR
+                </button>
                 <button
                   onClick={() => { setDevSubTab('json'); setJsonInput(''); setJsonOutput(''); setJsonError(''); }}
                   className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'json' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
@@ -799,16 +982,16 @@ export default function Toolbox() {
                   LOREM IPSUM
                 </button>
                 <button
-                  onClick={() => { setDevSubTab('qr'); setQrInput(''); setQrCodeUrl(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'qr' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
-                >
-                  QR GENERATOR
-                </button>
-                <button
                   onClick={() => { setDevSubTab('base64'); setTextInput(''); setTextResult(''); }}
                   className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'base64' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   BASE64
+                </button>
+                <button
+                  onClick={() => { setDevSubTab('unicode'); setUnicodeInput(''); setUnicodeOutput(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'unicode' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('bd.sub_unicode')}
                 </button>
               </div>
 
@@ -1051,6 +1234,40 @@ export default function Toolbox() {
                   )}
                 </div>
               )}
+
+              {devSubTab === 'unicode' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-xs font-mono text-slate-400">INPUT TEXT (ইউনিকোড বা বিজয়)</label>
+                    <textarea
+                      value={unicodeInput}
+                      onChange={(e) => setUnicodeInput(e.target.value)}
+                      placeholder="এখানে টেক্সট লিখুন..."
+                      className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 min-h-[100px] font-mono"
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={handleUnicodeToBijoy}
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-4 py-2 rounded transition-all"
+                    >
+                      {t('bd.btn_convert_bijoy')}
+                    </button>
+                    <button
+                      onClick={handleBijoyToUnicode}
+                      className="bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-300 text-xs font-mono px-4 py-2 rounded transition-all"
+                    >
+                      {t('bd.btn_convert_unicode')}
+                    </button>
+                  </div>
+                  {unicodeOutput && (
+                    <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs break-all">
+                      <div className="text-slate-500 mb-1">// RESULT CONVERSION</div>
+                      <div className="text-slate-200">{unicodeOutput}</div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -1080,6 +1297,18 @@ export default function Toolbox() {
                   className={`px-3 py-1 text-xs font-mono border ${mathSubTab === 'land' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   {t('math.sub_land')}
+                </button>
+                <button
+                  onClick={() => { setMathSubTab('sci_calc'); setCalcInput(''); setCalcOutput(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${mathSubTab === 'sci_calc' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('math.sub_sci_calc')}
+                </button>
+                <button
+                  onClick={() => { setMathSubTab('age'); setAgeResult(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${mathSubTab === 'age' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('bd.sub_age')}
                 </button>
               </div>
 
@@ -1275,6 +1504,105 @@ export default function Toolbox() {
                   )}
                 </div>
               )}
+
+              {mathSubTab === 'sci_calc' && (
+                <div className="space-y-4 max-w-md mx-auto">
+                  {/* Display Screen */}
+                  <div className="bg-slate-950 border border-slate-800 rounded p-4 text-right font-mono min-h-[80px] flex flex-col justify-between">
+                    <div className="text-slate-500 text-xs break-all tracking-wider min-h-[1.5em]">{calcInput || '0'}</div>
+                    <div className="text-cyan-400 text-lg font-bold break-all select-all tracking-widest">{calcOutput || ' '}</div>
+                  </div>
+
+                  {/* Buttons Grid */}
+                  <div className="grid grid-cols-5 gap-2">
+                    {[
+                      { label: 'sin', action: () => setCalcInput(prev => prev + 'sin(') },
+                      { label: 'cos', action: () => setCalcInput(prev => prev + 'cos(') },
+                      { label: 'tan', action: () => setCalcInput(prev => prev + 'tan(') },
+                      { label: 'log', action: () => setCalcInput(prev => prev + 'log(') },
+                      { label: 'ln', action: () => setCalcInput(prev => prev + 'ln(') },
+
+                      { label: '√', action: () => setCalcInput(prev => prev + 'sqrt(') },
+                      { label: '^', action: () => setCalcInput(prev => prev + '^') },
+                      { label: 'π', action: () => setCalcInput(prev => prev + 'π') },
+                      { label: 'e', action: () => setCalcInput(prev => prev + 'e') },
+                      { label: '(', action: () => setCalcInput(prev => prev + '(') },
+
+                      { label: '7', action: () => setCalcInput(prev => prev + '7') },
+                      { label: '8', action: () => setCalcInput(prev => prev + '8') },
+                      { label: '9', action: () => setCalcInput(prev => prev + '9') },
+                      { label: ')', action: () => setCalcInput(prev => prev + ')') },
+                      { label: 'C', action: () => { setCalcInput(''); setCalcOutput(''); }, className: 'bg-red-950/30 hover:bg-red-900/30 text-red-400 border-red-900/50' },
+
+                      { label: '4', action: () => setCalcInput(prev => prev + '4') },
+                      { label: '5', action: () => setCalcInput(prev => prev + '5') },
+                      { label: '6', action: () => setCalcInput(prev => prev + '6') },
+                      { label: '*', action: () => setCalcInput(prev => prev + '*') },
+                      { label: '/', action: () => setCalcInput(prev => prev + '/') },
+
+                      { label: '1', action: () => setCalcInput(prev => prev + '1') },
+                      { label: '2', action: () => setCalcInput(prev => prev + '2') },
+                      { label: '3', action: () => setCalcInput(prev => prev + '3') },
+                      { label: '+', action: () => setCalcInput(prev => prev + '+') },
+                      { label: '-', action: () => setCalcInput(prev => prev + '-') },
+
+                      { label: '0', action: () => setCalcInput(prev => prev + '0') },
+                      { label: '.', action: () => setCalcInput(prev => prev + '.') },
+                      { label: '⌫', action: () => setCalcInput(prev => prev.slice(0, -1)) },
+                    ].map((btn, idx) => (
+                      <button
+                        key={idx}
+                        onClick={btn.action}
+                        className={`py-2 text-xs font-mono border border-slate-800 rounded bg-slate-900 hover:bg-slate-850 text-slate-300 hover:text-white transition-all shadow-sm ${btn.className || ''}`}
+                      >
+                        {btn.label}
+                      </button>
+                    ))}
+                    
+                    <button
+                      onClick={() => evaluateCalculatorFormula(calcInput)}
+                      className="col-span-2 py-2 text-xs font-mono font-bold border border-cyan-400/50 rounded bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 transition-all shadow-sm"
+                    >
+                      =
+                    </button>
+                  </div>
+                </div>
+              )}
+              {mathSubTab === 'age' && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col space-y-1.5">
+                      <label className="text-xs font-mono text-slate-400">{t('bd.label_dob')}</label>
+                      <input
+                        type="date"
+                        value={ageDob}
+                        onChange={(e) => setAgeDob(e.target.value)}
+                        className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-400/50 font-mono"
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-1.5">
+                      <label className="text-xs font-mono text-slate-400">{t('bd.label_target_date')}</label>
+                      <input
+                        type="date"
+                        value={ageTargetDate}
+                        onChange={(e) => setAgeTargetDate(e.target.value)}
+                        className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-400/50 font-mono"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleCalculateAge}
+                    className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2 rounded transition-all w-full"
+                  >
+                    {t('bd.btn_calc_age')}
+                  </button>
+                  {ageResult && (
+                    <div className="p-3 bg-slate-950 border border-slate-850 rounded text-center text-sm font-mono text-cyan-400">
+                      {ageResult}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -1288,6 +1616,12 @@ export default function Toolbox() {
                   {t('helpers.sub_yt')}
                 </button>
                 <button
+                  onClick={() => { setHelperSubTab('video_dl'); setVideoUrl(''); setVideoStatus('idle'); setVideoErrorMsg(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${helperSubTab === 'video_dl' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('helpers.sub_video_dl')}
+                </button>
+                <button
                   onClick={() => { setHelperSubTab('word'); setCaseInput(''); }}
                   className={`px-3 py-1 text-xs font-mono border ${helperSubTab === 'word' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
@@ -1298,6 +1632,12 @@ export default function Toolbox() {
                   className={`px-3 py-1 text-xs font-mono border ${helperSubTab === 'case' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   {t('helpers.sub_case')}
+                </button>
+                <button
+                  onClick={() => { setHelperSubTab('resize'); setResizeImgFile(null); setResizeStatus(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${helperSubTab === 'resize' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('bd.sub_resize')}
                 </button>
               </div>
 
@@ -1338,6 +1678,78 @@ export default function Toolbox() {
                       ))}
                     </div>
                   )}
+                </div>
+              )}
+
+              {helperSubTab === 'video_dl' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-xs font-mono text-slate-400">{t('helpers.video_url')}</label>
+                    <input
+                      type="text"
+                      value={videoUrl}
+                      onChange={(e) => setVideoUrl(e.target.value)}
+                      placeholder={t('helpers.video_placeholder')}
+                      className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 font-mono"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col space-y-1.5">
+                      <label className="text-xs font-mono text-slate-400">{t('helpers.video_format')}</label>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setVideoFormat('video')}
+                          className={`flex-1 py-1.5 text-xs font-mono border rounded ${videoFormat === 'video' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-slate-800 text-slate-400 hover:text-slate-200 bg-slate-950'}`}
+                        >
+                          {t('helpers.video_format_video')}
+                        </button>
+                        <button
+                          onClick={() => setVideoFormat('audio')}
+                          className={`flex-1 py-1.5 text-xs font-mono border rounded ${videoFormat === 'audio' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-slate-800 text-slate-400 hover:text-slate-200 bg-slate-950'}`}
+                        >
+                          {t('helpers.video_format_audio')}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col space-y-1.5">
+                      <label className="text-xs font-mono text-slate-400">{t('helpers.video_quality')}</label>
+                      <select
+                        value={videoQuality}
+                        onChange={(e) => setVideoQuality(e.target.value)}
+                        disabled={videoFormat === 'audio'}
+                        className="bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-slate-300 focus:outline-none font-mono text-xs disabled:opacity-55"
+                      >
+                        <option value="max">Max Quality</option>
+                        <option value="1080">1080p</option>
+                        <option value="720">720p</option>
+                        <option value="480">480p</option>
+                        <option value="360">360p</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col space-y-2 pt-2">
+                    <button
+                      onClick={handleVideoDownload}
+                      disabled={videoStatus === 'processing'}
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono py-2 rounded transition-all disabled:opacity-50"
+                    >
+                      {videoStatus === 'processing' ? t('helpers.video_btn_dl_progress') : t('helpers.video_btn_dl')}
+                    </button>
+
+                    {videoStatus === 'error' && (
+                      <div className="p-3 bg-red-950/20 border border-red-500/30 rounded text-xs font-mono text-red-400 mt-2">
+                        {videoErrorMsg}
+                      </div>
+                    )}
+                    {videoStatus === 'success' && (
+                      <div className="p-3 bg-cyan-950/20 border border-cyan-500/30 rounded text-xs font-mono text-cyan-400 mt-2">
+                        Success! Direct link opened.
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -1405,150 +1817,103 @@ export default function Toolbox() {
                   </div>
                 </div>
               )}
-            </div>
-          )}
-
-          {activeTab === 'net' && (
-            <div className="space-y-6">
-              {/* Network Tool sub selector */}
-              <div className="flex space-x-2 border-b border-slate-900 pb-2">
-                <button
-                  onClick={() => { setIpInput(''); setIpDetails(null); }}
-                  className="px-3 py-1 text-xs font-mono border border-transparent text-slate-400 hover:text-slate-200"
-                >
-                  {t('net.net') || 'IP LOOKUP'}
-                </button>
-              </div>
-
-              {/* IP Lookup block */}
-              <div className="space-y-4">
-                <div className="flex flex-col space-y-1.5">
-                  <label className="text-xs font-mono text-slate-400">TARGET IP ADDRESS</label>
-                  <div className="flex gap-2">
+              {helperSubTab === 'resize' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-xs font-mono text-slate-400">{t('bd.label_upload_img')}</label>
                     <input
-                      type="text"
-                      value={ipInput}
-                      onChange={(e) => setIpInput(e.target.value)}
-                      placeholder="e.g. 8.8.8.8 (Leave empty for current IP)"
-                      className="flex-1 bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 font-mono"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files?.[0]) {
+                          setResizeImgFile(e.target.files[0]);
+                          setResizeStatus('');
+                        }
+                      }}
+                      className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-300 font-mono"
                     />
+                  </div>
+                  <div className="flex gap-3">
                     <button
-                      onClick={handleIpLookup}
-                      className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2 rounded transition-all"
+                      disabled={!resizeImgFile}
+                      onClick={() => handleResizeImage('photo')}
+                      className="flex-1 bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-4 py-2.5 rounded transition-all"
                     >
-                      QUERY
+                      {t('bd.btn_resize_photo')}
+                    </button>
+                    <button
+                      disabled={!resizeImgFile}
+                      onClick={() => handleResizeImage('sig')}
+                      className="flex-1 bg-slate-900 hover:bg-slate-850 disabled:opacity-40 disabled:hover:bg-slate-900 border border-slate-800 text-slate-300 text-xs font-mono px-4 py-2.5 rounded transition-all"
+                    >
+                      {t('bd.btn_resize_sig')}
                     </button>
                   </div>
-                </div>
-
-                {ipDetails && (
-                  <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs">
-                    {ipDetails.error ? (
-                      <div className="text-red-400">Error: {ipDetails.reason}</div>
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
-                        <div><span className="text-slate-500">IP Node:</span> {ipDetails.ip}</div>
-                        <div><span className="text-slate-500">ISP / Network:</span> {ipDetails.org}</div>
-                        <div><span className="text-slate-500">Location:</span> {ipDetails.city}, {ipDetails.region}</div>
-                        <div><span className="text-slate-500">Country Code:</span> {ipDetails.country_code} ({ipDetails.country_name})</div>
-                        <div><span className="text-slate-500">Timezone:</span> {ipDetails.timezone}</div>
-                        <div><span className="text-slate-500">Coordinates:</span> Lat: {ipDetails.latitude}, Lon: {ipDetails.longitude}</div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* DNS Diagnostics block */}
-              <div className="space-y-4 pt-4 border-t border-slate-900">
-                <div className="flex flex-col space-y-1.5">
-                  <label className="text-xs font-mono text-slate-400">DOMAIN NAME</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={dnsInput}
-                      onChange={(e) => setDnsInput(e.target.value)}
-                      placeholder="e.g. google.com"
-                      className="flex-1 bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 font-mono"
-                    />
-                    <button
-                      onClick={handleDnsLookup}
-                      className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2 rounded transition-all"
-                    >
-                      RESOLVE
-                    </button>
-                  </div>
-                </div>
-
-                {dnsDetails && (
-                  <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs space-y-2">
-                    <div className="text-cyan-400">// DIG / NSLOOKUP SIMULATION FOR {dnsDetails.host.toUpperCase()}</div>
-                    <div className="grid grid-cols-1 gap-2 text-slate-300">
-                      <div>
-                        <span className="text-slate-500 font-bold block mb-0.5">A RECORDS (IPv4)</span>
-                        {dnsDetails.a.map((rec: string) => <div key={rec} className="pl-3">{rec}</div>)}
-                      </div>
-                      <div>
-                        <span className="text-slate-500 font-bold block mb-0.5">AAAA RECORDS (IPv6)</span>
-                        {dnsDetails.aaaa.map((rec: string) => <div key={rec} className="pl-3">{rec}</div>)}
-                      </div>
-                      <div>
-                        <span className="text-slate-500 font-bold block mb-0.5">MX RECORDS</span>
-                        {dnsDetails.mx.map((rec: string) => <div key={rec} className="pl-3">{rec}</div>)}
-                      </div>
-                      <div>
-                        <span className="text-slate-500 font-bold block mb-0.5">TXT RECORDS</span>
-                        {dnsDetails.txt.map((rec: string) => <div key={rec} className="pl-3">{rec}</div>)}
-                      </div>
+                  {resizeStatus && (
+                    <div className="p-3 bg-slate-950 border border-slate-850 rounded text-center text-xs font-mono text-slate-300">
+                      {resizeStatus}
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
+
 
           {activeTab === 'pdf' && (
             <div className="space-y-6">
               {/* PDF Subtabs */}
-              <div className="flex space-x-2 border-b border-slate-900 pb-2">
+              <div className="flex space-x-2 border-b border-slate-900 pb-2 overflow-x-auto scrollbar-none whitespace-nowrap">
                 <button
-                  onClick={() => { setPdfSubTab('merge'); setPdfFiles([]); setPdfStatus('idle'); }}
+                  onClick={() => { setPdfSubTab('word_to_pdf'); setPdfFiles([]); setPdfStatus('idle'); setPdfPagesOrder([]); }}
+                  className={`px-3 py-1 text-xs font-mono border ${pdfSubTab === 'word_to_pdf' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('pdf.tab_word_to_pdf')}
+                </button>
+                <button
+                  onClick={() => { setPdfSubTab('jpg_to_pdf'); setPdfFiles([]); setPdfStatus('idle'); setPdfPagesOrder([]); }}
+                  className={`px-3 py-1 text-xs font-mono border ${pdfSubTab === 'jpg_to_pdf' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('pdf.tab_jpg_to_pdf')}
+                </button>
+                <button
+                  onClick={() => { setPdfSubTab('merge'); setPdfFiles([]); setPdfStatus('idle'); setPdfPagesOrder([]); }}
                   className={`px-3 py-1 text-xs font-mono border ${pdfSubTab === 'merge' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   {t('pdf.tab_merge')}
                 </button>
                 <button
-                  onClick={() => { setPdfSubTab('split'); setPdfFiles([]); setPdfStatus('idle'); }}
+                  onClick={() => { setPdfSubTab('split'); setPdfFiles([]); setPdfStatus('idle'); setPdfPagesOrder([]); }}
                   className={`px-3 py-1 text-xs font-mono border ${pdfSubTab === 'split' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   {t('pdf.tab_split')}
                 </button>
                 <button
-                  onClick={() => { setPdfSubTab('jpg_to_pdf'); setPdfFiles([]); setPdfStatus('idle'); }}
-                  className={`px-3 py-1 text-xs font-mono border ${pdfSubTab === 'jpg_to_pdf' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                  onClick={() => { setPdfSubTab('organize'); setPdfFiles([]); setPdfStatus('idle'); setPdfPagesOrder([]); }}
+                  className={`px-3 py-1 text-xs font-mono border ${pdfSubTab === 'organize' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
-                  {t('pdf.tab_jpg_to_pdf')}
+                  {t('pdf.tab_organize')}
                 </button>
-              </div>
-
-              <div className="text-sm text-slate-400 italic font-mono">
-                // {t('pdf.desc')}
               </div>
 
               {/* Upload Section */}
               <div className="flex flex-col space-y-2">
                 <label className="text-xs font-mono text-slate-400">
-                  {pdfSubTab === 'jpg_to_pdf' ? t('pdf.select_images') : pdfSubTab === 'split' ? t('pdf.select_file') : t('pdf.select_files')}
+                  {pdfSubTab === 'jpg_to_pdf' ? t('pdf.select_images') : pdfSubTab === 'word_to_pdf' ? t('pdf.select_word_file') : (pdfSubTab === 'split' || pdfSubTab === 'organize') ? t('pdf.select_file') : t('pdf.select_files')}
                 </label>
                 <input
                   type="file"
-                  multiple={pdfSubTab !== 'split'}
-                  accept={pdfSubTab === 'jpg_to_pdf' ? 'image/jpeg,image/png,image/jpg' : 'application/pdf'}
+                  multiple={pdfSubTab !== 'split' && pdfSubTab !== 'organize' && pdfSubTab !== 'word_to_pdf'}
+                  accept={pdfSubTab === 'jpg_to_pdf' ? 'image/jpeg,image/png,image/jpg' : pdfSubTab === 'word_to_pdf' ? '.docx' : 'application/pdf'}
                   onChange={(e) => {
                     if (e.target.files) {
                       const newFiles = Array.from(e.target.files);
-                      if (pdfSubTab === 'split') {
-                        setPdfFiles(newFiles.slice(0, 1));
+                      if (pdfSubTab === 'split' || pdfSubTab === 'organize' || pdfSubTab === 'word_to_pdf') {
+                        const selectedFile = newFiles[0];
+                        setPdfFiles([selectedFile]);
+                        if (pdfSubTab === 'organize') {
+                          loadPdfPagesCount(selectedFile);
+                        }
                       } else {
                         setPdfFiles((prev) => [...prev, ...newFiles]);
                       }
@@ -1573,8 +1938,64 @@ export default function Toolbox() {
                 </div>
               )}
 
+              {/* PDF Organize preview grid */}
+              {pdfSubTab === 'organize' && pdfPagesOrder.length > 0 && (
+                <div className="space-y-4">
+                  <label className="text-xs font-mono text-slate-400">{t('pdf.label_organize')}</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                    {pdfPagesOrder.map((pageIdx, idx) => (
+                      <div key={idx} className="bg-slate-950 border border-slate-800 rounded p-3 text-center flex flex-col items-center justify-between font-mono text-xs text-slate-300 relative group">
+                        <div className="w-10 h-12 bg-slate-900 border border-slate-800 rounded flex items-center justify-center text-slate-500 font-bold mb-2">
+                          PDF
+                        </div>
+                        <div>Page {pageIdx + 1}</div>
+                        <div className="flex gap-2 mt-2">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={() => {
+                              const order = [...pdfPagesOrder];
+                              const temp = order[idx];
+                              order[idx] = order[idx - 1];
+                              order[idx - 1] = temp;
+                              setPdfPagesOrder(order);
+                            }}
+                            className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-[10px] px-1.5 py-0.5 rounded text-slate-400 disabled:opacity-30"
+                          >
+                            ◀
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === pdfPagesOrder.length - 1}
+                            onClick={() => {
+                              const order = [...pdfPagesOrder];
+                              const temp = order[idx];
+                              order[idx] = order[idx + 1];
+                              order[idx + 1] = temp;
+                              setPdfPagesOrder(order);
+                            }}
+                            className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-[10px] px-1.5 py-0.5 rounded text-slate-400 disabled:opacity-30"
+                          >
+                            ▶
+                          </button>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPdfPagesOrder(pdfPagesOrder.filter((_, i) => i !== idx));
+                          }}
+                          className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-500 font-bold rounded-full flex items-center justify-center text-[10px]"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Uploaded File List */}
-              {pdfFiles.length > 0 && (
+              {pdfFiles.length > 0 && pdfSubTab !== 'organize' && (
                 <div className="space-y-2">
                   <label className="text-xs font-mono text-slate-400">{t('pdf.label_files')}</label>
                   <div className="bg-slate-950/50 border border-slate-900 rounded divide-y divide-slate-900">
@@ -1664,7 +2085,302 @@ export default function Toolbox() {
                     {t('pdf.btn_convert')}
                   </button>
                 )}
+                {pdfSubTab === 'organize' && (
+                  <button
+                    disabled={pdfStatus === 'processing' || pdfFiles.length === 0 || pdfPagesOrder.length === 0}
+                    onClick={handleOrganizePdf}
+                    className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
+                  >
+                    {t('pdf.btn_organize')}
+                  </button>
+                )}
+                {pdfSubTab === 'word_to_pdf' && (
+                  <button
+                    disabled={pdfStatus === 'processing' || pdfFiles.length === 0}
+                    onClick={handleWordToPdf}
+                    className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
+                  >
+                    {t('pdf.btn_convert_word')}
+                  </button>
+                )}
               </div>
+            </div>
+          )}
+
+          {activeTab === 'security' && (
+            <div className="space-y-6">
+              {/* Security Subtabs */}
+              <div className="flex flex-wrap space-x-2 border-b border-slate-900 pb-2 gap-y-1">
+                <button
+                  onClick={() => { setSecuritySubTab('ip'); setIpInput(''); setIpDetails(null); }}
+                  className={`px-3 py-1 text-xs font-mono border ${securitySubTab === 'ip' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  IP LOOKUP
+                </button>
+                <button
+                  onClick={() => { setSecuritySubTab('dns'); setDnsInput(''); setDnsDetails(null); }}
+                  className={`px-3 py-1 text-xs font-mono border ${securitySubTab === 'dns' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  DNS DIAGNOSTICS
+                </button>
+                <button
+                  onClick={() => { setSecuritySubTab('pwd'); setPwdResult(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${securitySubTab === 'pwd' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('security.sub_pwd')}
+                </button>
+                <button
+                  onClick={() => { setSecuritySubTab('hash'); setHashResult(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${securitySubTab === 'hash' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('security.sub_hash')}
+                </button>
+                <button
+                  onClick={() => { setSecuritySubTab('cipher'); setCipherResult(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${securitySubTab === 'cipher' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('security.sub_cipher')}
+                </button>
+              </div>
+
+              {/* IP Lookup block */}
+              {securitySubTab === 'ip' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-xs font-mono text-slate-400">TARGET IP ADDRESS</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={ipInput}
+                        onChange={(e) => setIpInput(e.target.value)}
+                        placeholder="e.g. 8.8.8.8 (Leave empty for current IP)"
+                        className="flex-1 bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 font-mono"
+                      />
+                      <button
+                        onClick={handleIpLookup}
+                        className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2 rounded transition-all"
+                      >
+                        QUERY
+                      </button>
+                    </div>
+                  </div>
+
+                  {ipDetails && (
+                    <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs">
+                      {ipDetails.error ? (
+                        <div className="text-red-400">Error: {ipDetails.reason}</div>
+                      ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-slate-300">
+                          <div><span className="text-slate-500">IP Node:</span> {ipDetails.ip}</div>
+                          <div><span className="text-slate-500">ISP / Network:</span> {ipDetails.org}</div>
+                          <div><span className="text-slate-500">Location:</span> {ipDetails.city}, {ipDetails.region}</div>
+                          <div><span className="text-slate-500">Country Code:</span> {ipDetails.country_code} ({ipDetails.country_name})</div>
+                          <div><span className="text-slate-500">Timezone:</span> {ipDetails.timezone}</div>
+                          <div><span className="text-slate-500">Coordinates:</span> Lat: {ipDetails.latitude}, Lon: {ipDetails.longitude}</div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* DNS Diagnostics block */}
+              {securitySubTab === 'dns' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-xs font-mono text-slate-400">DOMAIN NAME</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={dnsInput}
+                        onChange={(e) => setDnsInput(e.target.value)}
+                        placeholder="e.g. google.com"
+                        className="flex-1 bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 font-mono"
+                      />
+                      <button
+                        onClick={handleDnsLookup}
+                        className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2 rounded transition-all"
+                      >
+                        RESOLVE
+                      </button>
+                    </div>
+                  </div>
+
+                  {dnsDetails && (
+                    <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs space-y-2">
+                      <div className="text-cyan-400">// DIG / NSLOOKUP SIMULATION FOR {dnsDetails.host.toUpperCase()}</div>
+                      <div className="grid grid-cols-1 gap-2 text-slate-300">
+                        <div>
+                          <span className="text-slate-500 font-bold block mb-0.5">A RECORDS (IPv4)</span>
+                          {dnsDetails.a.map((rec: string) => <div key={rec} className="pl-3">{rec}</div>)}
+                        </div>
+                        <div>
+                          <span className="text-slate-500 font-bold block mb-0.5">AAAA RECORDS (IPv6)</span>
+                          {dnsDetails.aaaa.map((rec: string) => <div key={rec} className="pl-3">{rec}</div>)}
+                        </div>
+                        <div>
+                          <span className="text-slate-500 font-bold block mb-0.5">MX RECORDS</span>
+                          {dnsDetails.mx.map((rec: string) => <div key={rec} className="pl-3">{rec}</div>)}
+                        </div>
+                        <div>
+                          <span className="text-slate-500 font-bold block mb-0.5">TXT RECORDS</span>
+                          {dnsDetails.txt.map((rec: string) => <div key={rec} className="pl-3">{rec}</div>)}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Password Generator */}
+              {securitySubTab === 'pwd' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col space-y-2">
+                    <label className="text-xs font-mono text-slate-400">PASSWORD LENGTH ({pwdLength})</label>
+                    <input
+                      type="range"
+                      min="8"
+                      max="64"
+                      value={pwdLength}
+                      onChange={(e) => setPwdLength(Number(e.target.value))}
+                      className="w-full bg-slate-950 accent-cyan-400 h-1.5 rounded-lg appearance-none cursor-pointer"
+                    />
+                  </div>
+                  <div className="flex gap-6 text-xs font-mono">
+                    <label className="flex items-center space-x-2 text-slate-300">
+                      <input
+                        type="checkbox"
+                        checked={pwdNumbers}
+                        onChange={(e) => setPwdNumbers(e.target.checked)}
+                        className="rounded border-slate-800 bg-slate-950 text-cyan-500 focus:ring-cyan-400/50"
+                      />
+                      <span>INCLUDE NUMBERS</span>
+                    </label>
+                    <label className="flex items-center space-x-2 text-slate-300">
+                      <input
+                        type="checkbox"
+                        checked={pwdSymbols}
+                        onChange={(e) => setPwdSymbols(e.target.checked)}
+                        className="rounded border-slate-800 bg-slate-950 text-cyan-500 focus:ring-cyan-400/50"
+                      />
+                      <span>INCLUDE SYMBOLS</span>
+                    </label>
+                  </div>
+                  <button
+                    onClick={handleGeneratePassword}
+                    className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
+                  >
+                    {t('security.btn_gen_pwd')}
+                  </button>
+                  {pwdResult && (
+                    <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs flex justify-between items-center break-all">
+                      <span className="text-emerald-400 select-all font-bold">{pwdResult}</span>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(pwdResult);
+                        }}
+                        className="text-slate-500 hover:text-cyan-400 text-xs ml-4"
+                      >
+                        COPY 📋
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Hash Generator */}
+              {securitySubTab === 'hash' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-xs font-mono text-slate-400">HASH INPUT DATA</label>
+                    <textarea
+                      value={hashInput}
+                      onChange={(e) => setHashInput(e.target.value)}
+                      placeholder="Type text to hash..."
+                      className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 min-h-[100px] font-mono"
+                    />
+                  </div>
+                  <div className="flex gap-4 items-center">
+                    <select
+                      value={hashAlgo}
+                      onChange={(e) => setHashAlgo(e.target.value as any)}
+                      className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs font-mono text-slate-300 focus:outline-none focus:border-cyan-400/50"
+                    >
+                      <option value="SHA-256">SHA-256</option>
+                      <option value="SHA-1">SHA-1</option>
+                      <option value="SHA-512">SHA-512</option>
+                    </select>
+                    <button
+                      onClick={handleGenerateHash}
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all flex-1"
+                    >
+                      {t('security.btn_gen_hash')}
+                    </button>
+                  </div>
+                  {hashResult && (
+                    <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs break-all">
+                      <div className="text-slate-500 mb-1">// {hashAlgo} HASH CHECKSUM</div>
+                      <div className="text-cyan-400 font-bold">{hashResult}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ROT13 & Caesar Cipher */}
+              {securitySubTab === 'cipher' && (
+                <div className="space-y-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-xs font-mono text-slate-400">CIPHER PAYLOAD</label>
+                    <textarea
+                      value={cipherInput}
+                      onChange={(e) => setCipherInput(e.target.value)}
+                      placeholder="Type secret message..."
+                      className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 min-h-[100px] font-mono"
+                    />
+                  </div>
+                  <div className="flex gap-4 items-center flex-wrap">
+                    <div className="flex flex-col space-y-1">
+                      <label className="text-[10px] font-mono text-slate-500">CAESAR SHIFT (1-25)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="25"
+                        value={cipherShift}
+                        onChange={(e) => setCipherShift(Number(e.target.value))}
+                        className="bg-slate-950 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-100 w-24 font-mono"
+                      />
+                    </div>
+                    <div className="flex gap-3 mt-4">
+                      <button
+                        onClick={() => handleCipherAction('encrypt', 'caesar')}
+                        className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-4 py-2 rounded"
+                      >
+                        CAESAR {t('security.btn_encrypt')}
+                      </button>
+                      <button
+                        onClick={() => handleCipherAction('decrypt', 'caesar')}
+                        className="bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-300 text-xs font-mono px-4 py-2 rounded"
+                      >
+                        CAESAR {t('security.btn_decrypt')}
+                      </button>
+                      <button
+                        onClick={() => handleCipherAction('encrypt', 'rot13')}
+                        className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-4 py-2 rounded"
+                      >
+                        ROT13
+                      </button>
+                    </div>
+                  </div>
+                  {cipherResult && (
+                    <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs break-all">
+                      <div className="text-slate-500 mb-1">// CIPHER OUTPUT</div>
+                      <div className="text-emerald-400 font-bold">{cipherResult}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+
             </div>
           )}
         </div>

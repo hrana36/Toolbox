@@ -9,7 +9,7 @@ export default function Home() {
   const { t, lang, toggleLang } = useTranslation();
   const [latency, setLatency] = useState(24);
   const [displayText, setDisplayText] = useState('');
-  const [activeTab, setActiveTab] = useState<'Network' | 'Endpoint' | 'Cloud' | 'SecOps' | 'Toolbox'>('Network');
+  const [activeTab, setActiveTab] = useState<'Network' | 'Endpoint' | 'Cloud' | 'SecOps'>('Network');
 
   useEffect(() => {
     document.title = t('home.tab_title');
@@ -46,7 +46,8 @@ export default function Home() {
     { href: '/portfolio', label: t('nav.portfolio') },
     { href: '/blog', label: t('nav.blog') },
     { href: '/faq', label: t('nav.faq') },
-    { href: '/contact', label: t('nav.contact') },
+
+    { href: '/toolbox', label: t('nav.toolbox') },
   ];
 
   return (
@@ -56,7 +57,7 @@ export default function Home() {
         <div className="flex items-center space-x-3">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
           <span className="font-mono text-base font-bold tracking-widest text-slate-200">
-            RANA // SYS_OPS
+            RANA
           </span>
         </div>
         <nav className="hidden md:flex space-x-6 text-sm font-mono">
@@ -64,18 +65,29 @@ export default function Home() {
             <Link 
               key={link.href}
               href={link.href} 
-              className={`hover:text-cyan-400 transition-colors ${link.active ? 'text-cyan-400 border-b border-cyan-400' : 'text-slate-400'}`}
+              className={`hover:text-cyan-400 transition-colors flex items-center gap-1 ${link.active ? 'text-cyan-400 border-b border-cyan-400' : 'text-slate-400'}`}
             >
               {link.label}
+              {link.href === '/toolbox' && (
+                <img src="/hot.png" alt="hot" className="w-4 h-4 object-contain" />
+              )}
             </Link>
           ))}
         </nav>
-        <button 
-          onClick={toggleLang} 
-          className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
-        >
-          {lang === 'en' ? 'EN' : 'BN'}
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/contact"
+            className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold px-4 py-1.5 rounded transition-all shadow-[0_0_12px_rgba(34,211,238,0.4)] hover:shadow-[0_0_18px_rgba(34,211,238,0.6)]"
+          >
+            Hire Me
+          </Link>
+          <button 
+            onClick={toggleLang} 
+            className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"
+          >
+            {lang === 'en' ? 'EN' : 'BN'}
+          </button>
+        </div>
       </header>
 
       {/* Hero Body */}
@@ -127,7 +139,7 @@ export default function Home() {
 
             {/* Terminal Category Tabs */}
             <div className="flex flex-wrap gap-2 font-mono text-xs">
-              {(['Network', 'Endpoint', 'Cloud', 'SecOps', 'Toolbox'] as const).map((tab) => (
+              {(['Network', 'Endpoint', 'Cloud', 'SecOps'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}

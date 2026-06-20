@@ -19,7 +19,8 @@ export default function Portfolio() {
     { href: '/portfolio', label: t('nav.portfolio'), active: true },
     { href: '/blog', label: t('nav.blog') },
     { href: '/faq', label: t('nav.faq') },
-    { href: '/contact', label: t('nav.contact') },
+
+    { href: '/toolbox', label: t('nav.toolbox') },
   ];
 
   return (
@@ -29,7 +30,7 @@ export default function Portfolio() {
         <div className="flex items-center space-x-3">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
           <h1 className="font-mono text-base font-bold tracking-widest text-slate-200">
-            RANA // SYS_OPS
+            RANA
           </h1>
         </div>
         <nav className="hidden md:flex space-x-6 text-sm font-mono">
@@ -37,17 +38,22 @@ export default function Portfolio() {
             <Link 
               key={link.href}
               href={link.href} 
-              className={`hover:text-cyan-400 transition-colors ${link.active ? 'text-cyan-400 border-b border-cyan-400' : 'text-slate-400'}`}
+              className={`hover:text-cyan-400 transition-colors flex items-center gap-1 ${link.active ? 'text-cyan-400 border-b border-cyan-400' : 'text-slate-400'}`}
             >
               {link.label}
+              {link.href === '/toolbox' && (
+                <img src="/hot.png" alt="hot" className="w-4 h-4 object-contain" />
+              )}
             </Link>
           ))}
         </nav>
-        <div className="flex items-center space-x-6">
-          <div className="hidden sm:flex items-center space-x-2 text-xs font-mono text-slate-400">
-            <span>{t('portfolio.header.system_status')}:</span>
-            <span className="text-emerald-400 font-bold">{t('portfolio.header.nominal')}</span>
-          </div>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/contact"
+            className="bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold px-4 py-1.5 rounded transition-all shadow-[0_0_12px_rgba(34,211,238,0.4)] hover:shadow-[0_0_18px_rgba(34,211,238,0.6)]"
+          >
+            Hire Me
+          </Link>
           <button 
             onClick={toggleLang} 
             className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-mono text-slate-300 px-3 py-1.5 rounded transition-all"

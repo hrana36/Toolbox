@@ -151,13 +151,6 @@ export const portfolioData = {
       description: 'Deploy and secure an AD domain using Group Policy and auditing best practices.',
       tech: ['Active Directory', 'GPO Hardening', 'LDAP Security', 'Auditing Policy', 'Kerberos Hardening'],
       link: '#'
-    },
-    {
-      title: 'BD Toolbox',
-      category: 'Toolbox',
-      description: 'Architected and built a bilingual (EN/Bangla) multi-tool utility platform with 20+ client-side tools (Next.js, TypeScript, client-side processing for privacy/security).',
-      tech: ['Next.js', 'TypeScript', 'Tailwind CSS', 'React'],
-      link: '#'
     }
   ],
   educationAndCertifications: {
