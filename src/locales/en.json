@@ -7,7 +7,12 @@
     "about": "Personnel Dossier",
     "contact": "Secure Comms",
     "toolbox": "Toolbox",
-    "pdf": "PDF Utilities"
+    "pdf": "PDF Utilities",
+    "bd": "BD Essentials",
+    "dev_tools": "Dev & Design",
+    "math": "Calculators",
+    "helpers": "Media & Text",
+    "net": "Network Tools"
   },
   "home": {
     "title": "Systems & Security Operations Center",
@@ -117,5 +122,48 @@
     "status_processing": "Processing document client-side... Please wait.",
     "status_success": "Document processed successfully! Downloading...",
     "status_error": "Error: "
+  },
+  "bd": {
+    "title": "BANGLADESHI ESSENTIALS",
+    "sub_unicode": "Unicode ↔ Bijoy Converter",
+    "sub_age": "Age Calculator",
+    "sub_resize": "Job Photo Resizer",
+    "btn_convert_unicode": "CONVERT TO UNICODE",
+    "btn_convert_bijoy": "CONVERT TO BIJOY",
+    "label_dob": "DATE OF BIRTH",
+    "label_target_date": "AGE AS OF (TARGET DATE)",
+    "btn_calc_age": "CALCULATE AGE",
+    "btn_resize_photo": "RESIZE PHOTO (300x300)",
+    "btn_resize_sig": "RESIZE SIGNATURE (300x80)",
+    "label_upload_img": "SELECT IMAGE FILE (JPG/PNG)",
+    "age_result": "Age: {y} Years, {m} Months, {d} Days"
+  },
+  "dev_tools": {
+    "title": "DEV & DESIGN TOOLS",
+    "sub_json": "JSON Formatter / Validator",
+    "sub_color": "Color Picker & Palette",
+    "sub_diff": "Diff Checker",
+    "sub_lorem": "Lorem Ipsum Generator",
+    "sub_qr": "QR Code Generator",
+    "btn_format_json": "FORMAT JSON",
+    "btn_validate_json": "VALIDATE JSON",
+    "btn_compare": "COMPARE TEXT",
+    "btn_gen_lorem": "GENERATE TEXT",
+    "btn_gen_qr": "GENERATE QR CODE"
+  },
+  "math": {
+    "title": "MATH & CALCULATORS",
+    "sub_gpa": "GPA / CGPA Calculator",
+    "sub_emi": "EMI / Loan Calculator",
+    "sub_pct": "Percentage & Margin",
+    "sub_land": "Unit & Land Converter",
+    "btn_calc": "CALCULATE"
+  },
+  "helpers": {
+    "title": "MEDIA & TEXT HELPERS",
+    "sub_yt": "YouTube Thumbnail Downloader",
+    "sub_count": "Word & Character Counter",
+    "sub_case": "Case Converter",
+    "btn_download": "GET THUMBNAILS"
   }
 }
