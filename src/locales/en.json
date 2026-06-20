@@ -2,10 +2,12 @@
   "nav": {
     "home": "Console Home",
     "portfolio": "Terminal Port",
-    "blog": "Threat Feed",
+    "blog": "Tips & Tricks",
     "faq": "Operations FAQ",
     "about": "Personnel Dossier",
-    "contact": "Secure Comms"
+    "contact": "Secure Comms",
+    "toolbox": "Toolbox",
+    "pdf": "PDF Utilities"
   },
   "home": {
     "title": "Systems & Security Operations Center",
@@ -15,8 +17,8 @@
     "card_port_desc": "Run active command queries on systems, experience logs, and verified credentials.",
     "card_about_title": "Personnel Dossier",
     "card_about_desc": "Read detailed profiles on infrastructure administration and SecOps capabilities.",
-    "card_blog_title": "Threat Feed",
-    "card_blog_desc": "Check the threat intelligence advisories, runbooks, and cybersecurity bulletins.",
+    "card_blog_title": "Tips & Tricks",
+    "card_blog_desc": "Check sysadmin tips, operational tricks, and cybersecurity walkthroughs.",
     "card_contact_title": "Secure Comms",
     "card_contact_desc": "Establish secure contact links for project proposals or security audits.",
     "pinger_latency": "Server Latency",
@@ -81,19 +83,39 @@
     "tab_title": "Rana | Secure Comms"
   },
   "blog": {
-    "title": "Threat Intelligence Feed",
-    "subtitle": "Security advisories, infrastructure runbooks, and threat intelligence bulletins.",
+    "title": "Tips & Tricks",
+    "subtitle": "Useful systems administration tips, SecOps tricks, and infrastructure runbooks.",
     "severity_label": "Severity",
     "read_more": "Read Bulletin",
-    "back": "Return to Feed",
-    "tab_title": "Rana | Threat Intel Feed",
-    "error_title": "[ERROR] 404: ADVISORY_NOT_FOUND",
-    "error_back": "Return to Threat Feed"
+    "back": "Return to Tips & Tricks",
+    "tab_title": "Rana | Tips & Tricks",
+    "error_title": "[ERROR] 404: POST_NOT_FOUND",
+    "error_back": "Return to Tips & Tricks"
   },
   "footer": {
     "quick_links": "Console Map",
     "tools": "SecOps Links",
     "follow": "Direct Channels",
     "copyright": "All rights reserved. Secure terminal session active."
+  },
+  "pdf": {
+    "title": "PDF UTILITIES",
+    "desc": "Local client-side PDF manipulation tools. Secure, fast, and offline processing without uploading your documents.",
+    "tab_merge": "MERGE PDFs",
+    "tab_split": "SPLIT PDF",
+    "tab_jpg_to_pdf": "JPG TO PDF",
+    "select_files": "Select PDF Files",
+    "select_images": "Select Image Files (JPG/PNG)",
+    "select_file": "Select PDF File",
+    "label_files": "FILES TO PROCESS",
+    "label_page_range": "PAGE RANGE",
+    "placeholder_page_range": "e.g., 1-3, 5 (Leave empty to extract all)",
+    "btn_merge": "MERGE DOCUMENTS",
+    "btn_split": "SPLIT DOCUMENT",
+    "btn_convert": "CONVERT TO PDF",
+    "status_idle": "Ready for input.",
+    "status_processing": "Processing document client-side... Please wait.",
+    "status_success": "Document processed successfully! Downloading...",
+    "status_error": "Error: "
   }
 }
