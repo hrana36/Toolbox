@@ -2173,12 +2173,6 @@ export default function Toolbox() {
                   {t('security.sub_hash')}
                 </button>
                 <button
-                  onClick={() => { setSecuritySubTab('cipher'); setCipherResult(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${securitySubTab === 'cipher' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
-                >
-                  {t('security.sub_cipher')}
-                </button>
-                <button
                   onClick={() => { setSecuritySubTab('ssl'); setSslDomain(''); setSslDetails(null); setSslError(''); setSslPemInput(''); }}
                   className={`px-3 py-1 text-xs font-mono border ${securitySubTab === 'ssl' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
@@ -2364,60 +2358,6 @@ export default function Toolbox() {
                     <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs break-all">
                       <div className="text-slate-500 mb-1">// {hashAlgo} HASH CHECKSUM</div>
                       <div className="text-cyan-400 font-bold">{hashResult}</div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* ROT13 & Caesar Cipher */}
-              {securitySubTab === 'cipher' && (
-                <div className="space-y-4">
-                  <div className="flex flex-col space-y-1.5">
-                    <label className="text-xs font-mono text-slate-400">CIPHER PAYLOAD</label>
-                    <textarea
-                      value={cipherInput}
-                      onChange={(e) => setCipherInput(e.target.value)}
-                      placeholder="Type secret message..."
-                      className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 min-h-[100px] font-mono"
-                    />
-                  </div>
-                  <div className="flex gap-4 items-center flex-wrap">
-                    <div className="flex flex-col space-y-1">
-                      <label className="text-[10px] font-mono text-slate-500">CAESAR SHIFT (1-25)</label>
-                      <input
-                        type="number"
-                        min="1"
-                        max="25"
-                        value={cipherShift}
-                        onChange={(e) => setCipherShift(Number(e.target.value))}
-                        className="bg-slate-950 border border-slate-800 rounded px-2 py-1.5 text-xs text-slate-100 w-24 font-mono"
-                      />
-                    </div>
-                    <div className="flex gap-3 mt-4">
-                      <button
-                        onClick={() => handleCipherAction('encrypt', 'caesar')}
-                        className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-4 py-2 rounded"
-                      >
-                        CAESAR {t('security.btn_encrypt')}
-                      </button>
-                      <button
-                        onClick={() => handleCipherAction('decrypt', 'caesar')}
-                        className="bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-300 text-xs font-mono px-4 py-2 rounded"
-                      >
-                        CAESAR {t('security.btn_decrypt')}
-                      </button>
-                      <button
-                        onClick={() => handleCipherAction('encrypt', 'rot13')}
-                        className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-4 py-2 rounded"
-                      >
-                        ROT13
-                      </button>
-                    </div>
-                  </div>
-                  {cipherResult && (
-                    <div className="mt-4 p-4 bg-slate-950 border border-slate-850 rounded font-mono text-xs break-all">
-                      <div className="text-slate-500 mb-1">// CIPHER OUTPUT</div>
-                      <div className="text-emerald-400 font-bold">{cipherResult}</div>
                     </div>
                   )}
                 </div>
