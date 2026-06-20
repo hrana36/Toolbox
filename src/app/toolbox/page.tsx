@@ -115,7 +115,7 @@ export default function Toolbox() {
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
   // Security & Cryptography States
-  const [securitySubTab, setSecuritySubTab] = useState<'ip' | 'dns' | 'pwd' | 'hash' | 'cipher'>('ip');
+  const [securitySubTab, setSecuritySubTab] = useState<'ip' | 'dns' | 'pwd' | 'hash' | 'cipher' | 'ssl'>('ip');
   const [pwdLength, setPwdLength] = useState(16);
   const [pwdNumbers, setPwdNumbers] = useState(true);
   const [pwdSymbols, setPwdSymbols] = useState(true);
@@ -126,6 +126,11 @@ export default function Toolbox() {
   const [cipherInput, setCipherInput] = useState('');
   const [cipherShift, setCipherShift] = useState(3);
   const [cipherResult, setCipherResult] = useState('');
+  const [sslDomain, setSslDomain] = useState('');
+  const [sslDetails, setSslDetails] = useState<any>(null);
+  const [sslError, setSslError] = useState('');
+  const [sslLoading, setSslLoading] = useState(false);
+  const [sslPemInput, setSslPemInput] = useState('');
 
   // Math & Calculator States
   const [mathSubTab, setMathSubTab] = useState<'gpa' | 'emi' | 'pct' | 'land' | 'sci_calc' | 'age'>('gpa');
@@ -214,6 +219,38 @@ export default function Toolbox() {
       txt: ['v=spf1 include:spf.protection.outlook.com -all', 'google-site-verification=xyz123'],
       ns: ['ns1.cloudflare.com', 'ns2.cloudflare.com']
     });
+  };
+
+  const handleFetchSsl = async () => {
+    if (!sslDomain.trim()) return;
+    setSslLoading(true);
+    setSslError('');
+    setSslDetails(null);
+    try {
+      const res = await fetch(`/api/ssl-inspect?domain=${encodeURIComponent(sslDomain.trim())}`);
+      const data = await res.json();
+      if (data.error) {
+        setSslError(data.error);
+      } else {
+        setSslDetails(data);
+      }
+    } catch (e: any) {
+      setSslError('Failed to retrieve certificate details.');
+    } finally {
+      setSslLoading(false);
+    }
+  };
+
+  const handleDecodeLocalPem = () => {
+    if (!sslPemInput.trim()) return;
+    setSslError('');
+    setSslDetails(null);
+    const decoded = parsePemCertificate(sslPemInput);
+    if (!decoded.success) {
+      setSslError(decoded.error || 'Failed to parse PEM.');
+    } else {
+      setSslDetails(decoded);
+    }
   };
 
   const handleVideoDownload = async () => {
@@ -2141,6 +2178,12 @@ export default function Toolbox() {
                 >
                   {t('security.sub_cipher')}
                 </button>
+                <button
+                  onClick={() => { setSecuritySubTab('ssl'); setSslDomain(''); setSslDetails(null); setSslError(''); setSslPemInput(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${securitySubTab === 'ssl' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('security.sub_ssl')}
+                </button>
               </div>
 
               {/* IP Lookup block */}
@@ -2380,6 +2423,130 @@ export default function Toolbox() {
                 </div>
               )}
 
+              {securitySubTab === 'ssl' && (
+                <div className="space-y-6">
+                  {/* Two columns: Query Domain, and Paste PEM */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Remote Live Lookup */}
+                    <div className="space-y-4 border border-slate-800 bg-slate-950/40 p-4 rounded-lg">
+                      <div className="text-xs font-mono text-cyan-400">// LIVE SSL HOST ENQUIRY</div>
+                      <div className="flex flex-col space-y-1.5">
+                        <label className="text-[10px] font-mono text-slate-500">DOMAIN NAME</label>
+                        <input
+                          type="text"
+                          value={sslDomain}
+                          onChange={(e) => setSslDomain(e.target.value)}
+                          placeholder="e.g. google.com"
+                          className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-100 placeholder-slate-650 focus:outline-none focus:border-cyan-400/50 font-mono"
+                        />
+                      </div>
+                      <button
+                        onClick={handleFetchSsl}
+                        disabled={sslLoading}
+                        className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full disabled:opacity-50"
+                      >
+                        {sslLoading ? 'QUERYING HANDSHAKE...' : t('security.btn_fetch_ssl')}
+                      </button>
+                    </div>
+
+                    {/* Local PEM Decoder */}
+                    <div className="space-y-4 border border-slate-800 bg-slate-950/40 p-4 rounded-lg">
+                      <div className="text-xs font-mono text-cyan-400">// OFFLINE LOCAL PEM DECODER</div>
+                      <div className="flex flex-col space-y-1.5">
+                        <label className="text-[10px] font-mono text-slate-500">PASTE PEM ENCODED CERTIFICATE</label>
+                        <textarea
+                          value={sslPemInput}
+                          onChange={(e) => setSslPemInput(e.target.value)}
+                          placeholder="-----BEGIN CERTIFICATE-----&#10;MIIF...&#10;-----END CERTIFICATE-----"
+                          className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-xs text-slate-100 placeholder-slate-655 focus:outline-none focus:border-cyan-400/50 min-h-[100px] font-mono"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="file"
+                          accept=".pem,.crt,.cer,.der"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (evt) => {
+                                const txt = evt.target?.result as string;
+                                setSslPemInput(txt);
+                              };
+                              reader.readAsText(file);
+                            }
+                          }}
+                          className="text-[10px] text-slate-500 file:bg-slate-900 file:border file:border-slate-800 file:text-slate-300 file:text-[10px] file:font-mono file:px-3 file:py-1 file:rounded cursor-pointer flex-1"
+                        />
+                        <button
+                          onClick={handleDecodeLocalPem}
+                          className="bg-slate-900 hover:bg-slate-850 border border-slate-800 text-slate-300 text-xs font-mono px-4 py-1.5 rounded transition-all"
+                        >
+                          {t('security.btn_decode_pem')}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Errors */}
+                  {sslError && (
+                    <div className="p-3 bg-red-950/20 border border-red-900/40 rounded font-mono text-xs text-red-400">
+                      [ERROR] {sslError}
+                    </div>
+                  )}
+
+                  {/* Results Display */}
+                  {sslDetails && (
+                    <div className="p-5 bg-slate-950 border border-slate-855 rounded-lg font-mono text-xs space-y-4">
+                      <div className="text-cyan-400 border-b border-slate-900 pb-2 flex justify-between items-center">
+                        <span>// CERTIFICATE SCHEMATICS DECODED</span>
+                        <span className="text-[10px] text-slate-500">Serial: {sslDetails.serialNumber}</span>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-300">
+                        <div className="space-y-1">
+                          <span className="text-slate-500 font-bold block">SUBJECT DETAILS</span>
+                          <div className="pl-3">
+                            <span className="text-slate-500">Common Name (CN):</span> {sslDetails.subject?.CN || 'N/A'}
+                          </div>
+                          <div className="pl-3">
+                            <span className="text-slate-500">Organization (O):</span> {sslDetails.subject?.O || 'N/A'}
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <span className="text-slate-500 font-bold block">ISSUER INFO</span>
+                          <div className="pl-3">
+                            <span className="text-slate-500">Common Name (CN):</span> {sslDetails.issuer?.CN || 'N/A'}
+                          </div>
+                          <div className="pl-3">
+                            <span className="text-slate-500">Organization (O):</span> {sslDetails.issuer?.O || 'N/A'}
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <span className="text-slate-500 font-bold block">VALIDITY EPOCHS</span>
+                          <div className="pl-3">
+                            <span className="text-slate-500">Not Before (Issue):</span> {sslDetails.valid_from}
+                          </div>
+                          <div className="pl-3">
+                            <span className="text-slate-500">Not After (Expiry):</span> {sslDetails.valid_to}
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <span className="text-slate-500 font-bold block">CRYPTOGRAPHIC KEY SIG</span>
+                          <div className="pl-3">
+                            <span className="text-slate-500">Type:</span> {sslDetails.type} ({sslDetails.bits} bits)
+                          </div>
+                          <div className="pl-3">
+                            <span className="text-slate-500">SHA-256 Fingerprint:</span> <span className="break-all select-all font-bold text-cyan-400">{sslDetails.fingerprint256}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
             </div>
           )}
