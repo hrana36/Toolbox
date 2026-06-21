@@ -73,11 +73,13 @@ export default function Blog() {
             <div key={post.slug} className="bg-slate-900/30 border border-slate-800 rounded-lg p-4 md:p-5 cyber-glow flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between font-mono text-[10px] mb-3">
-                  <span className="text-slate-500">{post.date} Â· {post.category}</span>
+                  <span className="text-slate-500">{post.date} • {post.category}</span>
                   <span className={`px-2 py-0.5 rounded border ${
                     post.severity === 'HIGH' 
                       ? 'bg-red-950/40 border-red-800 text-red-400' 
-                      : 'bg-yellow-950/40 border-yellow-800 text-yellow-400'
+                      : post.severity === 'MEDIUM'
+                        ? 'bg-yellow-950/40 border-yellow-800 text-yellow-400'
+                        : 'bg-cyan-950/40 border-cyan-800 text-cyan-400'
                   }`}>
                     {t('blog.severity_label')}: {post.severity}
                   </span>
@@ -105,8 +107,8 @@ export default function Blog() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA // SYS_OPS. {t('footer.copyright')}</div>
           <div className="flex space-x-6 text-xs">
-            <a href="https://www.linkedin.com/in/hrana36/" className="text-slate-400 hover:text-white">LinkedIn</a>
-            <a href="https://github.com/hrana36" className="text-slate-400 hover:text-white">GitHub</a>
+            <a href="https://www.linkedin.com/in/hrana36/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">LinkedIn</a>
+            <a href="https://github.com/hrana36" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">GitHub</a>
           </div>
         </div>
       </footer>

@@ -89,7 +89,13 @@ export default function BlogPostPage(props: { params: Params }) {
               <span>•</span>
               <span>{post.category}</span>
               <span>•</span>
-              <span className="text-red-400">{t('blog.severity_label')}: {post.severity}</span>
+              <span className={
+                post.severity === 'HIGH' 
+                  ? 'text-red-400' 
+                  : post.severity === 'MEDIUM'
+                    ? 'text-yellow-400'
+                    : 'text-cyan-400'
+              }>{t('blog.severity_label')}: {post.severity}</span>
             </div>
             <h1 className="text-2xl font-bold font-mono text-white leading-tight">
               {post.title}
@@ -107,8 +113,8 @@ export default function BlogPostPage(props: { params: Params }) {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA // SYS_OPS. {t('footer.copyright')}</div>
           <div className="flex space-x-6 text-xs">
-            <a href="https://www.linkedin.com/in/hrana36/" className="text-slate-400 hover:text-white">LinkedIn</a>
-            <a href="https://github.com/hrana36" className="text-slate-400 hover:text-white">GitHub</a>
+            <a href="https://www.linkedin.com/in/hrana36/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">LinkedIn</a>
+            <a href="https://github.com/hrana36" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">GitHub</a>
           </div>
         </div>
       </footer>
