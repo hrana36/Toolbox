@@ -20,7 +20,10 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setOnline(navigator.onLine);
-      setIsEncrypted(window.location.protocol === 'https:');
+      const isLocalOrSecure = window.location.protocol === 'https:' || 
+                             window.location.hostname === 'localhost' || 
+                             window.location.hostname === '127.0.0.1';
+      setIsEncrypted(isLocalOrSecure);
     }
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
@@ -249,8 +252,8 @@ export default function Home() {
           </div>
           <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
             <span className="text-slate-500 uppercase">{t('home.pinger_vpn')}</span>
-            <span className={`text-lg font-bold mt-2 ${isEncrypted ? 'text-cyan-400' : 'text-amber-400'}`}>
-              {isEncrypted ? t('home.status_encrypted') : t('home.status_plaintext')}
+            <span className="text-lg font-bold mt-2 text-cyan-400">
+              {isEncrypted ? t('home.status_encrypted') : t('home.status_direct')}
             </span>
           </div>
           <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">

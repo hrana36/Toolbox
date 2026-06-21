@@ -35,6 +35,7 @@
     "status_offline": "OFFLINE",
     "status_offline_shields": "Offline",
     "status_plaintext": "Plaintext",
+    "status_direct": "Direct",
     "tab_title": "Rana | Systems & Security Control Center",
     "project_title": "Project Files & Artifacts",
     "project_desc": "Verified systems utilities, deployment automation pipelines, and infrastructure architectures.",
