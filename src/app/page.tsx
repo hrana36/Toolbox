@@ -7,7 +7,9 @@ import { portfolioData } from '@/data/portfolio';
 
 export default function Home() {
   const { t, lang, toggleLang } = useTranslation();
-  const [latency, setLatency] = useState(24);
+  const [latency, setLatency] = useState<number>(0);
+  const [online, setOnline] = useState<boolean>(true);
+  const [isEncrypted, setIsEncrypted] = useState<boolean>(false);
   const [displayText, setDisplayText] = useState('');
   const [activeTab, setActiveTab] = useState<'Network' | 'Endpoint' | 'Cloud' | 'SecOps'>('Network');
 
@@ -16,9 +18,38 @@ export default function Home() {
   }, [lang, t]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLatency(prev => Math.max(15, Math.min(45, prev + Math.floor(Math.random() * 7) - 3)));
-    }, 3000);
+    if (typeof window !== 'undefined') {
+      setOnline(navigator.onLine);
+      setIsEncrypted(window.location.protocol === 'https:');
+    }
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    const measureLatency = async () => {
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        setLatency(0);
+        return;
+      }
+      try {
+        const start = performance.now();
+        await fetch('/?ping=' + Date.now(), { method: 'HEAD', cache: 'no-store' });
+        const end = performance.now();
+        setLatency(Math.round(end - start));
+      } catch (e) {
+        setLatency(0);
+      }
+    };
+
+    measureLatency();
+    const interval = setInterval(measureLatency, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -95,7 +126,9 @@ export default function Home() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
           {/* Left Badge: MD-102 */}
           <div className="hidden md:flex w-36 h-36 justify-center items-center flex-shrink-0">
-            <img src="/md-102.png" alt="MD-102 Badge" className="w-30 h-30 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
+            <a href="https://learn.microsoft.com/en-us/users/hrana36/credentials/4d6346b6185d668b" target="_blank" rel="noopener noreferrer">
+              <img src="/md-102.png" alt="MD-102 Badge" className="w-30 h-30 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20 hover:scale-110 transition-transform duration-300 cursor-pointer" />
+            </a>
           </div>
 
           {/* Center Content */}
@@ -107,8 +140,12 @@ export default function Home() {
 
             {/* Mobile Badges Row (only shown on small screens) */}
             <div className="flex md:hidden justify-center items-center gap-6 mb-6">
-              <img src="/md-102.png" alt="MD-102 Badge" className="w-20 h-20 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
-              <img src="/az-104.png" alt="AZ-104 Badge" className="w-20 h-20 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
+              <a href="https://learn.microsoft.com/en-us/users/hrana36/credentials/4d6346b6185d668b" target="_blank" rel="noopener noreferrer">
+                <img src="/md-102.png" alt="MD-102 Badge" className="w-20 h-20 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20 hover:scale-110 transition-transform duration-300 cursor-pointer" />
+              </a>
+              <a href="https://learn.microsoft.com/en-us/users/hrana36/credentials/905350cf839de8be" target="_blank" rel="noopener noreferrer">
+                <img src="/az-104.png" alt="AZ-104 Badge" className="w-20 h-20 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20 hover:scale-110 transition-transform duration-300 cursor-pointer" />
+              </a>
             </div>
 
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight mb-6 leading-tight">
@@ -121,7 +158,9 @@ export default function Home() {
 
           {/* Right Badge: AZ-104 */}
           <div className="hidden md:flex w-36 h-36 justify-center items-center flex-shrink-0">
-            <img src="/az-104.png" alt="AZ-104 Badge" className="w-30 h-30 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20" />
+            <a href="https://learn.microsoft.com/en-us/users/hrana36/credentials/905350cf839de8be" target="_blank" rel="noopener noreferrer">
+              <img src="/az-104.png" alt="AZ-104 Badge" className="w-30 h-30 object-contain cyber-glow rounded-full p-1 border border-slate-800/40 bg-slate-950/20 hover:scale-110 transition-transform duration-300 cursor-pointer" />
+            </a>
           </div>
         </div>
 
@@ -198,19 +237,27 @@ export default function Home() {
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-xs">
           <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
             <span className="text-slate-500 uppercase">{t('home.pinger_latency')}</span>
-            <span className="text-lg font-bold text-cyan-400 mt-2">{latency}ms</span>
+            <span className={`text-lg font-bold mt-2 ${latency > 0 ? 'text-cyan-400' : 'text-slate-500'}`}>
+              {latency > 0 ? `${latency}ms` : '---'}
+            </span>
           </div>
           <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
             <span className="text-slate-500 uppercase">{t('home.pinger_shields')}</span>
-            <span className="text-lg font-bold text-emerald-400 mt-2">{t('home.status_nominal')}</span>
+            <span className={`text-lg font-bold mt-2 ${online ? 'text-emerald-400' : 'text-red-400'}`}>
+              {online ? t('home.status_nominal') : t('home.status_offline_shields')}
+            </span>
           </div>
           <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
             <span className="text-slate-500 uppercase">{t('home.pinger_vpn')}</span>
-            <span className="text-lg font-bold text-cyan-400 mt-2">{t('home.status_encrypted')}</span>
+            <span className={`text-lg font-bold mt-2 ${isEncrypted ? 'text-cyan-400' : 'text-amber-400'}`}>
+              {isEncrypted ? t('home.status_encrypted') : t('home.status_plaintext')}
+            </span>
           </div>
           <div className="bg-slate-900/40 border border-slate-800 rounded p-4 flex flex-col justify-between cyber-glow">
             <span className="text-slate-500 uppercase">{t('home.pinger_status')}</span>
-            <span className="text-lg font-bold text-emerald-400 mt-2">{t('home.status_online')}</span>
+            <span className={`text-lg font-bold mt-2 ${online ? 'text-emerald-400' : 'text-red-400'}`}>
+              {online ? t('home.status_online') : t('home.status_offline')}
+            </span>
           </div>
         </section>
       </main>
@@ -220,8 +267,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA // SYS_OPS. {t('footer.copyright')}</div>
           <div className="flex space-x-6 text-xs">
-            <a href="https://www.linkedin.com/in/hrana36/" className="text-slate-400 hover:text-white">LinkedIn</a>
-            <a href="https://github.com/hrana36" className="text-slate-400 hover:text-white">GitHub</a>
+            <a href="https://www.linkedin.com/in/hrana36/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">LinkedIn</a>
+            <a href="https://github.com/hrana36" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">GitHub</a>
           </div>
         </div>
       </footer>
