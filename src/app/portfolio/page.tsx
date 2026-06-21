@@ -71,20 +71,8 @@ export default function Portfolio() {
         </div>
 
         {/* Right Dashboard Column */}
-        <div className="w-full md:w-80 flex flex-col justify-between space-y-4">
+        <div className="w-full md:w-80 flex flex-col justify-start space-y-4">
           <ComplianceGauge />
-          
-          <div className="bg-slate-900/50 border border-slate-800 rounded-lg p-5 font-mono text-xs text-slate-400 cyber-glow flex-1 flex flex-col justify-center">
-            <span className="text-slate-500 uppercase tracking-wider mb-2 block">{t('portfolio.instructions.title')}</span>
-            <p className="leading-relaxed">
-              {t('portfolio.instructions.body').split("'help'").map((text, idx, arr) => (
-                <span key={idx}>
-                  {text}
-                  {idx < arr.length - 1 && <span className="text-cyan-400">help</span>}
-                </span>
-              ))}
-            </p>
-          </div>
         </div>
       </main>
 
