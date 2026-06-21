@@ -83,6 +83,7 @@ export const portfolioData = {
   ],
   projects: [
     {
+      slug: 'secure-network-segmentation',
       title: 'Secure Network Segmentation & Firewall Lab',
       category: 'Network',
       description: 'Design a segmented network with a firewall and validate access.',
@@ -90,6 +91,7 @@ export const portfolioData = {
       link: '#'
     },
     {
+      slug: 'server-hardening',
       title: 'Server Hardening & Baseline Configuration',
       category: 'Endpoint',
       description: 'Apply CIS benchmarks to secure Windows or Linux systems and verify reduced vulnerabilities.',
@@ -97,6 +99,7 @@ export const portfolioData = {
       link: '#'
     },
     {
+      slug: 'endpoint-monitoring',
       title: 'Endpoint Monitoring & EDR Deployment',
       category: 'Endpoint',
       description: 'Deploy an open-source EDR solution and detect suspicious endpoint behavior.',
@@ -104,6 +107,7 @@ export const portfolioData = {
       link: '#'
     },
     {
+      slug: 'automated-patching',
       title: 'Automated Patching & Configuration Management',
       category: 'Endpoint',
       description: 'Automate OS patching and security configuration enforcement across systems.',
@@ -111,6 +115,7 @@ export const portfolioData = {
       link: '#'
     },
     {
+      slug: 'cloud-hardening',
       title: 'Cloud Environment Hardening & Monitoring',
       category: 'Cloud',
       description: 'Build and monitor a secure AWS or Azure environment using native security services.',
@@ -118,6 +123,7 @@ export const portfolioData = {
       link: '#'
     },
     {
+      slug: 'vulnerability-scanning',
       title: 'Vulnerability Scanning & Remediation Pipeline',
       category: 'SecOps',
       description: 'Scan systems for vulnerabilities, remediate findings, and validate fixes through rescanning.',
@@ -125,6 +131,7 @@ export const portfolioData = {
       link: '#'
     },
     {
+      slug: 'network-ids-ips',
       title: 'Network IDS/IPS Deployment & Tuning',
       category: 'Network',
       description: 'Deploy and tune IDS rules to detect attacks while minimizing false positives.',
@@ -132,6 +139,7 @@ export const portfolioData = {
       link: '#'
     },
     {
+      slug: 'siem-implementation',
       title: 'SIEM Implementation & Log Management',
       category: 'SecOps',
       description: 'Centralize logs and configure security alerts using a SIEM platform.',
@@ -139,6 +147,7 @@ export const portfolioData = {
       link: '#'
     },
     {
+      slug: 'container-security',
       title: 'Container Security: Image Scanning & Hardening',
       category: 'Cloud',
       description: 'Scan and harden Docker images to reduce container vulnerabilities.',
@@ -146,6 +155,7 @@ export const portfolioData = {
       link: '#'
     },
     {
+      slug: 'active-directory-security',
       title: 'Active Directory Security Lab',
       category: 'Endpoint',
       description: 'Deploy and secure an AD domain using Group Policy and auditing best practices.',
@@ -156,16 +166,24 @@ export const portfolioData = {
   educationAndCertifications: {
     certifications: [
       {
-        name: 'Microsoft 365 Certified: Endpoint Administrator Associate (MD-102)',
-        date: 'May 8, 2024'
-      },
-      {
-        name: 'Microsoft Certified: Azure Administrator Associate (AZ-104)',
+        name: 'Microsoft Certified: Azure Administrator Associate (AZ-104) [Active]',
         date: 'June 2024'
       },
       {
-        name: 'Google IT Support Professional',
-        date: 'Jan 5, 2021'
+        name: 'Microsoft 365 Certified: Endpoint Administrator Associate (MD-102) [Previous]',
+        date: 'May 8, 2024'
+      },
+      {
+        name: 'Coursera: Microsoft Cybersecurity Analyst Specialization',
+        date: '2024'
+      },
+      {
+        name: 'Coursera: Google IT Support Specialization',
+        date: '2021'
+      },
+      {
+        name: 'Coursera: Python 3 Programming Specialization',
+        date: '2020'
       }
     ],
     education: [

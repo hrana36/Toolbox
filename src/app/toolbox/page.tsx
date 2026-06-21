@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useTranslation } from '@/locales/i18n';
 import { unicodeToBijoy, bijoyToUnicode } from '@/utils/banglaConverter';
@@ -69,7 +70,7 @@ function parsePemCertificate(pemText: string) {
   }
 }
 
-export default function Toolbox() {
+function ToolboxContent() {
   const { t, lang, toggleLang } = useTranslation();
   const [activeTab, setActiveTab] = useState<'dev_tools' | 'math' | 'helpers' | 'pdf' | 'security'>('pdf');
   
@@ -82,12 +83,20 @@ export default function Toolbox() {
   const [dnsDetails, setDnsDetails] = useState<any>(null);
   
   // PDF states
-  const [pdfSubTab, setPdfSubTab] = useState<'merge' | 'split' | 'jpg_to_pdf' | 'organize' | 'word_to_pdf'>('merge');
+  const [pdfSubTab, setPdfSubTab] = useState<'ats_checker' | 'word_to_pdf' | 'jpg_to_pdf' | 'merge' | 'split' | 'organize'>('ats_checker');
   const [pdfFiles, setPdfFiles] = useState<File[]>([]);
   const [pdfPageRange, setPdfPageRange] = useState('');
   const [pdfStatus, setPdfStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
   const [pdfErrorMessage, setPdfErrorMessage] = useState('');
   const [pdfPagesOrder, setPdfPagesOrder] = useState<number[]>([]); // stores page indices (0-indexed) for custom sorting/ordering
+  
+  const [atsResumeText, setAtsResumeText] = useState('');
+  const [atsJobDesc, setAtsJobDesc] = useState('');
+  const [atsStatus, setAtsStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle');
+  const [atsErrorMessage, setAtsErrorMessage] = useState('');
+  const [atsResults, setAtsResults] = useState<any>(null);
+  const [atsLoadingStep, setAtsLoadingStep] = useState(0);
+  const [atsActiveResultTab, setAtsActiveResultTab] = useState<'content' | 'section' | 'essentials' | 'tailoring'>('content');
   
   // BD Essentials States
   const [bdSubTab, setBdSubTab] = useState<'unicode' | 'age' | 'resize'>('unicode');
@@ -167,6 +176,35 @@ export default function Toolbox() {
   useEffect(() => {
     document.title = lang === 'en' ? 'Rana | Cyber Deck' : 'রানা | সাইবার ডেক';
   }, [lang]);
+
+  // Read URL query params to deep-link into specific toolbox tab/subtab
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    const sub = searchParams.get('sub');
+    if (tab && ['dev_tools', 'math', 'helpers', 'pdf', 'security'].includes(tab)) {
+      setActiveTab(tab as any);
+    }
+    if (sub) {
+      switch (tab) {
+        case 'dev_tools':
+          if (['base64', 'json', 'color', 'diff', 'lorem', 'qr', 'unicode'].includes(sub)) setDevSubTab(sub as any);
+          break;
+        case 'math':
+          if (['gpa', 'emi', 'pct', 'land', 'sci_calc', 'age'].includes(sub)) setMathSubTab(sub as any);
+          break;
+        case 'helpers':
+          if (['yt', 'word', 'case', 'video_dl', 'resize'].includes(sub)) setHelperSubTab(sub as any);
+          break;
+        case 'pdf':
+          if (['ats_checker', 'word_to_pdf', 'jpg_to_pdf', 'merge', 'split', 'organize'].includes(sub)) setPdfSubTab(sub as any);
+          break;
+        case 'security':
+          if (['ip', 'dns', 'pwd', 'hash', 'cipher', 'ssl'].includes(sub)) setSecuritySubTab(sub as any);
+          break;
+      }
+    }
+  }, [searchParams]);
 
   const navLinks = [
     { href: '/', label: t('nav.home') },
@@ -534,6 +572,250 @@ export default function Toolbox() {
 
   const removeFile = (index: number) => {
     setPdfFiles(pdfFiles.filter((_, i) => i !== index));
+  };
+
+  const handleAnalyzeAts = () => {
+    if (!atsResumeText.trim()) {
+      setAtsErrorMessage(lang === 'en' ? 'Please paste your resume text or upload a docx/txt file.' : 'অনুগ্রহ করে আপনার রিজিউম টেক্সট পেস্ট করুন অথবা docx/txt ফাইল আপলোড করুন।');
+      return;
+    }
+    if (!atsJobDesc.trim()) {
+      setAtsErrorMessage(lang === 'en' ? 'Please paste the target Job Description.' : 'অনুগ্রহ করে টার্গেট জব ডেসক্রিপশন পেস্ট করুন।');
+      return;
+    }
+
+    setAtsStatus('processing');
+    setAtsErrorMessage('');
+    setAtsLoadingStep(1); // 1. Parsing your resume
+
+    // Step 2: Analyzing experience (600ms)
+    setTimeout(() => {
+      setAtsLoadingStep(2);
+    }, 700);
+
+    // Step 3: Extracting skills (1400ms)
+    setTimeout(() => {
+      setAtsLoadingStep(3);
+    }, 1400);
+
+    // Step 4: Generating recommendations (2100ms)
+    setTimeout(() => {
+      setAtsLoadingStep(4);
+    }, 2100);
+
+    // Step 5: Complete & Show results (2800ms)
+    setTimeout(() => {
+      try {
+        const resume = atsResumeText.toLowerCase();
+        const jobDesc = atsJobDesc.toLowerCase();
+
+        const commonKeywords = [
+          'react', 'angular', 'vue', 'next.js', 'typescript', 'javascript', 'html', 'css', 'sass', 'tailwind',
+          'python', 'django', 'flask', 'fastapi', 'java', 'spring boot', 'spring', 'kotlin', 'c++', 'c#', '.net', 'asp.net',
+          'ruby', 'rails', 'php', 'laravel', 'node.js', 'express', 'nestjs', 'go', 'golang', 'rust',
+          'sql', 'mysql', 'postgresql', 'mongodb', 'redis', 'elasticsearch', 'cassandra', 'dynamodb', 'oracle',
+          'aws', 'azure', 'gcp', 'google cloud', 'docker', 'kubernetes', 'jenkins', 'git', 'github', 'gitlab', 'ci/cd',
+          'terraform', 'ansible', 'prometheus', 'grafana', 'linux', 'unix', 'bash', 'powershell',
+          'rest api', 'graphql', 'grpc', 'microservices', 'serverless', 'system design', 'architecture',
+          'agile', 'scrum', 'kanban', 'jira', 'confluence', 'project management', 'product management',
+          'machine learning', 'deep learning', 'ai', 'data science', 'pandas', 'numpy', 'scikit-learn', 'tensorflow', 'pytorch',
+          'cybersecurity', 'security', 'firewall', 'pentesting', 'siem', 'soc', 'datto', 'sentinelone', 'bitdefender', 'acronis',
+          'backup', 'bcdr', 'network', 'routing', 'switching', 'dns', 'ssl', 'active directory', 'office 365', 'm365',
+          'troubleshooting', 'helpdesk', 'support', 'it support', 'system administrator', 'sysadmin', 'devops',
+          'communication', 'teamwork', 'leadership', 'problem solving', 'analytical', 'collaboration'
+        ];
+
+        const dynamicKeywordsSet = new Set<string>();
+        const words = atsJobDesc.match(/[A-Z][a-zA-Z0-9+#\-\.]+/g) || [];
+        words.forEach(w => {
+          const lw = w.toLowerCase();
+          if (lw.length > 2 && !['the', 'and', 'for', 'you', 'are', 'with', 'this', 'that', 'from', 'your', 'will', 'have'].includes(lw)) {
+            dynamicKeywordsSet.add(lw);
+          }
+        });
+        commonKeywords.forEach(k => {
+          if (jobDesc.includes(k)) {
+            dynamicKeywordsSet.add(k);
+          }
+        });
+
+        const extractedKeywords = Array.from(dynamicKeywordsSet);
+
+        const foundKeywords: string[] = [];
+        const missingKeywords: string[] = [];
+
+        extractedKeywords.forEach(keyword => {
+          const regex = new RegExp(`\\b${keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}\\b`, 'i');
+          if (regex.test(resume) || resume.includes(keyword)) {
+            foundKeywords.push(keyword);
+          } else {
+            missingKeywords.push(keyword);
+          }
+        });
+
+        const checks = {
+          contact: /email|phone|contact|linkedin|github|@|\+?[0-9]{7,15}/i.test(resume),
+          experience: /experience|work history|employment|history|professional experience/i.test(resume),
+          education: /education|degree|university|college|school|academic/i.test(resume),
+          skills: /skills|core skills|technologies|expertise|technical/i.test(resume)
+        };
+
+        const wordCount = atsResumeText.split(/\s+/).filter(Boolean).length;
+        const isLengthOptimal = wordCount >= 300 && wordCount <= 1000;
+
+        const buzzwords = ['synergy', 'hardworking', 'go-getter', 'detail-oriented', 'motivated', 'results-driven', 'dynamic', 'self-starter'];
+        const foundBuzzwords = buzzwords.filter(b => resume.includes(b));
+
+        const actionVerbs = ['led', 'managed', 'developed', 'implemented', 'designed', 'created', 'built', 'optimized', 'reduced', 'increased', 'architected', 'resolved', 'automated'];
+        const foundActionVerbs = actionVerbs.filter(v => resume.includes(v));
+
+        // Subscores Calculations (0 to 100)
+        let subContent = 20;
+        if (isLengthOptimal) subContent += 30;
+        if (foundActionVerbs.length >= 4) subContent += 40;
+        else subContent += foundActionVerbs.length * 10;
+        subContent -= Math.min(foundBuzzwords.length * 10, 30);
+        subContent = Math.max(10, Math.min(100, subContent));
+
+        let subSection = 0;
+        if (checks.contact) subSection += 25;
+        if (checks.experience) subSection += 25;
+        if (checks.education) subSection += 25;
+        if (checks.skills) subSection += 25;
+
+        let subEssentials = 20;
+        if (checks.contact) subEssentials += 40;
+        if (checks.experience && checks.education) subEssentials += 20;
+        if (isLengthOptimal) subEssentials += 20;
+        subEssentials = Math.max(10, Math.min(100, subEssentials));
+
+        let subTailoring = 100;
+        if (extractedKeywords.length > 0) {
+          subTailoring = Math.round((foundKeywords.length / extractedKeywords.length) * 100);
+        }
+
+        // Overall Weighted Score
+        let score = Math.round((subContent * 0.25) + (subSection * 0.25) + (subEssentials * 0.2) + (subTailoring * 0.3));
+        score = Math.max(10, Math.min(100, score));
+
+        const recommendations: string[] = [];
+        if (!checks.contact) {
+          recommendations.push(lang === 'en' 
+            ? 'Contact information (email, phone, LinkedIn or GitHub) was not clearly detected. Ensure your contact details are at the top.' 
+            : 'যোগাযোগের তথ্য (ইমেইল, ফোন, লিঙ্কডইন বা গিটহাব) স্পষ্টভাবে সনাক্ত করা যায়নি। পৃষ্ঠার শীর্ষে আপনার যোগাযোগের বিবরণ রাখুন।');
+        }
+        if (!checks.experience) {
+          recommendations.push(lang === 'en'
+            ? 'Work experience section is missing or has a non-standard heading. Use "Professional Experience" or "Work History".'
+            : 'কাজের অভিজ্ঞতার বিভাগটি অনুপস্থিত বা একটি অপ্রচলিত শিরোনাম ব্যবহার করা হয়েছে। "Professional Experience" বা "Work History" শিরোনাম ব্যবহার করুন।');
+        }
+        if (!checks.education) {
+          recommendations.push(lang === 'en'
+            ? 'Education section was not detected. Add a section titled "Education" with your academic qualifications.'
+            : 'শিক্ষা বিষয়ক বিভাগ সনাক্ত করা যায়নি। আপনার একাডেমিক যোগ্যতা সহ "Education" শিরোনামের একটি বিভাগ যোগ করুন।');
+        }
+        if (wordCount < 300) {
+          recommendations.push(lang === 'en'
+            ? `Your resume is quite short (${wordCount} words). Add more details, achievements, and impact statements to your experiences.`
+            : `আপনার রিজিউমটি বেশ সংক্ষিপ্ত (${wordCount} শব্দ)। আপনার অভিজ্ঞতায় আরও তথ্য, অর্জন এবং প্রভাবের বিবরণ যোগ করুন।`);
+        } else if (wordCount > 1000) {
+          recommendations.push(lang === 'en'
+            ? `Your resume is a bit long (${wordCount} words). Try to condense it to 1-2 pages (approx. 400-800 words) by highlighting only the most relevant achievements.`
+            : `আপনার রিজিউমটি একটু দীর্ঘ (${wordCount} শব্দ)। শুধুমাত্র সবচেয়ে প্রাসঙ্গিক অর্জনগুলিকে হাইলাইট করে এটি ১-২ পৃষ্ঠায় (প্রায় ৪০০-৮০০ শব্দ) সংকুচিত করার চেষ্টা করুন।`);
+        }
+        if (missingKeywords.length > 0) {
+          const topMissing = missingKeywords.slice(0, 5).map(k => `"${k.toUpperCase()}"`).join(', ');
+          recommendations.push(lang === 'en'
+            ? `Add relevant keywords from the job description like ${topMissing} to make your resume more visible to the ATS algorithm.`
+            : `এটএস অ্যালগরিদমে আপনার রিজিউমটি দৃশ্যমান করতে জব ডেসক্রিপশনের প্রাসঙ্গিক কীওয়ার্ড যেমন ${topMissing} যোগ করুন।`);
+        }
+        if (foundBuzzwords.length > 2) {
+          recommendations.push(lang === 'en'
+            ? `Avoid generic buzzwords: ${foundBuzzwords.map(b => `"${b}"`).join(', ')}. Replace them with specific actions and quantifiable results.`
+            : `সাধারণ অলংকারিক শব্দ বা বাজওয়ার্ড পরিহার করুন: ${foundBuzzwords.map(b => `"${b}"`).join(', ')}। এগুলির পরিবর্তে সুনির্দিষ্ট কাজ এবং পরিমাপযোগ্য ফলাফল উল্লেখ করুন।`);
+        }
+        if (foundActionVerbs.length < 3) {
+          recommendations.push(lang === 'en'
+            ? 'Include more strong action verbs (e.g., "Led", "Developed", "Automated", "Optimized") at the start of your experience bullet points.'
+            : 'আপনার কাজের বিবরণীর বুলেটের শুরুতে আরও শক্তিশালী অ্যাকশন ভার্ব (যেমন, "Led", "Developed", "Automated", "Optimized") ব্যবহার করুন।');
+        }
+
+        setAtsResults({
+          score,
+          subScores: {
+            content: subContent,
+            section: subSection,
+            essentials: subEssentials,
+            tailoring: subTailoring
+          },
+          wordCount,
+          keywords: {
+            found: foundKeywords.map(k => k.toUpperCase()),
+            missing: missingKeywords.map(k => k.toUpperCase())
+          },
+          checks,
+          recommendations
+        });
+        setAtsStatus('success');
+        setAtsLoadingStep(0);
+      } catch (e: any) {
+        setAtsStatus('error');
+        setAtsLoadingStep(0);
+        setAtsErrorMessage(e.message || 'Error parsing resume data.');
+      }
+    }, 2800);
+  };
+
+  const handleAtsFileUpload = async (file: File) => {
+    setAtsErrorMessage('');
+    if (file.name.endsWith('.docx')) {
+      setAtsStatus('processing');
+      try {
+        const mammoth = await import('mammoth');
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        setAtsResumeText(result.value);
+        setAtsStatus('idle');
+      } catch (e: any) {
+        setAtsStatus('error');
+        setAtsErrorMessage(lang === 'en' ? 'Failed to read DOCX file.' : 'ডকএক্স ফাইল পড়তে ব্যর্থ হয়েছে।');
+      }
+    } else if (file.name.endsWith('.pdf')) {
+      setAtsStatus('processing');
+      try {
+        const pdfjs: any = await import('pdfjs-dist');
+        pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
+        const arrayBuffer = await file.arrayBuffer();
+        const loadingTask = pdfjs.getDocument({ data: arrayBuffer });
+        const pdfDoc = await loadingTask.promise;
+        let text = '';
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+          const page = await pdfDoc.getPage(i);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items
+            .map((item: any) => item.str)
+            .join(' ');
+          text += pageText + '\n';
+        }
+        setAtsResumeText(text);
+        setAtsStatus('idle');
+      } catch (e: any) {
+        setAtsStatus('error');
+        setAtsErrorMessage(lang === 'en' ? 'Failed to read PDF file. Make sure it is not scanned/image-only.' : 'পিডিএফ ফাইল পড়তে ব্যর্থ হয়েছে। নিশ্চিত করুন এটি স্ক্যান করা/শুধুমাত্র ছবি পিডিএফ নয়।');
+      }
+    } else if (file.name.endsWith('.txt')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setAtsResumeText(e.target?.result as string || '');
+      };
+      reader.onerror = () => {
+        setAtsErrorMessage(lang === 'en' ? 'Failed to read TXT file.' : 'টেক্সট ফাইল পড়তে ব্যর্থ হয়েছে।');
+      };
+      reader.readAsText(file);
+    } else {
+      setAtsErrorMessage(lang === 'en' ? 'Unsupported file format. Please upload .pdf, .docx, or .txt, or copy-paste text.' : 'অসমর্থিত ফাইল ফরম্যাট। অনুগ্রহ করে .pdf, .docx বা .txt ফাইল আপলোড করুন, অথবা টেক্সট কপি-পেস্ট করুন।');
+    }
   };
 
   // BD Essentials Handlers
@@ -987,46 +1269,46 @@ export default function Toolbox() {
 
           {activeTab === 'dev_tools' && (
             <div className="space-y-6">
-              <div className="flex flex-wrap space-x-2 border-b border-slate-900 pb-2 gap-y-1">
+              <div className="flex space-x-1 border-b border-slate-900 pb-2 overflow-x-auto scrollbar-none whitespace-nowrap">
                 <button
                   onClick={() => { setDevSubTab('qr'); setQrInput(''); setQrCodeUrl(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'qr' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                  className={`px-2 py-1 text-xs font-mono border ${devSubTab === 'qr' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   QR GENERATOR
                 </button>
                 <button
                   onClick={() => { setDevSubTab('json'); setJsonInput(''); setJsonOutput(''); setJsonError(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'json' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                  className={`px-2 py-1 text-xs font-mono border ${devSubTab === 'json' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   JSON FORMATTER
                 </button>
                 <button
                   onClick={() => { setDevSubTab('color'); setColorPalette([]); }}
-                  className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'color' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                  className={`px-2 py-1 text-xs font-mono border ${devSubTab === 'color' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   COLOR PICKER
                 </button>
                 <button
                   onClick={() => { setDevSubTab('diff'); setDiffA(''); setDiffB(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'diff' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                  className={`px-2 py-1 text-xs font-mono border ${devSubTab === 'diff' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   DIFF CHECKER
                 </button>
                 <button
                   onClick={() => { setDevSubTab('lorem'); setLoremOutput(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'lorem' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                  className={`px-2 py-1 text-xs font-mono border ${devSubTab === 'lorem' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   LOREM IPSUM
                 </button>
                 <button
                   onClick={() => { setDevSubTab('base64'); setTextInput(''); setTextResult(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'base64' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                  className={`px-2 py-1 text-xs font-mono border ${devSubTab === 'base64' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   BASE64
                 </button>
                 <button
                   onClick={() => { setDevSubTab('unicode'); setUnicodeInput(''); setUnicodeOutput(''); }}
-                  className={`px-3 py-1 text-xs font-mono border ${devSubTab === 'unicode' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                  className={`px-2 py-1 text-xs font-mono border ${devSubTab === 'unicode' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
                   {t('bd.sub_unicode')}
                 </button>
@@ -1902,6 +2184,12 @@ export default function Toolbox() {
               {/* PDF Subtabs */}
               <div className="flex space-x-2 border-b border-slate-900 pb-2 overflow-x-auto scrollbar-none whitespace-nowrap">
                 <button
+                  onClick={() => { setPdfSubTab('ats_checker'); setAtsResults(null); setAtsStatus('idle'); setAtsResumeText(''); setAtsJobDesc(''); setAtsErrorMessage(''); }}
+                  className={`px-3 py-1 text-xs font-mono border ${pdfSubTab === 'ats_checker' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                >
+                  {t('pdf.tab_ats_checker')}
+                </button>
+                <button
                   onClick={() => { setPdfSubTab('word_to_pdf'); setPdfFiles([]); setPdfStatus('idle'); setPdfPagesOrder([]); }}
                   className={`px-3 py-1 text-xs font-mono border ${pdfSubTab === 'word_to_pdf' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                 >
@@ -1934,32 +2222,34 @@ export default function Toolbox() {
               </div>
 
               {/* Upload Section */}
-              <div className="flex flex-col space-y-2">
-                <label className="text-xs font-mono text-slate-400">
-                  {pdfSubTab === 'jpg_to_pdf' ? t('pdf.select_images') : pdfSubTab === 'word_to_pdf' ? t('pdf.select_word_file') : (pdfSubTab === 'split' || pdfSubTab === 'organize') ? t('pdf.select_file') : t('pdf.select_files')}
-                </label>
-                <input
-                  type="file"
-                  multiple={pdfSubTab !== 'split' && pdfSubTab !== 'organize' && pdfSubTab !== 'word_to_pdf'}
-                  accept={pdfSubTab === 'jpg_to_pdf' ? 'image/jpeg,image/png,image/jpg' : pdfSubTab === 'word_to_pdf' ? '.docx' : 'application/pdf'}
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      const newFiles = Array.from(e.target.files);
-                      if (pdfSubTab === 'split' || pdfSubTab === 'organize' || pdfSubTab === 'word_to_pdf') {
-                        const selectedFile = newFiles[0];
-                        setPdfFiles([selectedFile]);
-                        if (pdfSubTab === 'organize') {
-                          loadPdfPagesCount(selectedFile);
+              {pdfSubTab !== 'ats_checker' && (
+                <div className="flex flex-col space-y-2">
+                  <label className="text-xs font-mono text-slate-400">
+                    {pdfSubTab === 'jpg_to_pdf' ? t('pdf.select_images') : pdfSubTab === 'word_to_pdf' ? t('pdf.select_word_file') : (pdfSubTab === 'split' || pdfSubTab === 'organize') ? t('pdf.select_file') : t('pdf.select_files')}
+                  </label>
+                  <input
+                    type="file"
+                    multiple={pdfSubTab !== 'split' && pdfSubTab !== 'organize' && pdfSubTab !== 'word_to_pdf'}
+                    accept={pdfSubTab === 'jpg_to_pdf' ? 'image/jpeg,image/png,image/jpg' : pdfSubTab === 'word_to_pdf' ? '.docx' : 'application/pdf'}
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        const newFiles = Array.from(e.target.files);
+                        if (pdfSubTab === 'split' || pdfSubTab === 'organize' || pdfSubTab === 'word_to_pdf') {
+                          const selectedFile = newFiles[0];
+                          setPdfFiles([selectedFile]);
+                          if (pdfSubTab === 'organize') {
+                            loadPdfPagesCount(selectedFile);
+                          }
+                        } else {
+                          setPdfFiles((prev) => [...prev, ...newFiles]);
                         }
-                      } else {
-                        setPdfFiles((prev) => [...prev, ...newFiles]);
+                        setPdfStatus('idle');
                       }
-                      setPdfStatus('idle');
-                    }
-                  }}
-                  className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-300 font-mono file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-mono file:bg-slate-900 file:text-slate-300 file:cursor-pointer hover:file:bg-slate-800"
-                />
-              </div>
+                    }}
+                    className="bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm text-slate-300 font-mono file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-mono file:bg-slate-900 file:text-slate-300 file:cursor-pointer hover:file:bg-slate-800"
+                  />
+                </div>
+              )}
 
               {/* Page Range input for Split */}
               {pdfSubTab === 'split' && (
@@ -2032,7 +2322,7 @@ export default function Toolbox() {
               )}
 
               {/* Uploaded File List */}
-              {pdfFiles.length > 0 && pdfSubTab !== 'organize' && (
+              {pdfFiles.length > 0 && pdfSubTab !== 'organize' && pdfSubTab !== 'ats_checker' && (
                 <div className="space-y-2">
                   <label className="text-xs font-mono text-slate-400">{t('pdf.label_files')}</label>
                   <div className="bg-slate-950/50 border border-slate-900 rounded divide-y divide-slate-900">
@@ -2073,7 +2363,7 @@ export default function Toolbox() {
               )}
 
               {/* Processing and Status UI */}
-              {pdfStatus !== 'idle' && (
+              {pdfStatus !== 'idle' && pdfSubTab !== 'ats_checker' && (
                 <div className={`p-3 rounded border font-mono text-xs ${pdfStatus === 'error' ? 'bg-red-500/10 border-red-500/30' : 'bg-cyan-500/10 border-cyan-500/30'}`}>
                   {pdfStatus === 'processing' && (
                     <div className="text-cyan-400 animate-pulse">
@@ -2094,60 +2384,584 @@ export default function Toolbox() {
               )}
 
               {/* Action Button */}
-              <div>
-                {pdfSubTab === 'merge' && (
-                  <button
-                    disabled={pdfStatus === 'processing' || pdfFiles.length < 2}
-                    onClick={handleMergePdfs}
-                    className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
-                  >
-                    {t('pdf.btn_merge')}
-                  </button>
-                )}
-                {pdfSubTab === 'split' && (
-                  <button
-                    disabled={pdfStatus === 'processing' || pdfFiles.length === 0}
-                    onClick={handleSplitPdf}
-                    className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
-                  >
-                    {t('pdf.btn_split')}
-                  </button>
-                )}
-                {pdfSubTab === 'jpg_to_pdf' && (
-                  <button
-                    disabled={pdfStatus === 'processing' || pdfFiles.length === 0}
-                    onClick={handleJpgToPdf}
-                    className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
-                  >
-                    {t('pdf.btn_convert')}
-                  </button>
-                )}
-                {pdfSubTab === 'organize' && (
-                  <button
-                    disabled={pdfStatus === 'processing' || pdfFiles.length === 0 || pdfPagesOrder.length === 0}
-                    onClick={handleOrganizePdf}
-                    className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
-                  >
-                    {t('pdf.btn_organize')}
-                  </button>
-                )}
-                {pdfSubTab === 'word_to_pdf' && (
-                  <button
-                    disabled={pdfStatus === 'processing' || pdfFiles.length === 0}
-                    onClick={handleWordToPdf}
-                    className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
-                  >
-                    {t('pdf.btn_convert_word')}
-                  </button>
-                )}
-              </div>
+              {pdfSubTab !== 'ats_checker' && (
+                <div>
+                  {pdfSubTab === 'merge' && (
+                    <button
+                      disabled={pdfStatus === 'processing' || pdfFiles.length < 2}
+                      onClick={handleMergePdfs}
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
+                    >
+                      {t('pdf.btn_merge')}
+                    </button>
+                  )}
+                  {pdfSubTab === 'split' && (
+                    <button
+                      disabled={pdfStatus === 'processing' || pdfFiles.length === 0}
+                      onClick={handleSplitPdf}
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
+                    >
+                      {t('pdf.btn_split')}
+                    </button>
+                  )}
+                  {pdfSubTab === 'jpg_to_pdf' && (
+                    <button
+                      disabled={pdfStatus === 'processing' || pdfFiles.length === 0}
+                      onClick={handleJpgToPdf}
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
+                    >
+                      {t('pdf.btn_convert')}
+                    </button>
+                  )}
+                  {pdfSubTab === 'organize' && (
+                    <button
+                      disabled={pdfStatus === 'processing' || pdfFiles.length === 0 || pdfPagesOrder.length === 0}
+                      onClick={handleOrganizePdf}
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
+                    >
+                      {t('pdf.btn_organize')}
+                    </button>
+                  )}
+                  {pdfSubTab === 'word_to_pdf' && (
+                    <button
+                      disabled={pdfStatus === 'processing' || pdfFiles.length === 0}
+                      onClick={handleWordToPdf}
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 disabled:opacity-40 disabled:hover:bg-cyan-500/10 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full"
+                    >
+                      {t('pdf.btn_convert_word')}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* ATS Resume Checker UI */}
+              {pdfSubTab === 'ats_checker' && (
+                <div className="space-y-6 animate-[fadeIn_0.3s_ease-out]">
+                  {/* Explanation header */}
+                  <div className="bg-slate-900/30 border border-slate-900 rounded p-4">
+                    <h3 className="text-sm font-bold text-white font-mono uppercase mb-2">⚡ {lang === 'en' ? 'ATS RESUME OPTIMIZER' : 'এটিএস রিজিউম অপ্টিমাইজার'}</h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      {lang === 'en' 
+                        ? 'Compare your resume against a target job description client-side. We extract key skills, identify missing industry keywords, audit standard formatting sections, check for weak action verbs or cliches, and provide a readability score. Zero server uploads.' 
+                        : 'ক্লায়েন্ট-সাইডে আপনার রিজিউম ও জব ডেসক্রিপশন তুলনা করুন। আমরা মূল দক্ষতা বের করব, অনুপস্থিত কীওয়ার্ড চিহ্নিত করব, সাধারণ ফরম্যাটিং নিরীক্ষা করব এবং একটি রিডাবিলিটি স্কোর দেব। কোনো ফাইল সার্ভারে আপলোড করা হয় না।'}
+                    </p>
+                  </div>
+
+                  {/* Inputs split view */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Resume Input */}
+                    <div className="flex flex-col space-y-2">
+                      <div className="flex justify-between items-center">
+                        <label className="text-xs font-mono text-slate-300 font-bold uppercase">{lang === 'en' ? '1. YOUR RESUME' : '১. আপনার রিজিউম'}</label>
+                        {/* File Upload Option */}
+                        <label className="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 cursor-pointer flex items-center gap-1">
+                          📁 {lang === 'en' ? 'Upload (.pdf/.docx/.txt)' : 'ফাইল আপলোড (.pdf/.docx/.txt)'}
+                          <input 
+                            type="file" 
+                            accept=".pdf,.docx,.txt" 
+                            className="hidden" 
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                handleAtsFileUpload(e.target.files[0]);
+                              }
+                            }} 
+                          />
+                        </label>
+                      </div>
+                      <textarea
+                        value={atsResumeText}
+                        onChange={(e) => setAtsResumeText(e.target.value)}
+                        placeholder={lang === 'en' ? 'Paste your resume text here, or click "Upload" to read from a file...' : 'এখানে আপনার রিজিউমের টেক্সট পেস্ট করুন, অথবা ফাইল থেকে পড়তে "ফাইল আপলোড" এ ক্লিক করুন...'}
+                        rows={12}
+                        className="bg-slate-950 border border-slate-800 rounded p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 font-mono resize-y w-full leading-relaxed"
+                      />
+                    </div>
+
+                    {/* Job Description Input */}
+                    <div className="flex flex-col space-y-2">
+                      <label className="text-xs font-mono text-slate-300 font-bold uppercase">{lang === 'en' ? '2. TARGET JOB DESCRIPTION' : '২. জব ডেসক্রিপশন'}</label>
+                      <textarea
+                        value={atsJobDesc}
+                        onChange={(e) => setAtsJobDesc(e.target.value)}
+                        placeholder={lang === 'en' ? 'Paste the full job description or list of requirements here...' : 'এখানে সম্পূর্ণ জব ডেসক্রিপশন বা প্রয়োজনীয় যোগ্যতার তালিকা পেস্ট করুন...'}
+                        rows={12}
+                        className="bg-slate-950 border border-slate-800 rounded p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-cyan-400/50 font-mono resize-y w-full leading-relaxed"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Processing Status / Error Messages */}
+                  {atsErrorMessage && (
+                    <div className="p-3 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs font-mono">
+                      ⚠ {atsErrorMessage}
+                    </div>
+                  )}
+
+                  {atsStatus === 'processing' && (
+                    <div className="p-6 bg-slate-950/80 border border-slate-900 rounded-lg max-w-lg mx-auto space-y-6 font-mono shadow-[0_0_24px_rgba(0,0,0,0.5)]">
+                      <div className="flex items-center justify-between border-b border-slate-900 pb-3">
+                        <span className="text-sm font-bold text-white uppercase">{lang === 'en' ? 'ATS ANALYSIS ENGINE' : 'এটিএস অ্যানালিসিস ইঞ্জিন'}</span>
+                        <span className="text-[10px] text-cyan-400 animate-pulse">[ {lang === 'en' ? 'RUNNING' : 'চলমান'} ]</span>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {/* Step 1 */}
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] border ${
+                              atsLoadingStep > 1 ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400' :
+                              atsLoadingStep === 1 ? 'border-cyan-400 text-cyan-400 animate-pulse' : 'border-slate-800 text-slate-650'
+                            }`}>
+                              {atsLoadingStep > 1 ? '✓' : '●'}
+                            </div>
+                            <span className={`transition-colors duration-300 ${atsLoadingStep >= 1 ? 'text-slate-200' : 'text-slate-500'}`}>
+                              {lang === 'en' ? 'Parsing your resume' : 'রিজিউম পার্স করা হচ্ছে'}
+                            </span>
+                          </div>
+                          <span className="font-bold font-mono">
+                            {atsLoadingStep > 1 && <span className="text-emerald-400">DONE</span>}
+                            {atsLoadingStep === 1 && <span className="text-cyan-400 animate-pulse">ACTIVE</span>}
+                            {atsLoadingStep < 1 && <span className="text-slate-700">PENDING</span>}
+                          </span>
+                        </div>
+
+                        {/* Step 2 */}
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] border ${
+                              atsLoadingStep > 2 ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400' :
+                              atsLoadingStep === 2 ? 'border-cyan-400 text-cyan-400 animate-pulse' : 'border-slate-800 text-slate-650'
+                            }`}>
+                              {atsLoadingStep > 2 ? '✓' : '●'}
+                            </div>
+                            <span className={`transition-colors duration-300 ${atsLoadingStep >= 2 ? 'text-slate-200' : 'text-slate-500'}`}>
+                              {lang === 'en' ? 'Analyzing your experience' : 'অভিজ্ঞতা বিশ্লেষণ করা হচ্ছে'}
+                            </span>
+                          </div>
+                          <span className="font-bold font-mono">
+                            {atsLoadingStep > 2 && <span className="text-emerald-400">DONE</span>}
+                            {atsLoadingStep === 2 && <span className="text-cyan-400 animate-pulse">ACTIVE</span>}
+                            {atsLoadingStep < 2 && <span className="text-slate-700">PENDING</span>}
+                          </span>
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] border ${
+                              atsLoadingStep > 3 ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400' :
+                              atsLoadingStep === 3 ? 'border-cyan-400 text-cyan-400 animate-pulse' : 'border-slate-800 text-slate-650'
+                            }`}>
+                              {atsLoadingStep > 3 ? '✓' : '●'}
+                            </div>
+                            <span className={`transition-colors duration-300 ${atsLoadingStep >= 3 ? 'text-slate-200' : 'text-slate-500'}`}>
+                              {lang === 'en' ? 'Extracting your skills' : 'দক্ষতা এক্সট্র্যাক্ট করা হচ্ছে'}
+                            </span>
+                          </div>
+                          <span className="font-bold font-mono">
+                            {atsLoadingStep > 3 && <span className="text-emerald-400">DONE</span>}
+                            {atsLoadingStep === 3 && <span className="text-cyan-400 animate-pulse">ACTIVE</span>}
+                            {atsLoadingStep < 3 && <span className="text-slate-700">PENDING</span>}
+                          </span>
+                        </div>
+
+                        {/* Step 4 */}
+                        <div className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] border ${
+                              atsLoadingStep > 4 ? 'bg-cyan-500/20 border-cyan-400 text-cyan-400' :
+                              atsLoadingStep === 4 ? 'border-cyan-400 text-cyan-400 animate-pulse' : 'border-slate-800 text-slate-650'
+                            }`}>
+                              {atsLoadingStep > 4 ? '✓' : '●'}
+                            </div>
+                            <span className={`transition-colors duration-300 ${atsLoadingStep >= 4 ? 'text-slate-200' : 'text-slate-500'}`}>
+                              {lang === 'en' ? 'Generating recommendations' : 'সুপারিশ তৈরি করা হচ্ছে'}
+                            </span>
+                          </div>
+                          <span className="font-bold font-mono">
+                            {atsLoadingStep > 4 && <span className="text-emerald-400">DONE</span>}
+                            {atsLoadingStep === 4 && <span className="text-cyan-400 animate-pulse">ACTIVE</span>}
+                            {atsLoadingStep < 4 && <span className="text-slate-700">PENDING</span>}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Trigger */}
+                  {atsStatus !== 'processing' && (
+                    <button
+                      onClick={handleAnalyzeAts}
+                      className="bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-400/50 text-cyan-400 text-xs font-mono px-5 py-2.5 rounded transition-all w-full tracking-wider uppercase font-bold"
+                    >
+                      🔍 {lang === 'en' ? 'RUN ATS RESUME CHECK' : 'এটিএস রিজিউম চেক শুরু করুন'}
+                    </button>
+                  )}
+
+                  {/* Results Section */}
+                  {atsStatus === 'success' && atsResults && (
+                    <div className="space-y-6 mt-6 animate-[fadeIn_0.4s_ease-out] border-t border-slate-900 pt-6">
+                      
+                      {/* Calculate Dynamic Issues */}
+                      {(() => {
+                        const contentIssuesList = [
+                          { name: lang === 'en' ? 'ATS Parse Rate' : 'এটিএস পার্স রেট', ok: atsResults.score >= 55, desc: lang === 'en' ? 'Measures overall text readability by ATS parsers.' : 'এটিএস রিডার দ্বারা পড়ার যোগ্যতা নির্দেশ করে।', count: atsResults.score >= 55 ? 0 : 1 },
+                          { name: lang === 'en' ? 'Quantifying Impact' : 'ইমপ্যাক্ট বা পরিমাপযোগ্য ফলাফল', ok: atsResults.checks.experience && (atsResults.subScores?.content >= 60), desc: lang === 'en' ? 'Use strong action verbs and metrics in your experiences.' : 'আপনার অভিজ্ঞতায় শক্তিশালী অ্যাকশন ভার্ব এবং সংখ্যাসূচক বিবরণী।', count: atsResults.subScores?.content >= 60 ? 0 : 1 },
+                          { name: lang === 'en' ? 'Spelling & Grammar (Buzzwords)' : 'শব্দ ব্যবহার (বাজওয়ার্ড)', ok: atsResults.subScores?.content >= 80, desc: lang === 'en' ? 'Avoid cliches, buzzwords, and repetitive text.' : 'অনর্থক অলংকারিক বাজওয়ার্ড ও পুনরাবৃত্তি পরিহার করা হয়েছে কি না।', count: atsResults.subScores?.content >= 80 ? 0 : 1 },
+                        ];
+
+                        const sectionIssuesList = [
+                          { name: lang === 'en' ? 'Contact Details' : 'যোগাযোগের তথ্য', ok: atsResults.checks.contact, desc: lang === 'en' ? 'Presence of email, phone, and links.' : 'ইমেইল, ফোন এবং প্রোফাইল লিঙ্ক পাওয়া গেছে কি না।', count: atsResults.checks.contact ? 0 : 1 },
+                          { name: lang === 'en' ? 'Experience Section' : 'অভিজ্ঞতা বিবরণী', ok: atsResults.checks.experience, desc: lang === 'en' ? 'Professional experience headers parsed successfully.' : 'পেশাগত অভিজ্ঞতা বিষয়ক হেডারের উপস্থিতি।', count: atsResults.checks.experience ? 0 : 1 },
+                          { name: lang === 'en' ? 'Education Section' : 'শিক্ষা বিভাগ', ok: atsResults.checks.education, desc: lang === 'en' ? 'Academic degree headers found.' : 'একাডেমিক যোগ্যতা ও ডিগ্রির বিবরণী।', count: atsResults.checks.education ? 0 : 1 },
+                          { name: lang === 'en' ? 'Skills List' : 'দক্ষতা তালিকা', ok: atsResults.checks.skills, desc: lang === 'en' ? 'Technical skills section detected.' : 'প্রযুক্তিগত দক্ষতা ও দক্ষতার তালিকা।', count: atsResults.checks.skills ? 0 : 1 },
+                        ];
+
+                        const essentialsIssuesList = [
+                          { name: lang === 'en' ? 'Layout Structure' : 'লেআউট ও বিন্যাস', ok: atsResults.checks.experience && atsResults.checks.education, desc: lang === 'en' ? 'Standard headers and parsing compatibility.' : 'স্ট্যান্ডার্ড হেডার ও রিডাবিলিটি কম্প্যাটিবিলিটি।', count: (atsResults.checks.experience && atsResults.checks.education) ? 0 : 1 },
+                          { name: lang === 'en' ? 'File Format' : 'ফাইল ফরম্যাট', ok: true, desc: lang === 'en' ? 'Parsed document compatibility (PDF/DOCX).' : 'প্রসেসকৃত ডকুমেন্টের এটিএস বান্ধব ফরম্যাট।', count: 0 },
+                        ];
+
+                        const tailoringIssuesList = [
+                          { name: lang === 'en' ? 'Keyword Match' : 'কীওয়ার্ড ম্যাচিং রেট', ok: atsResults.subScores?.tailoring >= 70, desc: lang === 'en' ? 'Matching target keywords from Job Description.' : 'জব ডেসক্রিপশন থেকে টার্গেট কীওয়ার্ডের মিলের হার।', count: atsResults.subScores?.tailoring >= 70 ? 0 : 1 },
+                          { name: lang === 'en' ? 'Missing Core Requirements' : 'অনুপস্থিত মূল যোগ্যতাসমূহ', ok: atsResults.subScores?.tailoring >= 50, desc: lang === 'en' ? 'Missing keywords count check.' : 'অনুপস্থিত মূল কীওয়ার্ডের সংখ্যা যাচাই।', count: atsResults.subScores?.tailoring >= 50 ? 0 : 1 },
+                        ];
+
+                        const totalIssues = 
+                          contentIssuesList.filter(i => !i.ok).length +
+                          sectionIssuesList.filter(i => !i.ok).length +
+                          essentialsIssuesList.filter(i => !i.ok).length +
+                          tailoringIssuesList.filter(i => !i.ok).length;
+
+                        return (
+                          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start font-mono">
+                            
+                            {/* Left Sidebar (Scorecard + Category List) */}
+                            <div className="lg:col-span-4 bg-slate-950/60 border border-slate-800 rounded-lg p-5 space-y-5">
+                              {/* Overall score */}
+                              <div className="text-center pb-4 border-b border-slate-900">
+                                <span className="text-[10px] uppercase text-slate-500 tracking-widest block mb-1">
+                                  {lang === 'en' ? 'Your Score' : 'আপনার স্কোর'}
+                                </span>
+                                <div className={`text-3xl font-bold font-mono my-2 ${
+                                  atsResults.score >= 75 ? 'text-emerald-400' :
+                                  atsResults.score >= 50 ? 'text-yellow-500' : 'text-red-400'
+                                }`}>
+                                  {atsResults.score}/100
+                                </div>
+                                <span className="text-xs text-slate-400">
+                                  {totalIssues === 0 
+                                    ? (lang === 'en' ? 'No issues found!' : 'কোনো সমস্যা পাওয়া যায়নি!') 
+                                    : (lang === 'en' ? `${totalIssues} Issues` : `${totalIssues}টি সমস্যা`)}
+                                </span>
+                              </div>
+
+                              {/* Accordion Sections list */}
+                              <div className="space-y-4">
+                                
+                                {/* CONTENT Section */}
+                                <div className="space-y-1.5">
+                                  <button
+                                    onClick={() => setAtsActiveResultTab('content')}
+                                    className={`w-full flex items-center justify-between p-2 rounded border text-left text-xs font-bold transition-all ${
+                                      atsActiveResultTab === 'content' 
+                                        ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' 
+                                        : 'bg-transparent border-transparent text-slate-400 hover:text-slate-200'
+                                    }`}
+                                  >
+                                    <span>CONTENT</span>
+                                    <span className="bg-slate-900 text-slate-300 text-[10px] px-2 py-0.5 rounded font-bold">
+                                      {atsResults.subScores?.content}%
+                                    </span>
+                                  </button>
+                                  {atsActiveResultTab === 'content' && (
+                                    <div className="pl-2 space-y-1">
+                                      {contentIssuesList.map((item, idx) => (
+                                        <div key={idx} className="flex items-center gap-1.5 text-[10px] py-1 text-slate-400">
+                                          <span>{item.ok ? '✓' : '✗'}</span>
+                                          <span className={item.ok ? 'text-emerald-400' : 'text-yellow-500'}>{item.name}</span>
+                                          <span className="ml-auto text-[8px] bg-slate-900 text-slate-500 px-1 rounded">
+                                            {item.ok ? 'No issues' : '1 issue'}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* SECTION Section */}
+                                <div className="space-y-1.5">
+                                  <button
+                                    onClick={() => setAtsActiveResultTab('section')}
+                                    className={`w-full flex items-center justify-between p-2 rounded border text-left text-xs font-bold transition-all ${
+                                      atsActiveResultTab === 'section' 
+                                        ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' 
+                                        : 'bg-transparent border-transparent text-slate-400 hover:text-slate-200'
+                                    }`}
+                                  >
+                                    <span>SECTION</span>
+                                    <span className="bg-slate-900 text-slate-300 text-[10px] px-2 py-0.5 rounded font-bold">
+                                      {atsResults.subScores?.section}%
+                                    </span>
+                                  </button>
+                                  {atsActiveResultTab === 'section' && (
+                                    <div className="pl-2 space-y-1">
+                                      {sectionIssuesList.map((item, idx) => (
+                                        <div key={idx} className="flex items-center gap-1.5 text-[10px] py-1 text-slate-400">
+                                          <span>{item.ok ? '✓' : '✗'}</span>
+                                          <span className={item.ok ? 'text-emerald-400' : 'text-yellow-500'}>{item.name}</span>
+                                          <span className="ml-auto text-[8px] bg-slate-900 text-slate-500 px-1 rounded">
+                                            {item.ok ? 'No issues' : '1 issue'}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* ATS ESSENTIALS Section */}
+                                <div className="space-y-1.5">
+                                  <button
+                                    onClick={() => setAtsActiveResultTab('essentials')}
+                                    className={`w-full flex items-center justify-between p-2 rounded border text-left text-xs font-bold transition-all ${
+                                      atsActiveResultTab === 'essentials' 
+                                        ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' 
+                                        : 'bg-transparent border-transparent text-slate-400 hover:text-slate-200'
+                                    }`}
+                                  >
+                                    <span>ATS ESSENTIALS</span>
+                                    <span className="bg-slate-900 text-slate-300 text-[10px] px-2 py-0.5 rounded font-bold">
+                                      {atsResults.subScores?.essentials}%
+                                    </span>
+                                  </button>
+                                  {atsActiveResultTab === 'essentials' && (
+                                    <div className="pl-2 space-y-1">
+                                      {essentialsIssuesList.map((item, idx) => (
+                                        <div key={idx} className="flex items-center gap-1.5 text-[10px] py-1 text-slate-400">
+                                          <span>{item.ok ? '✓' : '✗'}</span>
+                                          <span className={item.ok ? 'text-emerald-400' : 'text-yellow-500'}>{item.name}</span>
+                                          <span className="ml-auto text-[8px] bg-slate-900 text-slate-500 px-1 rounded">
+                                            {item.ok ? 'No issues' : '1 issue'}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* TAILORING Section */}
+                                <div className="space-y-1.5">
+                                  <button
+                                    onClick={() => setAtsActiveResultTab('tailoring')}
+                                    className={`w-full flex items-center justify-between p-2 rounded border text-left text-xs font-bold transition-all ${
+                                      atsActiveResultTab === 'tailoring' 
+                                        ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' 
+                                        : 'bg-transparent border-transparent text-slate-400 hover:text-slate-200'
+                                    }`}
+                                  >
+                                    <span>TAILORING</span>
+                                    <span className="bg-slate-900 text-slate-300 text-[10px] px-2 py-0.5 rounded font-bold">
+                                      {atsResults.subScores?.tailoring}%
+                                    </span>
+                                  </button>
+                                  {atsActiveResultTab === 'tailoring' && (
+                                    <div className="pl-2 space-y-1">
+                                      {tailoringIssuesList.map((item, idx) => (
+                                        <div key={idx} className="flex items-center gap-1.5 text-[10px] py-1 text-slate-400">
+                                          <span>{item.ok ? '✓' : '✗'}</span>
+                                          <span className={item.ok ? 'text-emerald-400' : 'text-yellow-500'}>{item.name}</span>
+                                          <span className="ml-auto text-[8px] bg-slate-900 text-slate-500 px-1 rounded">
+                                            {item.ok ? 'No issues' : '1 issue'}
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+
+                              </div>
+
+                              {/* Action export report button */}
+                              <button
+                                onClick={() => window.print()}
+                                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 rounded text-center tracking-wider transition-colors mt-2"
+                              >
+                                {lang === 'en' ? 'PRINT FULL REPORT 🖨' : 'সম্পূর্ণ রিপোর্ট প্রিন্ট করুন 🖨'}
+                              </button>
+                            </div>
+
+                            {/* Right Pane (Audit details card matches right column UI) */}
+                            <div className="lg:col-span-8 bg-slate-950/40 border border-slate-900 rounded-lg p-5 space-y-6">
+                              
+                              {/* Category Header */}
+                              <div className="flex justify-between items-center border-b border-slate-900 pb-3">
+                                <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
+                                  📁 {atsActiveResultTab} REPORT
+                                </h3>
+                                <span className="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded font-bold">
+                                  {atsActiveResultTab === 'content' && (contentIssuesList.filter(i => !i.ok).length === 0 ? 'No issues found' : `${contentIssuesList.filter(i => !i.ok).length} Issues`)}
+                                  {atsActiveResultTab === 'section' && (sectionIssuesList.filter(i => !i.ok).length === 0 ? 'No issues found' : `${sectionIssuesList.filter(i => !i.ok).length} Issues`)}
+                                  {atsActiveResultTab === 'essentials' && (essentialsIssuesList.filter(i => !i.ok).length === 0 ? 'No issues found' : `${essentialsIssuesList.filter(i => !i.ok).length} Issues`)}
+                                  {atsActiveResultTab === 'tailoring' && (tailoringIssuesList.filter(i => !i.ok).length === 0 ? 'No issues found' : `${tailoringIssuesList.filter(i => !i.ok).length} Issues`)}
+                                </span>
+                              </div>
+
+                              {/* CONTENT DETAILS CARDS */}
+                              {atsActiveResultTab === 'content' && (
+                                <div className="space-y-4">
+                                  {/* Parse Rate Card */}
+                                  <div className="bg-slate-950/60 border border-slate-800 rounded p-4 space-y-3">
+                                    <div className="flex justify-between text-xs font-bold text-slate-200">
+                                      <span>ATS PARSE RATE</span>
+                                      <span className="text-emerald-400">PASSED</span>
+                                    </div>
+                                    <p className="text-xs text-slate-400 leading-relaxed">
+                                      {lang === 'en' 
+                                        ? 'Employers and recruiters use an Applicant Tracking System (ATS) to scan job applications at scale. A high parse rate means the ATS reads your experiences and skills clearly.' 
+                                        : 'নিয়োগকারীরা রিজিউম স্ক্যান করতে এটিএস ব্যবহার করে। উচ্চ পার্স রেট মানে আপনার দক্ষতা এটিএস সহজে পড়তে পারছে।'}
+                                    </p>
+                                    <div className="pt-2 border-t border-slate-900">
+                                      <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden relative">
+                                        <div style={{ width: `${atsResults.score}%` }} className="bg-emerald-500 h-full rounded" />
+                                      </div>
+                                      <div className="text-[10px] text-center text-slate-300 mt-2">
+                                        {lang === 'en' 
+                                          ? `Excellent! We parsed ${atsResults.score}% of your resume text successfully.` 
+                                          : `চমৎকার! আপনার রিজিউমের ${atsResults.score}% তথ্য এটিএস সঠিকভাবে পড়তে পেরেছে।`}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Quantifying Impact Card */}
+                                  <div className="bg-slate-950/60 border border-slate-800 rounded p-4 space-y-3">
+                                    <div className="flex justify-between text-xs font-bold text-slate-200">
+                                      <span>QUANTIFYING IMPACT</span>
+                                      <span className={atsResults.subScores?.content >= 60 ? 'text-emerald-400' : 'text-yellow-500'}>
+                                        {atsResults.subScores?.content >= 60 ? 'PASSED' : '1 ISSUE FOUND'}
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-slate-400 leading-relaxed">
+                                      {lang === 'en'
+                                        ? 'Strong professional resumes use quantifiable results and specific action verbs (e.g. "Automated", "Led", "Optimized") rather than passive descriptions.'
+                                        : 'একটি পেশাদার রিজিউমে পরিমাপযোগ্য ফলাফল এবং শক্তিশালী কাজের বিবরণী (যেমন: "Automated", "Led", "Optimized") উল্লেখ করা উচিত।'}
+                                    </p>
+                                    {atsResults.subScores?.content < 60 && (
+                                      <div className="text-[10px] bg-yellow-950/20 border border-yellow-900/30 p-2 rounded text-yellow-500 leading-relaxed">
+                                        💡 {lang === 'en' ? 'Recommendation: Try to include metrics (percentages, values) or start experience bullets with strong action words.' : 'পরামর্শ: আপনার কাজের বিবরণী শক্তিশালী অ্যাকশন ভার্ব ও কাজের সংখ্যা দিয়ে শুরু করুন।'}
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Repetition Card */}
+                                  <div className="bg-slate-950/60 border border-slate-800 rounded p-4 space-y-3">
+                                    <div className="flex justify-between text-xs font-bold text-slate-200">
+                                      <span>REPETITION & BUZZWORDS</span>
+                                      <span className="text-emerald-400">PASSED</span>
+                                    </div>
+                                    <p className="text-xs text-slate-400 leading-relaxed">
+                                      {lang === 'en'
+                                        ? 'Avoiding generic buzzwords (e.g., "detail-oriented", "synergy", "hardworking") keeps your resume professional and focused on achievements.'
+                                        : 'অনর্থক বাজওয়ার্ড পরিহার করা হলে আপনার রিজিউম আরও বেশি পেশাদার এবং অর্জনমুখী দেখায়।'}
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* SECTION DETAILS CARDS */}
+                              {atsActiveResultTab === 'section' && (
+                                <div className="space-y-4">
+                                  {sectionIssuesList.map((sec, idx) => (
+                                    <div key={idx} className="bg-slate-950/60 border border-slate-800 rounded p-4 space-y-2">
+                                      <div className="flex justify-between text-xs font-bold text-slate-200">
+                                        <span>{sec.name.toUpperCase()}</span>
+                                        <span className={sec.ok ? 'text-emerald-400' : 'text-red-400'}>
+                                          {sec.ok ? '✓ PASSED' : '✗ MISSING'}
+                                        </span>
+                                      </div>
+                                      <p className="text-xs text-slate-400 leading-relaxed">{sec.desc}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* ESSENTIALS DETAILS CARDS */}
+                              {atsActiveResultTab === 'essentials' && (
+                                <div className="space-y-4">
+                                  {essentialsIssuesList.map((sec, idx) => (
+                                    <div key={idx} className="bg-slate-950/60 border border-slate-800 rounded p-4 space-y-2">
+                                      <div className="flex justify-between text-xs font-bold text-slate-200">
+                                        <span>{sec.name.toUpperCase()}</span>
+                                        <span className={sec.ok ? 'text-emerald-400' : 'text-red-400'}>
+                                          {sec.ok ? '✓ PASSED' : '✗ ISSUE'}
+                                        </span>
+                                      </div>
+                                      <p className="text-xs text-slate-400 leading-relaxed">{sec.desc}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* TAILORING DETAILS CARDS */}
+                              {atsActiveResultTab === 'tailoring' && (
+                                <div className="space-y-4">
+                                  {/* Match score card */}
+                                  <div className="bg-slate-950/60 border border-slate-800 rounded p-4 space-y-3">
+                                    <div className="flex justify-between text-xs font-bold text-slate-200">
+                                      <span>JOB MATCH TAILORING</span>
+                                      <span className={atsResults.subScores?.tailoring >= 70 ? 'text-emerald-400' : 'text-yellow-500'}>
+                                        {atsResults.subScores?.tailoring}% MATCH
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-slate-400 leading-relaxed">
+                                      {lang === 'en' 
+                                        ? 'Evaluating parsed words against target skills and terms found in your Job Description.'
+                                        : 'আপনার রিজিউমের সাথে জব ডেসক্রিপশনে থাকা কীওয়ার্ডের ম্যাচিং রেট যাচাই।'}
+                                    </p>
+                                  </div>
+
+                                  {/* Keywords lists breakdown */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                                    <div className="bg-slate-950/50 border border-slate-900 rounded p-3 space-y-2">
+                                      <div className="text-xs font-bold text-emerald-400">✓ FOUND KEYWORDS</div>
+                                      <div className="flex flex-wrap gap-1">
+                                        {atsResults.keywords.found.slice(0, 15).map((kw: string) => (
+                                          <span key={kw} className="bg-emerald-950/20 border border-emerald-900/40 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded">
+                                            {kw}
+                                          </span>
+                                        ))}
+                                        {atsResults.keywords.found.length > 15 && <span className="text-[9px] text-slate-500">+{atsResults.keywords.found.length - 15} more</span>}
+                                      </div>
+                                    </div>
+                                    <div className="bg-slate-950/50 border border-slate-900 rounded p-3 space-y-2">
+                                      <div className="text-xs font-bold text-yellow-500">⚠ MISSING TERMS</div>
+                                      <div className="flex flex-wrap gap-1">
+                                        {atsResults.keywords.missing.slice(0, 15).map((kw: string) => (
+                                          <span key={kw} className="bg-yellow-950/20 border border-yellow-900/40 text-yellow-500 text-[9px] px-1.5 py-0.5 rounded">
+                                            {kw}
+                                          </span>
+                                        ))}
+                                        {atsResults.keywords.missing.length > 15 && <span className="text-[9px] text-slate-500">+{atsResults.keywords.missing.length - 15} more</span>}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
           {activeTab === 'security' && (
             <div className="space-y-6">
               {/* Security Subtabs */}
-              <div className="flex flex-wrap space-x-2 border-b border-slate-900 pb-2 gap-y-1">
+              <div className="flex space-x-2 border-b border-slate-900 pb-2 overflow-x-auto scrollbar-none whitespace-nowrap">
                 <button
                   onClick={() => { setSecuritySubTab('ip'); setIpInput(''); setIpDetails(null); }}
                   className={`px-3 py-1 text-xs font-mono border ${securitySubTab === 'ip' ? 'bg-cyan-500/10 border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
@@ -2496,13 +3310,22 @@ export default function Toolbox() {
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950/80 py-4 px-6 text-sm font-mono mt-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA // SYS_OPS. {t('footer.copyright')}</div>
+          <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA. {t('footer.copyright')}</div>
           <div className="flex space-x-6 text-xs">
-            <a href="https://www.linkedin.com/in/hrana36/" className="text-slate-400 hover:text-white">LinkedIn</a>
-            <a href="https://github.com/hrana36" className="text-slate-400 hover:text-white">GitHub</a>
+            <a href="https://www.linkedin.com/in/hrana36/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">LinkedIn</a>
+            <a href="https://github.com/hrana36" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">GitHub</a>
+            <a href="https://drive.google.com/drive/folders/1B5yzng9PwpBvF2d7s9lpbXqcVRZ3gGPn?usp=sharing" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">{t('footer.download_cv')}</a>
           </div>
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function Toolbox() {
+  return (
+    <Suspense fallback={null}>
+      <ToolboxContent />
+    </Suspense>
   );
 }

@@ -16,7 +16,7 @@
   "home": {
     "title": "Systems & Security Operations Center",
     "description": "Enterprise systems administration, cyber security engineering, endpoint compliance auditing, and proactive infrastructure monitoring.",
-    "hero_sub": "Initializing secure connection to sys_ops console... STATUS: OK.",
+    "hero_sub": "Establishing encrypted link to SecOps Center... Nodes online. STATUS: NOMINAL.",
     "card_port_title": "Interactive Console",
     "card_port_desc": "Run active command queries on systems, experience logs, and verified credentials.",
     "card_about_title": "Personnel Dossier",
@@ -49,11 +49,12 @@
   "about": {
     "title": "Personnel Security Dossier",
     "section_profile": "Professional Profile",
-    "profile_desc": "Highly experienced and certified IT professional specializing in System Administration, Cyber Security principles, and Infrastructure Management. Proven expertise in configuring, maintaining, and supporting Microsoft-centric environments (Windows Server, Active Directory, Office 365). Focused on endpoint security (AV/EDR), security awareness, system patching, and leveraging RMM/PSA tools for proactive support and compliance. Certified as an Endpoint Administrator Associate (MD-102) and Azure Administrator Associate (AZ-104).",
+    "profile_desc": "Highly experienced and certified IT professional specializing in System Administration, Cyber Security principles, and Infrastructure Management. Proven expertise in configuring, maintaining, and supporting Microsoft-centric environments (Windows Server, Active Directory, Office 365). Focused on endpoint security (AV/EDR), security awareness, system patching, and leveraging RMM/PSA tools for proactive support and compliance. Active verified certification: Microsoft Certified: Azure Administrator Associate (AZ-104). Previous credentials include Microsoft 365 Certified: Endpoint Administrator Associate (MD-102), Microsoft Cybersecurity Analyst Specialization, Google IT Support Specialization, and Python 3 Programming Specialization.",
     "section_mission": "Ops Mission",
     "mission_desc": "To secure, stabilize, and monitor enterprise infrastructure, minimizing threat surfaces and maximizing operational uptime through disciplined incident management and endpoint compliance.",
     "section_credentials": "Verified Credentials",
     "view_portfolio": "Launch Terminal",
+    "launch_lab": "Launch Lab",
     "tab_title": "Rana | Personnel Dossier"
   },
   "faq": {
@@ -63,11 +64,21 @@
     "question2": "How do you handle remote operations and ticketing SLAs?",
     "answer2": "I leverage enterprise RMM/PSA tools (Datto RMM, Autotask PSA, Ninja RMM, ConnectWise Manage) for remote patching, security auditing, automated alert responses, and incident resolution within strict Service Level Agreements.",
     "question3": "What EDR/AV security suites do you deploy and monitor?",
-    "answer3": "I deploy and manage advanced Endpoint Detection and Response (EDR) agents, including SentinelOne, Bitdefender, Datto AV/EDR, and Acronis Cyber Protect to secure enterprise nodes.",
+    "answer3": "I deploy and manage advanced Endpoint Detection and Response (EDR) agents, including SentinelOne, Bitdefender, Datto AV & EDR, and Acronis Cyber Protect to secure enterprise nodes.",
     "question4": "Are you available for international remote contracts?",
     "answer4": "Yes, I am currently working remotely from Dhaka, Bangladesh for Sydney, Australia-based MSPs, and support global operations in USA (Texas) and Australian regions.",
     "question5": "What active certifications do you hold?",
-    "answer5": "I hold active verified certifications: Microsoft 365 Certified: Endpoint Administrator Associate (MD-102), Microsoft Certified: Azure Administrator Associate (AZ-104), and Google IT Support Professional.",
+    "answer5": "I hold active verified certification: Microsoft Certified: Azure Administrator Associate (AZ-104). Previous certifications and specializations include Microsoft 365 Certified: Endpoint Administrator Associate (MD-102), Microsoft Cybersecurity Analyst Specialization, Google IT Support Specialization, and Python 3 Programming Specialization.",
+    "question6": "How do you implement and monitor Active Directory Group Policies (GPOs) for enterprise security?",
+    "answer6": "I implement GPOs following security frameworks (e.g., CIS benchmarks), configuring policies like restricting local admin rights, enabling Windows Defender Firewall settings, disabling legacy LLMNR/NetBIOS protocols, and securing Kerberos parameters.",
+    "question7": "What is your experience with Microsoft 365 security and Entra ID administration?",
+    "answer7": "I manage user lifecycles and permissions in Microsoft Entra ID. I secure tenants by configuring phishing-resistant MFA, conditional access policies, Exchange online anti-phishing rules, and monitoring log alerts.",
+    "question8": "How do you configure and leverage RMM tools like Datto RMM or Ninja RMM?",
+    "answer8": "I configure and leverage RMM agents to automate patch management, workstation maintenance, and server maintenance. This includes scheduling monthly OS updates, running device cleanup scripts, remote endpoint monitoring, and deploying automated remediation tasks to ensure system compliance and zero downtime.",
+    "question9": "Can you explain your incident ticket lifecycle process in a Managed Service Provider (MSP) environment?",
+    "answer9": "I manage tickets inside PSA platforms (Autotask PSA, ConnectWise Manage) from initiation to resolution. I categorize issues, prioritize them based on SLA urgency, and document troubleshooting steps.",
+    "question10": "What is your approach to backup validation and data protection?",
+    "answer10": "I deploy and configure automated backup systems such as Acronis Cyber Protect, SaaS backup, and BCDR backup. I perform daily checks on backup status, define retention policies, and run regular validation drills (restoring files/directories) to ensure data integrity and disaster recovery readiness.",
     "tab_title": "Rana | Operations Runbooks"
   },
   "contact": {
@@ -104,6 +115,7 @@
     "quick_links": "Console Map",
     "tools": "SecOps Links",
     "follow": "Direct Channels",
+    "download_cv": "Download CV",
     "copyright": "All rights reserved. Secure terminal session active."
   },
   "pdf": {
@@ -114,6 +126,7 @@
     "tab_jpg_to_pdf": "IMAGE TO PDF",
     "tab_organize": "ORGANIZE PAGES",
     "tab_word_to_pdf": "WORD TO PDF",
+    "tab_ats_checker": "ATS RESUME CHECKER",
     "select_files": "Select PDF Files",
     "select_images": "Select Image Files (JPG/PNG/WEBP/GIF)",
     "select_file": "Select PDF File",
@@ -134,7 +147,7 @@
   },
   "bd": {
     "title": "BANGLADESHI ESSENTIALS",
-    "sub_unicode": "Unicode ↔ Bijoy Converter",
+    "sub_unicode": "Unicode ↔ Bijoy",
     "sub_age": "Age Calculator",
     "sub_resize": "Job Photo Resizer",
     "btn_convert_unicode": "CONVERT TO UNICODE",
