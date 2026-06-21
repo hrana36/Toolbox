@@ -20,9 +20,7 @@ export default function TerminalConsole() {
   useEffect(() => {
     setLogs([
       { text: 'Rana-OS [Version 1.0.4]', type: 'success' },
-      { text: 'Type "help" to list available commands.', type: 'output' },
       { text: '', type: 'output' },
-      { text: `[${t('portfolio.instructions.title')}]`, type: 'success' },
       { text: t('portfolio.instructions.body'), type: 'output' },
       { text: '', type: 'output' }
     ]);
