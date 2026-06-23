@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+Disallow: /_next/
+Disallow: /api/
+
+User-agent: GPTBot
+Allow: /
+Disallow: /_next/
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /_next/
+Disallow: /api/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /_next/
+Disallow: /api/
+
+User-agent: anthropic-ai
+Allow: /
+Disallow: /_next/
+Disallow: /api/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /_next/
+Disallow: /api/
+
+Sitemap: https://toolbox-ten-omega.vercel.app/sitemap.xml

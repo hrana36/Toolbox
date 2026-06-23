@@ -1,39 +1,34 @@
-'use client';
+import type { Metadata } from 'next';
+import PortfolioClient from './PortfolioClient';
 
-import { useEffect } from 'react';
-import Link from 'next/link';
-import TerminalConsole from './components/TerminalConsole';
-import ComplianceGauge from './components/ComplianceGauge';
-import UtilityWidgets from './components/UtilityWidgets';
-import { useTranslation } from '@/locales/i18n';
+export const metadata: Metadata = {
+  title: "Portfolio | Active Lab Configurations & Systems Demos",
+  description: "Browse Rana's portfolio featuring interactive SecOps console commands, live network deployments, endpoint security structures, and Microsoft credentials.",
+  keywords: ['Rana portfolio', 'IT Ops Projects', 'Azure Lab Configurations', 'Interactive terminal console', 'SecOps Demos'],
+  openGraph: {
+    title: 'Portfolio | Active Lab Configurations & Systems Demos',
+    description: "Browse Rana's portfolio featuring interactive SecOps console commands and network deployments.",
+    url: 'https://toolbox-ten-omega.vercel.app/portfolio',
+    type: 'website',
+  },
+};
 
-export default function Portfolio() {
-  const { t, lang, toggleLang } = useTranslation();
-
-  useEffect(() => {
-    document.title = lang === 'en' ? 'Rana | Systems Operations Hub' : 'রানা | সিস্টেমস অপারেশনস হাব';
-  }, [lang]);
+export default function Page() {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    'name': "Rana's Systems Operations Portfolio",
+    'description': "A collection of interactive console queries, system credentials, and active cloud engineering project documentation.",
+    'url': 'https://toolbox-ten-omega.vercel.app/portfolio'
+  };
 
   return (
-    <div className="min-h-screen md:h-screen w-screen bg-slate-950 text-slate-100 flex flex-col overflow-y-auto md:overflow-hidden">
-
-      {/* Main Workspace */}
-      <main className="flex-1 flex flex-col md:flex-row gap-4 p-4 min-h-0">
-        {/* Terminal Column */}
-        <div className="flex-1 flex flex-col min-h-0">
-          <TerminalConsole />
-        </div>
-
-        {/* Right Dashboard Column */}
-        <div className="w-full md:w-80 flex flex-col justify-start space-y-4">
-          <ComplianceGauge />
-        </div>
-      </main>
-
-      {/* Bottom Utility Bar */}
-      <footer className="border-t border-slate-900 bg-slate-950/80 px-4 pb-4 pt-1">
-        <UtilityWidgets />
-      </footer>
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <PortfolioClient />
+    </>
   );
 }

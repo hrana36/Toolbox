@@ -1,130 +1,40 @@
-'use client';
+import type { Metadata } from 'next';
+import ContactClient from './ContactClient';
 
-import { useState, useEffect, FormEvent } from 'react';
-import Link from 'next/link';
-import { useTranslation } from '@/locales/i18n';
-import { portfolioData } from '@/data/portfolio';
+export const metadata: Metadata = {
+  title: 'Contact Rana | Hire a Systems & Cloud Security Specialist',
+  description: 'Get in touch with Rana to collaborate on Azure cloud provisioning, automated patch management setups, enterprise network security auditing, or server maintenance.',
+  keywords: ['Contact Rana', 'Hire Systems Administrator', 'Hire Cloud Engineer', 'Hire IT Specialist', 'Rana contact'],
+  openGraph: {
+    title: 'Contact Rana | Hire a Systems & Cloud Security Specialist',
+    description: 'Inquire about project availability, technical consultations, or systems operations hiring.',
+    url: 'https://toolbox-ten-omega.vercel.app/contact',
+    type: 'website',
+  },
+};
 
-export default function Contact() {
-  const { t, lang, toggleLang } = useTranslation();
-  const [submitted, setSubmitted] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', category: 'General', message: '' });
-
-  useEffect(() => {
-    document.title = t('contact.tab_title');
-  }, [lang, t]);
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-    setFormData({ name: '', email: '', category: 'General', message: '' });
+export default function Page() {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    'name': 'Contact Rana',
+    'description': 'Secure connection portal to hire or consult with Systems Specialist Rana.',
+    'url': 'https://toolbox-ten-omega.vercel.app/contact',
+    'mainEntity': {
+      '@type': 'ContactPoint',
+      'contactType': 'professional support',
+      'email': 'hrana36@gmail.com',
+      'availableLanguage': ['English', 'Bengali']
+    }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-
-      {/* Body */}
-      <main className="flex-1 max-w-2xl mx-auto w-full px-4 py-4 md:py-6 flex flex-col justify-center gap-8">
-        {/* Personnel Security Dossier */}
-        <div className="w-full flex flex-col justify-center">
-          <h1 className="text-2xl font-bold font-mono tracking-wider border-b border-slate-900 pb-2 mb-4 text-white uppercase text-cyber-glow">
-            {t('about.title')}
-          </h1>
-          <div className="space-y-4 leading-relaxed text-slate-300 text-sm">
-            {/* Profile Section */}
-            <section className="bg-slate-900/40 border border-slate-800 rounded-lg p-4 md:p-5 cyber-glow">
-              <h2 className="text-base font-bold font-mono text-cyan-400 mb-3 uppercase tracking-wider">{t('about.section_profile')}</h2>
-              <p className="text-slate-400 text-xs">{t('about.profile_desc')}</p>
-            </section>
-
-            {/* Mission Section */}
-            <section className="bg-slate-900/40 border border-slate-800 rounded-lg p-4 md:p-5 cyber-glow">
-              <h2 className="text-base font-bold font-mono text-emerald-400 mb-3 uppercase tracking-wider">{t('about.section_mission')}</h2>
-              <p className="text-slate-400 text-xs">{t('about.mission_desc')}</p>
-            </section>
-          </div>
-        </div>
-
-        {/* Centered Form */}
-        <div className="w-full flex flex-col justify-center">
-          <h1 className="text-2xl font-bold font-mono tracking-wider border-b border-slate-900 pb-2 mb-4 text-white uppercase text-cyber-glow">
-            {t('contact.title')}
-          </h1>
-          <p className="text-slate-400 text-sm mb-3 leading-relaxed">
-            {t('contact.description')}
-          </p>
-
-          {submitted ? (
-            <div className="bg-emerald-950/40 border border-emerald-900 text-emerald-400 p-4 rounded text-sm font-mono cyber-glow">
-              [OK] {t('contact.form_success')}
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-3 text-xs font-mono">
-              <div>
-                <label className="block text-slate-500 uppercase mb-1.5">{t('contact.form_name')}</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-slate-900/60 border border-slate-800 focus:border-cyan-500 rounded p-2.5 text-slate-200 outline-none focus:ring-0 transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-slate-500 uppercase mb-1.5">{t('contact.form_email')}</label>
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-slate-900/60 border border-slate-800 focus:border-cyan-500 rounded p-2.5 text-slate-200 outline-none focus:ring-0 transition-colors"
-                />
-              </div>
-              <div>
-                <label className="block text-slate-500 uppercase mb-1.5">{t('contact.form_subject')}</label>
-                <select
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full bg-slate-900/60 border border-slate-800 focus:border-cyan-500 rounded p-2.5 text-slate-200 outline-none focus:ring-0 transition-colors"
-                >
-                  <option value="General">{t('contact.option_general')}</option>
-                  <option value="Audit">{t('contact.option_audit')}</option>
-                  <option value="Contract">{t('contact.option_contract')}</option>
-                  <option value="Threat">{t('contact.option_threat')}</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-slate-500 uppercase mb-1.5">{t('contact.form_message')}</label>
-                <textarea
-                  rows={3}
-                  required
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full bg-slate-900/60 border border-slate-800 focus:border-cyan-500 rounded p-2.5 text-slate-200 outline-none focus:ring-0 transition-colors"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-cyan-600 hover:bg-cyan-700 text-white p-3 rounded font-bold tracking-widest uppercase border border-cyan-500/20 transition-colors cyber-glow"
-              >
-                {t('contact.form_submit')}
-              </button>
-            </form>
-          )}
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-900 bg-slate-950/80 py-4 px-6 text-sm font-mono mt-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-slate-500">&copy; {new Date().getFullYear()} RANA. {t('footer.copyright')}</div>
-          <div className="flex space-x-6 text-xs">
-            <a href="https://www.linkedin.com/in/hrana36/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">LinkedIn</a>
-            <a href="https://github.com/hrana36" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">GitHub</a>
-            <a href="https://drive.google.com/drive/folders/1B5yzng9PwpBvF2d7s9lpbXqcVRZ3gGPn?usp=sharing" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white">{t('footer.download_cv')}</a>
-          </div>
-        </div>
-      </footer>
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
+      <ContactClient />
+    </>
   );
 }
