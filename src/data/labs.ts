@@ -656,42 +656,6 @@ def analyze_headers(raw_email_str):
       'Ensure raw header parser correctly captures and flags missing authentication records.'
     ]
   },
-  'claudeos-toolkit': {
-    slug: 'claudeos-toolkit',
-    title: 'ClaudeOS Toolkit',
-    category: 'Endpoint',
-    description: 'Personal agentic system toolkit for automated tasks and local environment controls.',
-    tech: ['NodeJS', 'TypeScript', 'CLI Tooling', 'Agentic Systems', 'API Integration'],
-    objectives: [
-      'Interface with local filesystem environments securely.',
-      'Automate repetitive operations with custom subagent instructions.',
-      'Control localized tools via standard execution pipelines.'
-    ],
-    topology: `
-  [ ClaudeOS Shell ] <---> [ Subagent Router ] <---> [ System API Modules ]
-`,
-    steps: [
-      {
-        title: 'Setup System Controller API',
-        description: 'Initialize CLI subagent handler config.',
-        codeSnippet: `import { exec } from 'child_process';
-
-export function executeLocalAction(command: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    exec(command, (err, stdout) => {
-      if (err) return reject(err);
-      resolve(stdout);
-    });
-  });
-}`,
-        codeLang: 'typescript'
-      }
-    ],
-    verification: [
-      'Run script routines inside sandboxed workspace.',
-      'Verify automated subagent tasks report precise system states.'
-    ]
-  },
   'client-side-security-suite': {
     slug: 'client-side-security-suite',
     title: 'Client-Side Security Suite',

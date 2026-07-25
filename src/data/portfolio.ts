@@ -171,14 +171,6 @@ export const portfolioData = {
       link: 'https://github.com/hrana36/phishing-risk-analyzer'
     },
     {
-      slug: 'claudeos-toolkit',
-      title: 'ClaudeOS Toolkit',
-      category: 'Endpoint',
-      description: 'Personal agentic system toolkit for automated tasks and local environment controls.',
-      tech: ['NodeJS', 'TypeScript', 'CLI Tooling', 'Agentic Systems', 'API Integration'],
-      link: 'https://github.com/hrana36/ClaudeOS'
-    },
-    {
       slug: 'client-side-security-suite',
       title: 'Client-Side Security Suite',
       category: 'SecOps',
