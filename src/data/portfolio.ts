@@ -88,7 +88,7 @@ export const portfolioData = {
       category: 'Network',
       description: 'Design a segmented network with a firewall and validate access.',
       tech: ['pfSense', 'OPNsense', 'VLANs', 'Firewall Rules', 'Network Segmentation'],
-      link: 'https://github.com/hrana36/Toolbox'
+      link: 'https://github.com/hrana36/secure-network-segmentation'
     },
     {
       slug: 'server-hardening',
@@ -96,7 +96,7 @@ export const portfolioData = {
       category: 'Endpoint',
       description: 'Apply CIS benchmarks to secure Windows or Linux systems and verify reduced vulnerabilities.',
       tech: ['CIS Benchmarks', 'Group Policy (GPO)', 'Linux Hardening', 'Vulnerability Auditing'],
-      link: 'https://github.com/hrana36/Toolbox'
+      link: 'https://github.com/hrana36/server-hardening-baseline'
     },
     {
       slug: 'endpoint-monitoring',
@@ -104,7 +104,7 @@ export const portfolioData = {
       category: 'Endpoint',
       description: 'Deploy an open-source EDR solution and detect suspicious endpoint behavior.',
       tech: ['Wazuh', 'EDR', 'Endpoint Security', 'Sysmon', 'Threat Detection'],
-      link: 'https://github.com/hrana36/Toolbox'
+      link: 'https://github.com/hrana36/endpoint-monitoring-edr'
     },
     {
       slug: 'automated-patching',
@@ -112,7 +112,7 @@ export const portfolioData = {
       category: 'Endpoint',
       description: 'Automate OS patching and security configuration enforcement across systems.',
       tech: ['Ansible', 'Datto RMM', 'Ninja RMM', 'PowerShell', 'Patch Management'],
-      link: 'https://github.com/hrana36/Toolbox'
+      link: 'https://github.com/hrana36/automated-patching-config'
     },
     {
       slug: 'cloud-hardening',
@@ -120,7 +120,7 @@ export const portfolioData = {
       category: 'Cloud',
       description: 'Build and monitor a secure AWS or Azure environment using native security services.',
       tech: ['AWS Security Hub', 'Azure Entra ID', 'IAM Hardening', 'CloudTrail', 'GuardDuty'],
-      link: 'https://github.com/hrana36/Toolbox'
+      link: 'https://github.com/hrana36/cloud-hardening-monitoring'
     },
     {
       slug: 'vulnerability-scanning',
@@ -128,7 +128,7 @@ export const portfolioData = {
       category: 'SecOps',
       description: 'Scan systems for vulnerabilities, remediate findings, and validate fixes through rescanning.',
       tech: ['Nessus', 'OpenVAS', 'Vulnerability Assessment', 'Remediation tracking'],
-      link: 'https://github.com/hrana36/Toolbox'
+      link: 'https://github.com/hrana36/vulnerability-scanning-pipeline'
     },
     {
       slug: 'network-ids-ips',
@@ -136,7 +136,7 @@ export const portfolioData = {
       category: 'Network',
       description: 'Deploy and tune IDS rules to detect attacks while minimizing false positives.',
       tech: ['Snort', 'Suricata', 'IDS/IPS', 'Rule Tuning', 'Packet Analysis'],
-      link: 'https://github.com/hrana36/Toolbox'
+      link: 'https://github.com/hrana36/network-ids-ips'
     },
     {
       slug: 'siem-implementation',
@@ -144,7 +144,7 @@ export const portfolioData = {
       category: 'SecOps',
       description: 'Centralize logs and configure security alerts using a SIEM platform.',
       tech: ['ELK Stack', 'Wazuh SIEM', 'Syslog', 'Log Parsing', 'Security Alerting'],
-      link: 'https://github.com/hrana36/Toolbox'
+      link: 'https://github.com/hrana36/siem-log-management'
     },
     {
       slug: 'container-security',
@@ -152,7 +152,7 @@ export const portfolioData = {
       category: 'Cloud',
       description: 'Scan and harden Docker images to reduce container vulnerabilities.',
       tech: ['Docker', 'Trivy', 'Image Hardening', 'Container Security', 'CI/CD security'],
-      link: 'https://github.com/hrana36/Toolbox'
+      link: 'https://github.com/hrana36/container-security-hardening'
     },
     {
       slug: 'active-directory-security',
@@ -160,7 +160,31 @@ export const portfolioData = {
       category: 'Endpoint',
       description: 'Deploy and secure an AD domain using Group Policy and auditing best practices.',
       tech: ['Active Directory', 'GPO Hardening', 'LDAP Security', 'Auditing Policy', 'Kerberos Hardening'],
-      link: 'https://github.com/hrana36/Toolbox'
+      link: 'https://github.com/hrana36/active-directory-security-lab'
+    },
+    {
+      slug: 'phishing-risk-analyzer',
+      title: 'Phishing Risk & Susceptibility Analyzer',
+      category: 'SecOps',
+      description: 'Analyze email headers and simulate phishing susceptibility score evaluation.',
+      tech: ['Python', 'Email Security', 'Phishing Simulation', 'Header Analysis', 'Risk Assessment'],
+      link: 'https://github.com/hrana36/phishing-risk-analyzer'
+    },
+    {
+      slug: 'claudeos-toolkit',
+      title: 'ClaudeOS Toolkit',
+      category: 'Endpoint',
+      description: 'Personal agentic system toolkit for automated tasks and local environment controls.',
+      tech: ['NodeJS', 'TypeScript', 'CLI Tooling', 'Agentic Systems', 'API Integration'],
+      link: 'https://github.com/hrana36/ClaudeOS'
+    },
+    {
+      slug: 'client-side-security-suite',
+      title: 'Client-Side Security Suite',
+      category: 'SecOps',
+      description: 'Browser-based utility toolbox for cryptographic hash generation, password strength analyzer, and SSL checks.',
+      tech: ['React', 'Cryptography', 'Client-Side Security', 'SSL Audit', 'Web Utilities'],
+      link: 'https://github.com/hrana36/client-side-toolbox'
     }
   ],
   educationAndCertifications: {
