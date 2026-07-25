@@ -88,7 +88,7 @@ export const portfolioData = {
       category: 'Network',
       description: 'Design a segmented network with a firewall and validate access.',
       tech: ['pfSense', 'OPNsense', 'VLANs', 'Firewall Rules', 'Network Segmentation'],
-      link: '#'
+      link: 'https://github.com/hrana36/Toolbox'
     },
     {
       slug: 'server-hardening',
@@ -96,7 +96,7 @@ export const portfolioData = {
       category: 'Endpoint',
       description: 'Apply CIS benchmarks to secure Windows or Linux systems and verify reduced vulnerabilities.',
       tech: ['CIS Benchmarks', 'Group Policy (GPO)', 'Linux Hardening', 'Vulnerability Auditing'],
-      link: '#'
+      link: 'https://github.com/hrana36/Toolbox'
     },
     {
       slug: 'endpoint-monitoring',
@@ -104,7 +104,7 @@ export const portfolioData = {
       category: 'Endpoint',
       description: 'Deploy an open-source EDR solution and detect suspicious endpoint behavior.',
       tech: ['Wazuh', 'EDR', 'Endpoint Security', 'Sysmon', 'Threat Detection'],
-      link: '#'
+      link: 'https://github.com/hrana36/Toolbox'
     },
     {
       slug: 'automated-patching',
@@ -112,7 +112,7 @@ export const portfolioData = {
       category: 'Endpoint',
       description: 'Automate OS patching and security configuration enforcement across systems.',
       tech: ['Ansible', 'Datto RMM', 'Ninja RMM', 'PowerShell', 'Patch Management'],
-      link: '#'
+      link: 'https://github.com/hrana36/Toolbox'
     },
     {
       slug: 'cloud-hardening',
@@ -120,7 +120,7 @@ export const portfolioData = {
       category: 'Cloud',
       description: 'Build and monitor a secure AWS or Azure environment using native security services.',
       tech: ['AWS Security Hub', 'Azure Entra ID', 'IAM Hardening', 'CloudTrail', 'GuardDuty'],
-      link: '#'
+      link: 'https://github.com/hrana36/Toolbox'
     },
     {
       slug: 'vulnerability-scanning',
@@ -128,7 +128,7 @@ export const portfolioData = {
       category: 'SecOps',
       description: 'Scan systems for vulnerabilities, remediate findings, and validate fixes through rescanning.',
       tech: ['Nessus', 'OpenVAS', 'Vulnerability Assessment', 'Remediation tracking'],
-      link: '#'
+      link: 'https://github.com/hrana36/Toolbox'
     },
     {
       slug: 'network-ids-ips',
@@ -136,7 +136,7 @@ export const portfolioData = {
       category: 'Network',
       description: 'Deploy and tune IDS rules to detect attacks while minimizing false positives.',
       tech: ['Snort', 'Suricata', 'IDS/IPS', 'Rule Tuning', 'Packet Analysis'],
-      link: '#'
+      link: 'https://github.com/hrana36/Toolbox'
     },
     {
       slug: 'siem-implementation',
@@ -144,7 +144,7 @@ export const portfolioData = {
       category: 'SecOps',
       description: 'Centralize logs and configure security alerts using a SIEM platform.',
       tech: ['ELK Stack', 'Wazuh SIEM', 'Syslog', 'Log Parsing', 'Security Alerting'],
-      link: '#'
+      link: 'https://github.com/hrana36/Toolbox'
     },
     {
       slug: 'container-security',
@@ -152,7 +152,7 @@ export const portfolioData = {
       category: 'Cloud',
       description: 'Scan and harden Docker images to reduce container vulnerabilities.',
       tech: ['Docker', 'Trivy', 'Image Hardening', 'Container Security', 'CI/CD security'],
-      link: '#'
+      link: 'https://github.com/hrana36/Toolbox'
     },
     {
       slug: 'active-directory-security',
@@ -160,7 +160,7 @@ export const portfolioData = {
       category: 'Endpoint',
       description: 'Deploy and secure an AD domain using Group Policy and auditing best practices.',
       tech: ['Active Directory', 'GPO Hardening', 'LDAP Security', 'Auditing Policy', 'Kerberos Hardening'],
-      link: '#'
+      link: 'https://github.com/hrana36/Toolbox'
     }
   ],
   educationAndCertifications: {

@@ -179,14 +179,14 @@ export default function Home() {
                         </span>
                       ))}
                     </div>
-                    <div className="text-left mt-2">
-                      <Link 
-                        href={`/portfolio/projects/${project.slug}`} 
+                      <a 
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="inline-block border border-cyan-500/30 hover:border-cyan-400 bg-cyan-500/5 hover:bg-cyan-500/10 text-cyan-400 hover:text-cyan-300 font-mono text-[10px] uppercase tracking-wider px-3.5 py-1.5 rounded transition-all duration-300 shadow-[0_0_8px_rgba(34,211,238,0.1)] hover:shadow-[0_0_12px_rgba(34,211,238,0.3)]"
                       >
                         {t('about.launch_lab')} &rarr;
-                      </Link>
-                    </div>
+                      </a>
                   </div>
                 </div>
               ))}
