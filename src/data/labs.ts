@@ -618,5 +618,113 @@ filter {
       'Simulate brute force SSH attacks on test nodes and verify dashboard widgets flag the testing IP.',
       'Confirm email alerts successfully dispatch to administrators.'
     ]
+  },
+  'phishing-risk-analyzer': {
+    slug: 'phishing-risk-analyzer',
+    title: 'Phishing Risk & Susceptibility Analyzer',
+    category: 'SecOps',
+    description: 'Analyze email headers and simulate phishing susceptibility score evaluation.',
+    tech: ['Python', 'Email Security', 'Phishing Simulation', 'Header Analysis', 'Risk Assessment'],
+    objectives: [
+      'Parse SPF, DKIM, and DMARC parameters from raw email headers.',
+      'Evaluate domain age and threat reputation metadata.',
+      'Calculate cumulative susceptibility and risk score metrics.'
+    ],
+    topology: `
+  [ Raw Email Source ] ---> [ Header Parser & Checkers ]
+                                    |
+                                    v
+  [ Risk Score Dashboard ] <--- [ Reputation Engine ]
+`,
+    steps: [
+      {
+        title: 'Parse Headers & SPF/DKIM/DMARC Verification',
+        description: 'Read raw email headers to verify authenticity protocols.',
+        codeSnippet: `import email
+from email.parser import Parser
+
+def analyze_headers(raw_email_str):
+    msg = Parser().parsestr(raw_email_str)
+    spf = msg.get('Received-SPF')
+    dkim = msg.get('DKIM-Signature')
+    return { 'spf': spf, 'dkim': dkim }`,
+        codeLang: 'python'
+      }
+    ],
+    verification: [
+      'Confirm spoofed emails return high susceptibility alerts.',
+      'Ensure raw header parser correctly captures and flags missing authentication records.'
+    ]
+  },
+  'claudeos-toolkit': {
+    slug: 'claudeos-toolkit',
+    title: 'ClaudeOS Toolkit',
+    category: 'Endpoint',
+    description: 'Personal agentic system toolkit for automated tasks and local environment controls.',
+    tech: ['NodeJS', 'TypeScript', 'CLI Tooling', 'Agentic Systems', 'API Integration'],
+    objectives: [
+      'Interface with local filesystem environments securely.',
+      'Automate repetitive operations with custom subagent instructions.',
+      'Control localized tools via standard execution pipelines.'
+    ],
+    topology: `
+  [ ClaudeOS Shell ] <---> [ Subagent Router ] <---> [ System API Modules ]
+`,
+    steps: [
+      {
+        title: 'Setup System Controller API',
+        description: 'Initialize CLI subagent handler config.',
+        codeSnippet: `import { exec } from 'child_process';
+
+export function executeLocalAction(command: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec(command, (err, stdout) => {
+      if (err) return reject(err);
+      resolve(stdout);
+    });
+  });
+}`,
+        codeLang: 'typescript'
+      }
+    ],
+    verification: [
+      'Run script routines inside sandboxed workspace.',
+      'Verify automated subagent tasks report precise system states.'
+    ]
+  },
+  'client-side-security-suite': {
+    slug: 'client-side-security-suite',
+    title: 'Client-Side Security Suite',
+    category: 'SecOps',
+    description: 'Browser-based utility toolbox for cryptographic hash generation, password strength analyzer, and SSL checks.',
+    tech: ['React', 'Cryptography', 'Client-Side Security', 'SSL Audit', 'Web Utilities'],
+    objectives: [
+      'Perform offline client-side MD5, SHA-256, and SHA-512 cryptographic calculations.',
+      'Analyze password entropy strength locally without sending data to servers.',
+      'Inspect certificate chains using fast domain SSL checks.'
+    ],
+    topology: `
+  [ Browser Client UI ] ---> [ Web Cryptography API ]
+                                    |
+                                    v
+  [ Secure Vault Result ] <--- [ Local Storage Cache ]
+`,
+    steps: [
+      {
+        title: 'Define Client Hash Calculator',
+        description: 'Calculate cryptographic hash values in browser client context using Web Crypto API.',
+        codeSnippet: `async function computeSHA256(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}`,
+        codeLang: 'javascript'
+      }
+    ],
+    verification: [
+      'Ensure hashes match standard CLI tool values.',
+      'Verify that password evaluation runs offline and secure data never leaves the client.'
+    ]
   }
 };
